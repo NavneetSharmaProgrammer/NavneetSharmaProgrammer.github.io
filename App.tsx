@@ -28,7 +28,8 @@ import {
   Layers,
   Fingerprint,
   Mic,
-  Wifi
+  Wifi,
+  Download
 } from 'lucide-react';
 import { motion, useScroll, useTransform, AnimatePresence, Variants, useSpring, useMotionValue } from 'framer-motion';
 import { PROFILE, PROJECTS } from './constants';
@@ -310,7 +311,7 @@ const App: React.FC = () => {
                 whileHover={{ scale: 1.05, y: -8, rotate: -1 }}
                 whileTap={{ scale: 0.95 }}
                 href={PROFILE.linkedIn} target="_blank" 
-                className="px-12 py-6 bg-emerald-500 text-black font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl flex items-center gap-4 shadow-[0_20px_50px_-10px_rgba(16,185,129,0.4)]"
+                className="px-8 py-6 bg-emerald-500 text-black font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl flex items-center gap-4 shadow-[0_20px_50px_-10px_rgba(16,185,129,0.4)]"
               >
                 <Fingerprint size={20} /> Identity Profile
               </motion.a>
@@ -318,9 +319,17 @@ const App: React.FC = () => {
                 whileHover={{ scale: 1.05, y: -8, rotate: 1 }}
                 whileTap={{ scale: 0.95 }}
                 href={PROFILE.github} target="_blank" 
-                className="px-12 py-6 bg-white/5 border border-white/10 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl hover:bg-white hover:text-black transition-all"
+                className="px-8 py-6 bg-white/5 border border-white/10 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl hover:bg-white hover:text-black transition-all"
               >
                 Logic Repos
+              </motion.a>
+              <motion.a 
+                whileHover={{ scale: 1.05, y: -8, rotate: -2 }}
+                whileTap={{ scale: 0.95 }}
+                href={PROFILE.resumeUrl} target="_blank" 
+                className="px-8 py-6 bg-white/5 border border-emerald-500/30 text-emerald-500 font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl hover:bg-emerald-500 hover:text-black transition-all flex items-center gap-4"
+              >
+                <Download size={20} /> Download Resume
               </motion.a>
             </div>
           </TiltCard>
@@ -496,12 +505,14 @@ const App: React.FC = () => {
                  </div>
                ))}
             </div>
-            <motion.button 
+            <motion.a 
+              href={PROFILE.resumeUrl}
+              target="_blank"
               whileHover={{ y: -5, scale: 1.02 }}
-              className="mt-16 w-full py-6 bg-white/5 border border-white/10 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.5em] hover:bg-emerald-500 hover:text-black hover:border-emerald-500 transition-all shadow-xl"
+              className="mt-16 w-full py-6 bg-white/5 border border-white/10 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.5em] hover:bg-emerald-500 hover:text-black hover:border-emerald-500 transition-all shadow-xl text-center flex items-center justify-center gap-3"
             >
-              Verify Credentials
-            </motion.button>
+              <Download size={14} /> Verify Credentials
+            </motion.a>
           </motion.div>
 
           <motion.a 
@@ -565,15 +576,17 @@ const App: React.FC = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                    {[
-                     { label: 'Analyze RAG AI', icon: BrainCircuit },
-                     { label: 'Fetch Master Resume', icon: FileText },
-                     { label: 'System Documentation', icon: Settings },
-                     { label: 'Ping LinkedIn Uplink', icon: Linkedin },
-                     { label: 'Neural Git Access', icon: Github },
-                     { label: 'Broadcast Channel', icon: Youtube }
+                     { label: 'Analyze RAG AI', icon: BrainCircuit, link: '#' },
+                     { label: 'Fetch Master Resume', icon: FileText, link: PROFILE.resumeUrl },
+                     { label: 'System Documentation', icon: Settings, link: '#' },
+                     { label: 'Ping LinkedIn Uplink', icon: Linkedin, link: PROFILE.linkedIn },
+                     { label: 'Neural Git Access', icon: Github, link: PROFILE.github },
+                     { label: 'Broadcast Channel', icon: Youtube, link: PROFILE.youtube }
                    ].map((cmd, i) => (
-                     <motion.div 
+                     <motion.a 
                        key={i} 
+                       href={cmd.link}
+                       target="_blank"
                        whileHover={{ x: 5, scale: 1.02 }}
                        className="flex items-center justify-between p-5 bg-white/5 border border-white/5 rounded-[1.5rem] hover:bg-emerald-500 hover:text-black cursor-pointer transition-all group"
                      >
@@ -582,7 +595,7 @@ const App: React.FC = () => {
                            <span className="text-[11px] font-black uppercase tracking-widest">{cmd.label}</span>
                         </div>
                         <ArrowUpRight size={18} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-                     </motion.div>
+                     </motion.a>
                    ))}
                 </div>
                 <div className="mt-12 flex justify-between items-center text-[10px] font-black uppercase text-neutral-700 tracking-[0.2em]">
