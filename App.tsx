@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { 
   Github, 
@@ -33,7 +34,7 @@ import {
 import { motion, useScroll, useTransform, AnimatePresence, Variants, useSpring, useMotionValue } from 'framer-motion';
 import { PROFILE, PROJECTS } from './constants';
 
-// --- INVENTED: Neural Canvas Background (Invention: Interactive Synaptic Pulse) ---
+// --- INVENTED: Neural Canvas Background ---
 const NeuralCanvas = ({ vibe }: { vibe: string }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -108,7 +109,7 @@ const NeuralCanvas = ({ vibe }: { vibe: string }) => {
   return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" />;
 };
 
-// --- INVENTED: 3D Tilt Wrapper with Spring Logic ---
+// --- INVENTED: 3D Tilt Wrapper ---
 const TiltCard = ({ children, className, colSpan = 1, rowSpan = 1 }: any) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -141,7 +142,7 @@ const TiltCard = ({ children, className, colSpan = 1, rowSpan = 1 }: any) => {
   );
 };
 
-// --- INVENTED: System Sentience Overlay (Bottom HUD) ---
+// --- INVENTED: System Sentience Overlay ---
 const SystemSentienceHUD = () => {
   const [thoughts, setThoughts] = useState("System Initialized...");
   const sentienceMessages = [
@@ -179,7 +180,6 @@ const SystemSentienceHUD = () => {
 };
 
 const App: React.FC = () => {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [vibe, setVibe] = useState<'minimal' | 'maximal' | 'neural'>('neural');
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const [stats, setStats] = useState({ mouseV: 0, clickCount: 0 });
@@ -188,7 +188,6 @@ const App: React.FC = () => {
   useEffect(() => {
     let lastX = 0, lastY = 0;
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
       const v = Math.hypot(e.clientX - lastX, e.clientY - lastY);
       setStats(prev => ({ ...prev, mouseV: Math.round(v) }));
       lastX = e.clientX; lastY = e.clientY;
@@ -233,13 +232,11 @@ const App: React.FC = () => {
   return (
     <div className={`min-h-screen ${vibe === 'minimal' ? 'bg-[#fafafa] text-black' : 'bg-[#050505] text-white'} selection:bg-emerald-500 selection:text-black font-sans transition-colors duration-1000 overflow-x-hidden`}>
       
-      {/* Background & HUD */}
       <NeuralCanvas vibe={vibe} />
       <SystemSentienceHUD />
 
       <main className="max-w-[1550px] mx-auto p-4 md:p-12 relative z-10">
         
-        {/* Futuristic Navigation */}
         <nav className="flex justify-between items-center mb-16 px-4">
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
@@ -283,7 +280,6 @@ const App: React.FC = () => {
           </div>
         </nav>
 
-        {/* BENTO GRID 2.0 (Invention: Tactile Maximalism & Holographic Depth) */}
         <motion.div 
           variants={gridVariants}
           initial="hidden"
@@ -291,7 +287,6 @@ const App: React.FC = () => {
           className="grid grid-cols-1 md:grid-cols-4 gap-6"
         >
           
-          {/* 1. HERO BLOCK (2x2) */}
           <TiltCard colSpan={2} rowSpan={2} className="bento-card p-12 md:p-20 flex flex-col justify-between group">
             <div className="scanline opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:opacity-15 transition-opacity pointer-events-none">
@@ -331,7 +326,6 @@ const App: React.FC = () => {
             </div>
           </TiltCard>
 
-          {/* 2. FLAGSHIP PROJECT (2x2) */}
           <TiltCard colSpan={2} rowSpan={2} className="bento-card group flex flex-col p-0">
             <div className="scanline opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/95 z-10" />
@@ -346,7 +340,7 @@ const App: React.FC = () => {
               </div>
               <h3 className="text-6xl font-display font-black uppercase tracking-tighter mb-5 group-hover:text-glow-emerald transition-all duration-700">RAG AI Tutor</h3>
               <p className="text-neutral-300 text-xl leading-relaxed max-w-lg opacity-0 group-hover:opacity-100 transition-all transform translate-y-8 group-hover:translate-y-0 duration-500">
-                Created a semantic-aware educational assistant that decodes lecture streams and allows students to "chat" with their course history.
+                Created a semantic-aware educational assistant that decodes lecture streams and allows students to {"'"}chat{"'"} with their course history.
               </p>
               <div className="mt-10 pt-10 border-t border-white/10 flex items-center justify-between">
                  <div className="flex items-center gap-3">
@@ -360,7 +354,6 @@ const App: React.FC = () => {
             </div>
           </TiltCard>
 
-          {/* 3. SYSTEM DNA (1x1) (Invention: Real-time Metric Monitoring) */}
           <motion.div variants={itemVariants} className="bento-card p-10 flex flex-col justify-between group overflow-hidden bg-gradient-to-br from-emerald-500/5 to-transparent">
             <div className="absolute top-0 right-0 p-4">
                <Fingerprint size={60} className="text-emerald-500/10 group-hover:text-emerald-500/20 transition-colors" />
@@ -392,7 +385,6 @@ const App: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* 4. VID SNAP AI (1x1) */}
           <TiltCard className="bento-card p-10 flex flex-col justify-between group">
              <div className="flex justify-between items-start relative z-10">
                <div className="w-16 h-16 bg-white/5 rounded-[2rem] flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-black transition-all shadow-xl border border-white/5 group-hover:border-emerald-400">
@@ -412,7 +404,6 @@ const App: React.FC = () => {
              </div>
           </TiltCard>
 
-          {/* 5. GURGAON PREDICTOR (1x1) */}
           <TiltCard className="bento-card p-10 flex flex-col justify-between group border-emerald-500/10">
              <div className="flex justify-between items-center">
                <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-500">
@@ -427,15 +418,12 @@ const App: React.FC = () => {
                <h4 className="text-2xl font-display font-black uppercase leading-[1.1]">Valuation <br/> Engine</h4>
              </div>
              <div className="p-4 bg-zinc-950/80 border border-emerald-500/20 rounded-2xl">
-               <p className="text-[11px] font-mono text-emerald-500 leading-relaxed">
-                 $ model.predict(X_test) <br/>
-                 {" >> RMSE: 0.124"} <br/>
-                 {" >> Status: Converged"}
+               <p className="text-[11px] font-mono text-emerald-500 leading-relaxed whitespace-pre-wrap">
+                 {"$ model.predict(X_test)\n >> RMSE: 0.124\n >> Status: Converged"}
                </p>
              </div>
           </TiltCard>
 
-          {/* 6. SKILL TICKER 2.0 (2x1) */}
           <motion.div variants={itemVariants} className="md:col-span-2 bento-card flex flex-col justify-center py-12 overflow-hidden group">
             <div className="px-12 mb-8 flex items-center justify-between">
               <h3 className="text-[11px] font-black uppercase tracking-[0.5em] text-neutral-500 italic">Synthetic Processing Array</h3>
@@ -460,7 +448,6 @@ const App: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* 7. BROADCAST BLOCK (1x1) */}
           <motion.a 
             href={PROFILE.youtube} target="_blank"
             variants={itemVariants}
@@ -483,7 +470,6 @@ const App: React.FC = () => {
              <ArrowUpRight size={24} className="text-neutral-700 group-hover:text-white transition-colors self-end mt-4" />
           </motion.a>
 
-          {/* 8. TIMELINE ROADMAP (1x2 TALL) */}
           <motion.div 
             variants={itemVariants}
             className="md:row-span-2 bento-card p-12 flex flex-col group"
@@ -519,7 +505,6 @@ const App: React.FC = () => {
             </motion.button>
           </motion.div>
 
-          {/* 9. VISUAL TRACE (1x1) */}
           <motion.a 
             href={PROFILE.instagram} target="_blank"
             variants={itemVariants}
@@ -538,7 +523,6 @@ const App: React.FC = () => {
              </div>
           </motion.a>
 
-          {/* 10. SYSTEM OPTIMIZATION (1x1) */}
           <motion.div 
             variants={itemVariants}
             className="bento-card p-10 flex flex-col justify-center text-center group bg-emerald-500/5 border-emerald-500/20"
@@ -556,7 +540,6 @@ const App: React.FC = () => {
 
         </motion.div>
 
-        {/* INVENTOR: NEURAL COMMAND PALETTE (UX ENHANCEMENT) */}
         <AnimatePresence>
           {isCommandOpen && (
             <motion.div 
@@ -612,7 +595,6 @@ const App: React.FC = () => {
           )}
         </AnimatePresence>
 
-        {/* 2026 INVENTOR FOOTER */}
         <footer className="mt-40 pt-20 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-16 mb-24">
            <div className="flex flex-wrap justify-center md:justify-start gap-16">
               {[
