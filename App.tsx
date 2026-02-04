@@ -36,7 +36,7 @@ import {
 import { motion, useScroll, useTransform, AnimatePresence, Variants, useSpring, useMotionValue } from 'framer-motion';
 import { PROFILE, PROJECTS, SKILL_CATEGORIES } from './constants';
 
-// --- INVENTED: Neural Canvas Background ---
+// --- NEURAL CANVAS BACKGROUND ---
 const NeuralCanvas = ({ vibe }: { vibe: string }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -111,7 +111,7 @@ const NeuralCanvas = ({ vibe }: { vibe: string }) => {
   return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" />;
 };
 
-// --- INVENTED: 3D Tilt Wrapper ---
+// --- 3D TILT WRAPPER ---
 const TiltCard = ({ children, className, colSpan = 1, rowSpan = 1 }: any) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -144,7 +144,7 @@ const TiltCard = ({ children, className, colSpan = 1, rowSpan = 1 }: any) => {
   );
 };
 
-// --- INVENTED: System Sentience Overlay ---
+// --- SYSTEM SENTIENCE HUD ---
 const SystemSentienceHUD = () => {
   const [thoughts, setThoughts] = useState("System Initialized...");
   const sentienceMessages = [
@@ -306,7 +306,7 @@ const App: React.FC = () => {
                 Into Art<span className="text-emerald-500">.</span>
               </h1>
               <p className="text-neutral-400 text-2xl max-w-xl font-medium leading-relaxed">
-                Navneet Sharma here. Engineering <span className="text-white italic">Synthetic Wisdom</span> through <span className="text-white">Generative Pipelines</span> and <span className="text-white">Advanced ML</span>.
+                Navneet Sharma here. {PROFILE.role} with a First Division BCA. Specializing in <span className="text-white italic">AI/ML Pipelines</span> and <span className="text-white">Power BI Analytics</span>.
               </p>
             </div>
             <div className="relative z-10 flex flex-wrap gap-5 mt-16">
@@ -411,7 +411,7 @@ const App: React.FC = () => {
                <p className="text-[12px] text-neutral-500 leading-snug">{PROJECTS[1].description}</p>
              </div>
              <div className="pt-6 border-t border-white/5 flex gap-2 relative z-10">
-               {PROJECTS[1].tags.slice(0, 2).map(t => <span key={t} className="glass-pill !bg-emerald-500/10 !text-emerald-500">{t}</span>)}
+               {PROJECTS[1].tags.map(t => <span key={t} className="glass-pill !bg-emerald-500/10 !text-emerald-500">{t}</span>)}
              </div>
           </TiltCard>
 
@@ -622,7 +622,7 @@ const App: React.FC = () => {
               </div>
            </div>
            <div className="text-center md:text-right">
-             <p className="text-[11px] font-black uppercase text-white/10 tracking-[1.5em] mb-4">NAVNEET.SHARMA.DS</p>
+             <p className="text-[11px] font-black uppercase text-white/10 tracking-[1.5em] mb-4">SYSTEM ID: {PROFILE.systemId}</p>
              <div className="flex flex-col items-center md:items-end gap-1">
                 <p className="text-[9px] font-mono text-neutral-800">NAVNEET_SHARMA_PORTFOLIO_V2.0.exe</p>
                 <div className="flex gap-2">

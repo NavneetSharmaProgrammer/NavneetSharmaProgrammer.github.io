@@ -22,76 +22,77 @@ export interface Certification {
 
 export const PROFILE = {
   name: "Navneet Sharma",
-  role: "Aspiring Data Scientist | Python Practitioner",
+  role: "Aspiring Data Scientist & Full-Stack Developer",
   location: "Noida, Uttar Pradesh, India",
-  email: "navneetsharmanonu@gmail.com",
+  email: "navneetsharmaprogrammer@gmail.com",
+  systemId: "NS_8630066072",
   linkedIn: "https://www.linkedin.com/in/navneetsharma-590862241",
   youtube: "https://www.youtube.com/@CodingWithNavneet",
   github: "https://github.com/NavneetSharmaProgrammer",
   instagram: "https://www.instagram.com/navneet_sharma_/",
   // CURRENT RESUME URL
   resumeUrl: "https://drive.google.com/file/d/17NcRr-YBBp9gAW5n9evWhQsAHjQHKI7Q/view?usp=sharing", 
-  summary: "BCA Graduate (First Division) from Maa Shakumbhari University. Specializing in AI/ML Pipelines, Predictive Modeling, and Power BI Analytics. I build scalable GenAI products and data-driven solutions.",
+  summary: "BCA Graduate (First Division) from Maa Shakumbhari University. Specializing in AI/ML Pipelines and Power BI Analytics. Expert in engineering data-driven solutions and generative AI products.",
 };
 
 export const PROJECTS: Project[] = [
   {
     id: "rag-ai",
-    title: "RAG AI Teaching Assistant",
-    description: "Semantic-aware assistant that decodes lecture streams via OpenAI Whisper and answers queries using LangChain vector search.",
-    tags: ["NLP", "Vector-DB", "LangChain"],
+    title: "RAG AI TEACHING ASSISTANT",
+    description: "Semantic-aware assistant. Decodes lecture streams via Whisper & answers queries using LangChain vector search.",
+    tags: ["NLP", "VECTOR-DB"],
     imageUrl: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800",
     date: "2025",
-    stat: "Flagship AI"
+    stat: "FLAGSHIP AI"
   },
   {
     id: "vidsnap-ai",
     title: "VidSnapAI",
-    description: "Orchestrated pipeline for viral content generation. Integrates ElevenLabs audio synthesis and FFmpeg video stitching via Flask.",
-    tags: ["GenAI", "Flask", "FFmpeg"],
+    description: "Orchestrated pipeline for viral content generation. Integrates ElevenLabs audio & FFmpeg video stitching via Flask.",
+    tags: ["AUTO-GEN", "FLASK"],
     imageUrl: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=800",
     date: "2025",
-    stat: "Automation"
+    stat: "GEN-AI PRODUCT"
   },
   {
     id: "sales-forecast",
-    title: "Sales Forecast Model",
-    description: "Predictive modeling pipeline using Scikit-Learn to forecast revenue trends with 85% accuracy using historical sales data.",
-    tags: ["Predictive", "ML", "Pandas"],
+    title: "SALES FORECAST MODEL",
+    description: "Predictive modeling pipeline using Regression algorithms to forecast revenue trends with 85% Accuracy.",
+    tags: ["SCIKIT-LEARN", "PREDICTIVE"],
     imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800",
     date: "2024",
-    stat: "85% Accuracy"
+    stat: "ANALYTICS ENGINE"
   },
   {
     id: "ncaids",
-    title: "NCAIDS Portal",
-    description: "Modern, responsive website for Navneet College of AI & Data Science. Features dynamic admissions and academic tracking.",
-    tags: ["React", "Bootstrap", "MySQL"],
+    title: "NCAIDS PORTAL",
+    description: "Responsive website for Navneet College of AI & Data Science. Highlights academic offerings with dynamic UI.",
+    tags: ["REACT", "FULL-STACK"],
     imageUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=800",
     date: "2024",
-    stat: "Full Stack"
+    stat: "WEB MODULE"
   }
 ];
 
 export const SKILL_CATEGORIES: SkillCategory[] = [
   { 
-    title: "Core Logic (DS & AI)", 
-    skills: ["Python", "Pandas", "NumPy", "Scikit-Learn", "NLP & RAG", "Computer Vision (OpenCV)", "Machine Learning"] 
+    title: "Core Logic", 
+    skills: ["Python (Pandas, NumPy, Scikit-Learn)", "NLP & RAG Pipelines", "Flask APIs"] 
   },
   { 
     title: "Analytics Engine", 
-    skills: ["Power BI (DAX)", "Advanced Excel (VBA)", "SQL (T-SQL, MySQL)", "Tableau", "Data Modeling"] 
+    skills: ["Power BI (DAX, Modeling)", "Advanced Excel (VBA)", "SQL (T-SQL, MySQL)"] 
   },
   { 
-    title: "Full Stack Array", 
-    skills: ["React.js", "Next.js", "Redux.js", "Flask", "Node.js", "Tailwind CSS", "Git & GitHub"] 
+    title: "Frontend/Full-Stack", 
+    skills: ["React.js / Next.js", "Redux.js", "Tailwind CSS", "Git Workflows"] 
   }
 ];
 
 export const CERTIFICATIONS: Certification[] = [
-  { title: "Data Science Professional", issuer: "Croma Campus", date: "Present" },
-  { title: "Python Bootcamp: Zero to Hero", issuer: "CodeWithHarry", date: "Sep 2025" },
-  { title: "Web Development (MITS206093)", issuer: "Micro Info Tech", date: "Jun 2025" },
-  { title: "TCS iON Career Edge", issuer: "Tata Consultancy Services", date: "Jan 2025" },
-  { title: "Responsive Web Design", issuer: "freeCodeCamp", date: "Dec 2024" }
+  { title: "Data Science Professional", issuer: "Croma Campus", date: "SEP 2025 - PRESENT" },
+  { title: "Python Bootcamp: Zero to Hero", issuer: "CodeWithHarry", date: "SEP 2025" },
+  { title: "Web Development Internship (MITS206093)", issuer: "Micro Info Tech Services", date: "JUN 2025" },
+  { title: "TCS iON Career Edge", issuer: "Tata Consultancy Services", date: "JAN 2025" },
+  { title: "Responsive Web Design", issuer: "freeCodeCamp", date: "DEC 2024" }
 ];
