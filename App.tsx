@@ -29,10 +29,12 @@ import {
   Fingerprint,
   Mic,
   Wifi,
-  Download
+  Download,
+  MapPin,
+  Mail
 } from 'lucide-react';
 import { motion, useScroll, useTransform, AnimatePresence, Variants, useSpring, useMotionValue } from 'framer-motion';
-import { PROFILE, PROJECTS } from './constants';
+import { PROFILE, PROJECTS, SKILL_CATEGORIES } from './constants';
 
 // --- INVENTED: Neural Canvas Background ---
 const NeuralCanvas = ({ vibe }: { vibe: string }) => {
@@ -147,26 +149,26 @@ const SystemSentienceHUD = () => {
   const [thoughts, setThoughts] = useState("System Initialized...");
   const sentienceMessages = [
     "Analyzing scroll patterns...",
-    "User focus detected on RAG Project.",
-    "Optimizing data rendering pathways.",
-    "Neural weights updated.",
-    "Bento grid structure: Stable.",
-    "Dopamine levels rising...",
-    "System 2.0.26 operating at 99.8%."
+    "User focus detected on RAG AI module.",
+    "Optimizing predictive algorithms.",
+    "Neural weights updated for Data Analysis.",
+    "Bento structure: Stable & Optimized.",
+    "Data scientist career path: Converging.",
+    "System 2.0.26 operating at 99.9%."
   ];
 
   useEffect(() => {
     const interval = setInterval(() => {
       setThoughts(sentienceMessages[Math.floor(Math.random() * sentienceMessages.length)]);
-    }, 4000);
+    }, 4500);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] w-full max-w-sm px-4 md:max-w-md pointer-events-none">
-       <div className="bg-black/80 backdrop-blur-2xl border border-white/10 p-3 rounded-2xl flex items-center justify-between gap-4 pointer-events-auto">
+       <div className="bg-black/80 backdrop-blur-2xl border border-white/10 p-3 rounded-2xl flex items-center justify-between gap-4 pointer-events-auto shadow-2xl shadow-emerald-500/10">
           <div className="flex items-center gap-3">
-             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,1)]" />
              <p className="text-[10px] font-mono text-emerald-500 uppercase tracking-tighter w-48 truncate">{thoughts}</p>
           </div>
           <div className="flex items-center gap-4 text-neutral-500">
@@ -211,7 +213,8 @@ const App: React.FC = () => {
   const dataTools = useMemo(() => [
     "Python", "SQL", "Power BI", "Pandas", "NumPy", "Scikit-Learn", "LLMs", "LangChain", 
     "PyTorch", "Flask", "FFmpeg", "ElevenLabs", "Matplotlib", "Seaborn", "Git", "Jupyter",
-    "TensorFlow", "XGBoost", "HuggingFace", "FastAPI", "PostgreSQL", "React", "D3.js"
+    "TensorFlow", "XGBoost", "HuggingFace", "FastAPI", "PostgreSQL", "React", "D3.js",
+    "NLP", "Regression", "DAX", "MERN Stack", "VBA", "Tableau", "OpenCV"
   ], []);
 
   const gridVariants: Variants = {
@@ -338,17 +341,17 @@ const App: React.FC = () => {
             <div className="scanline opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/95 z-10" />
             <img 
-              src="https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=1200" 
+              src={PROJECTS[0].imageUrl} 
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s] grayscale group-hover:grayscale-0"
-              alt="RAG AI"
+              alt={PROJECTS[0].title}
             />
             <div className="relative z-20 mt-auto p-12">
               <div className="flex gap-3 mb-6">
-                 {['Whisper', 'VectorDB', 'LangChain'].map(t => <span key={t} className="glass-pill">{t}</span>)}
+                 {PROJECTS[0].tags.map(t => <span key={t} className="glass-pill">{t}</span>)}
               </div>
-              <h3 className="text-6xl font-display font-black uppercase tracking-tighter mb-5 group-hover:text-glow-emerald transition-all duration-700">RAG AI Tutor</h3>
+              <h3 className="text-6xl font-display font-black uppercase tracking-tighter mb-5 group-hover:text-glow-emerald transition-all duration-700">{PROJECTS[0].title}</h3>
               <p className="text-neutral-300 text-xl leading-relaxed max-w-lg opacity-0 group-hover:opacity-100 transition-all transform translate-y-8 group-hover:translate-y-0 duration-500">
-                Created a semantic-aware educational assistant that decodes lecture streams and allows students to {"'"}chat{"'"} with their course history.
+                {PROJECTS[0].description}
               </p>
               <div className="mt-10 pt-10 border-t border-white/10 flex items-center justify-between">
                  <div className="flex items-center gap-3">
@@ -368,7 +371,7 @@ const App: React.FC = () => {
             </div>
             <div className="flex justify-between items-center relative z-10">
                <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-500 italic">User DNA</h4>
-               <div className={`p-2 rounded-full transition-all duration-500 ${scanning ? 'bg-emerald-500 text-black' : 'bg-white/5 text-emerald-500 hover:bg-emerald-500/20'}`} onClick={toggleScan}>
+               <div className={`p-2 rounded-full transition-all duration-500 ${scanning ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,1)]' : 'bg-white/5 text-emerald-500 hover:bg-emerald-500/20'}`} onClick={toggleScan}>
                  <Activity size={18} className={scanning ? 'animate-bounce' : 'animate-pulse'} />
                </div>
             </div>
@@ -386,7 +389,7 @@ const App: React.FC = () => {
                <div className="flex justify-between items-end border-t border-white/5 pt-4">
                   <div>
                     <p className="text-[9px] font-black text-neutral-600 uppercase">Core Latency</p>
-                    <p className="text-sm font-bold font-mono">0.00032ms</p>
+                    <p className="text-sm font-bold font-mono">0.00028ms</p>
                   </div>
                   <Zap size={20} className="text-emerald-500 animate-pulse" />
                </div>
@@ -400,15 +403,15 @@ const App: React.FC = () => {
                </div>
                <div className="text-right">
                  <p className="text-[24px] font-display font-black leading-none text-emerald-500 text-glow-emerald">2026</p>
-                 <p className="text-[9px] font-black uppercase text-neutral-600 tracking-tighter mt-1">Autonomous GEN-AI</p>
+                 <p className="text-[9px] font-black uppercase text-neutral-600 tracking-tighter mt-1">Autonomous Gen-AI</p>
                </div>
              </div>
              <div className="relative z-10 mt-6">
-               <h4 className="text-2xl font-display font-black uppercase mb-2">VidSnapAI</h4>
-               <p className="text-[12px] text-neutral-500 leading-snug">Orchestrated a Flask-based pipeline for viral short-form content generation using ElevenLabs and FFmpeg.</p>
+               <h4 className="text-2xl font-display font-black uppercase mb-2">{PROJECTS[1].title}</h4>
+               <p className="text-[12px] text-neutral-500 leading-snug">{PROJECTS[1].description}</p>
              </div>
              <div className="pt-6 border-t border-white/5 flex gap-2 relative z-10">
-               <span className="glass-pill !bg-emerald-500/10 !text-emerald-500">100% Logic Path</span>
+               {PROJECTS[1].tags.slice(0, 2).map(t => <span key={t} className="glass-pill !bg-emerald-500/10 !text-emerald-500">{t}</span>)}
              </div>
           </TiltCard>
 
@@ -423,11 +426,11 @@ const App: React.FC = () => {
              </div>
              <div className="py-4">
                <p className="text-[10px] font-black uppercase text-neutral-600 mb-2">Model Inference #0xAF2</p>
-               <h4 className="text-2xl font-display font-black uppercase leading-[1.1]">Valuation <br/> Engine</h4>
+               <h4 className="text-2xl font-display font-black uppercase leading-[1.1]">{PROJECTS[2].title}</h4>
              </div>
              <div className="p-4 bg-zinc-950/80 border border-emerald-500/20 rounded-2xl">
                <p className="text-[11px] font-mono text-emerald-500 leading-relaxed whitespace-pre-wrap">
-                 {"$ model.predict(X_test)\n >> RMSE: 0.124\n >> Status: Converged"}
+                 {"$ model.predict(X_test)\n >> Status: CONVERGED\n >> Acc: 0.85"}
                </p>
              </div>
           </TiltCard>
@@ -468,12 +471,12 @@ const App: React.FC = () => {
                </div>
                <div className="flex items-center gap-2 px-3 py-1 bg-red-500/10 rounded-xl">
                  <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                 <span className="text-[9px] font-black text-red-500 uppercase tracking-widest">Live Uplink</span>
+                 <span className="text-[9px] font-black text-red-500 uppercase tracking-widest">Live Tutorials</span>
                </div>
              </div>
              <div className="relative z-10 mt-6">
                <p className="text-[10px] font-black uppercase text-neutral-600 mb-2 tracking-[0.2em]">Broadcast Array</p>
-               <h4 className="text-3xl font-display font-black uppercase leading-[0.9] group-hover:text-glow-red transition-all">Synthetic <br/> Tutorials</h4>
+               <h4 className="text-3xl font-display font-black uppercase leading-[0.9] group-hover:text-glow-red transition-all">Coding With <br/> Navneet</h4>
              </div>
              <ArrowUpRight size={24} className="text-neutral-700 group-hover:text-white transition-colors self-end mt-4" />
           </motion.a>
@@ -486,22 +489,22 @@ const App: React.FC = () => {
                <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/20 group-hover:bg-emerald-500/20 transition-all">
                  <Award size={28} className="text-emerald-500" />
                </div>
-               <h3 className="text-2xl font-display font-black uppercase tracking-tighter italic">Timeline<span className="text-emerald-500">_</span></h3>
+               <h3 className="text-2xl font-display font-black uppercase tracking-tighter italic">Timeline<span className="text-emerald-500">_</span>Trace</h3>
             </div>
             <div className="flex-1 space-y-14 relative">
                <div className="absolute left-1.5 top-0 bottom-0 w-px bg-white/5 group-hover:bg-emerald-500/30 transition-all duration-1000" />
                
                {[
-                 { inst: "Croma Campus", role: "DS Trainee", date: "Sep 2025", active: true },
-                 { inst: "MSU Saharanpur", role: "BCA Graduate", date: "Aug 2025", active: false },
-                 { inst: "UptoSkills", role: "WD Intern", date: "Apr 2025", active: false },
-                 { inst: "TCS iON", role: "Credential", date: "Jan 2025", active: false }
-               ].map((cert, idx) => (
-                 <div key={idx} className={`pl-12 relative transition-all duration-700 ${cert.active ? 'opacity-100 scale-105' : 'opacity-20 group-hover:opacity-60'}`}>
-                    <div className={`absolute left-[-1.5px] top-2 w-4 h-4 rounded-full ${cert.active ? 'bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,1)]' : 'bg-neutral-800 border border-white/5'}`} />
-                    <p className="text-[11px] font-black uppercase text-neutral-500 mb-2 tracking-[0.3em]">{cert.inst}</p>
-                    <h5 className="text-xl font-bold leading-tight uppercase group-hover:text-emerald-400 transition-colors">{cert.role}</h5>
-                    <p className="text-[11px] text-emerald-500/60 mt-3 font-mono bg-emerald-500/5 inline-block px-2 py-1 rounded">TIMESTAMP: {cert.date}</p>
+                 { inst: "Croma Campus", role: "Data Science Trainee", date: "SEP 2025 - PRESENT", active: true },
+                 { inst: "Micro Info Tech", role: "Web Dev Intern", date: "MAY 2025 - JUN 2025", active: false },
+                 { inst: "UptoSkills", role: "Web Dev Intern", date: "JAN 2025 - APR 2025", active: false },
+                 { inst: "MSU Saharanpur", role: "BCA Graduate", date: "AUG 2022 - AUG 2025", active: false }
+               ].map((exp, idx) => (
+                 <div key={idx} className={`pl-12 relative transition-all duration-700 ${exp.active ? 'opacity-100 scale-105' : 'opacity-20 group-hover:opacity-60'}`}>
+                    <div className={`absolute left-[-1.5px] top-2 w-4 h-4 rounded-full ${exp.active ? 'bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,1)]' : 'bg-neutral-800 border border-white/5'}`} />
+                    <p className="text-[11px] font-black uppercase text-neutral-500 mb-2 tracking-[0.3em]">{exp.inst}</p>
+                    <h5 className="text-xl font-bold leading-tight uppercase group-hover:text-emerald-400 transition-colors">{exp.role}</h5>
+                    <p className="text-[11px] text-emerald-500/60 mt-3 font-mono bg-emerald-500/5 inline-block px-2 py-1 rounded">TIMESTAMP: {exp.date}</p>
                  </div>
                ))}
             </div>
@@ -511,7 +514,7 @@ const App: React.FC = () => {
               whileHover={{ y: -5, scale: 1.02 }}
               className="mt-16 w-full py-6 bg-white/5 border border-white/10 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.5em] hover:bg-emerald-500 hover:text-black hover:border-emerald-500 transition-all shadow-xl text-center flex items-center justify-center gap-3"
             >
-              <Download size={14} /> Verify Credentials
+              <Download size={14} /> Full Logic Sheet
             </motion.a>
           </motion.div>
 
@@ -528,8 +531,8 @@ const App: React.FC = () => {
                <Camera size={20} className="text-neutral-700 group-hover:text-pink-400 transition-colors" />
              </div>
              <div className="relative z-10 mt-6">
-               <p className="text-[10px] font-black uppercase text-neutral-600 mb-2 tracking-[0.2em]">Trace Library</p>
-               <h4 className="text-3xl font-display font-black uppercase leading-none group-hover:text-glow-pink">Visual <br/> Logbook</h4>
+               <p className="text-[10px] font-black uppercase text-neutral-600 mb-2 tracking-[0.2em]">Visual Trace</p>
+               <h4 className="text-3xl font-display font-black uppercase leading-none group-hover:text-glow-pink">Life @ <br/> Noida</h4>
              </div>
           </motion.a>
 
@@ -576,12 +579,12 @@ const App: React.FC = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                    {[
-                     { label: 'Analyze RAG AI', icon: BrainCircuit, link: '#' },
-                     { label: 'Fetch Master Resume', icon: FileText, link: PROFILE.resumeUrl },
-                     { label: 'System Documentation', icon: Settings, link: '#' },
-                     { label: 'Ping LinkedIn Uplink', icon: Linkedin, link: PROFILE.linkedIn },
-                     { label: 'Neural Git Access', icon: Github, link: PROFILE.github },
-                     { label: 'Broadcast Channel', icon: Youtube, link: PROFILE.youtube }
+                     { label: 'RAG AI Logic', icon: BrainCircuit, link: '#' },
+                     { label: 'Download Resume', icon: Download, link: PROFILE.resumeUrl },
+                     { label: 'LinkedIn Uplink', icon: Linkedin, link: PROFILE.linkedIn },
+                     { label: 'Github Repos', icon: Github, link: PROFILE.github },
+                     { label: 'YouTube Archive', icon: Youtube, link: PROFILE.youtube },
+                     { label: 'Instagram Trace', icon: Instagram, link: PROFILE.instagram }
                    ].map((cmd, i) => (
                      <motion.a 
                        key={i} 
@@ -599,8 +602,8 @@ const App: React.FC = () => {
                    ))}
                 </div>
                 <div className="mt-12 flex justify-between items-center text-[10px] font-black uppercase text-neutral-700 tracking-[0.2em]">
-                  <span className="flex items-center gap-2 italic"> <MousePointer2 size={12} /> Click Command or ESC to Terminate</span>
-                  <span className="text-emerald-500/60 animate-pulse">Uplink: Synchronized</span>
+                  <span className="flex items-center gap-2 italic"> <MousePointer2 size={12} /> Press ESC to Close System Interface</span>
+                  <span className="text-emerald-500/60 animate-pulse">Connection: Stable</span>
                 </div>
               </motion.div>
             </motion.div>
@@ -608,27 +611,24 @@ const App: React.FC = () => {
         </AnimatePresence>
 
         <footer className="mt-40 pt-20 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-16 mb-24">
-           <div className="flex flex-wrap justify-center md:justify-start gap-16">
-              {[
-                { icon: Github, label: "Core.Repository", url: PROFILE.github },
-                { icon: Linkedin, label: "Professional.Sync", url: PROFILE.linkedIn },
-                { icon: Youtube, label: "Neural.Broadcast", url: PROFILE.youtube },
-                { icon: Instagram, label: "Visual.Trace", url: PROFILE.instagram }
-              ].map((s, idx) => (
-                <a key={idx} href={s.url} target="_blank" className="flex items-center gap-4 text-[11px] font-black uppercase text-neutral-600 hover:text-emerald-500 transition-all group">
-                   <s.icon size={24} className="group-hover:scale-125 group-hover:rotate-6 transition-all duration-500" /> 
-                   <span className="group-hover:translate-x-1 transition-transform">{s.label}</span>
-                </a>
-              ))}
+           <div className="flex flex-wrap justify-center md:justify-start gap-12">
+              <div className="flex items-center gap-4 text-neutral-400">
+                <Mail size={18} className="text-emerald-500" />
+                <span className="text-[11px] font-black uppercase tracking-widest">{PROFILE.email}</span>
+              </div>
+              <div className="flex items-center gap-4 text-neutral-400">
+                <MapPin size={18} className="text-emerald-500" />
+                <span className="text-[11px] font-black uppercase tracking-widest">{PROFILE.location}</span>
+              </div>
            </div>
            <div className="text-center md:text-right">
-             <p className="text-[11px] font-black uppercase text-white/10 tracking-[1.5em] mb-4">SYSTEM.TERMINATED</p>
+             <p className="text-[11px] font-black uppercase text-white/10 tracking-[1.5em] mb-4">NAVNEET.SHARMA.DS</p>
              <div className="flex flex-col items-center md:items-end gap-1">
-                <p className="text-[9px] font-mono text-neutral-800">C:Navneet_Sharma_Portfolio_2026.exe --status=optimal</p>
+                <p className="text-[9px] font-mono text-neutral-800">NAVNEET_SHARMA_PORTFOLIO_V2.0.exe</p>
                 <div className="flex gap-2">
                    <span className="w-1.5 h-1.5 bg-emerald-500/20 rounded-full" />
                    <span className="w-1.5 h-1.5 bg-emerald-500/40 rounded-full" />
-                   <span className="w-1.5 h-1.5 bg-emerald-500/60 rounded-full animate-pulse" />
+                   <span className="w-1.5 h-1.5 bg-emerald-500/60 rounded-full animate-pulse shadow-[0_0_5px_#10b981]" />
                 </div>
              </div>
            </div>
