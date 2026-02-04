@@ -31,7 +31,8 @@ import {
   Wifi,
   Download,
   MapPin,
-  Mail
+  Mail,
+  MessageCircle
 } from 'lucide-react';
 import { motion, useScroll, useTransform, AnimatePresence, Variants, useSpring, useMotionValue } from 'framer-motion';
 import { PROFILE, PROJECTS, SKILL_CATEGORIES } from './constants';
@@ -214,7 +215,7 @@ const App: React.FC = () => {
     "Python", "SQL", "Power BI", "Pandas", "NumPy", "Scikit-Learn", "LLMs", "LangChain", 
     "PyTorch", "Flask", "FFmpeg", "ElevenLabs", "Matplotlib", "Seaborn", "Git", "Jupyter",
     "TensorFlow", "XGBoost", "HuggingFace", "FastAPI", "PostgreSQL", "React", "D3.js",
-    "NLP", "Regression", "DAX", "MERN Stack", "VBA", "Tableau", "OpenCV"
+    "NLP", "Regression", "DAX", "MERN Stack", "VBA", "Tableau", "OpenCV", "Tailwind CSS", "Redux.js"
   ], []);
 
   const gridVariants: Variants = {
@@ -309,7 +310,7 @@ const App: React.FC = () => {
                 <p className="text-neutral-400 text-2xl max-w-xl font-medium leading-relaxed">
                   Navneet Sharma here. {PROFILE.summary}
                 </p>
-                <p className="text-emerald-500 text-[11px] font-black uppercase tracking-widest bg-emerald-500/5 px-4 py-2 rounded-xl inline-block border border-emerald-500/20">
+                <p className="text-emerald-500 text-[11px] font-black uppercase tracking-widest bg-emerald-500/5 px-4 py-2 rounded-xl inline-block border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
                   {PROFILE.currentStatus}
                 </p>
               </div>
@@ -500,10 +501,10 @@ const App: React.FC = () => {
                <div className="absolute left-1.5 top-0 bottom-0 w-px bg-white/5 group-hover:bg-emerald-500/30 transition-all duration-1000" />
                
                {[
-                 { inst: "Croma Campus | Noida", role: "Data Science Trainee", date: "SEP 2025 - PRESENT", active: true, log: "Developing Python scripts for data cleaning & predictive modeling. Mastered Power BI DAX." },
-                 { inst: "Micro Info Tech | Haryana", role: "Web Development Intern", date: "MAY 2025 - JUN 2025", active: false, log: "Developed responsive web pages (100% fidelity). Implemented Git workflows." },
-                 { inst: "UptoSkills | Remote", role: "Web Development Intern", date: "JAN 2025 - APR 2025", active: false, log: "Built dynamic MERN Stack solutions. Integrated Redux.js state management." },
-                 { inst: "MSU Saharanpur", role: "BCA Graduate (1st Div)", date: "AUG 2022 - AUG 2025", active: false, log: "Core Computer Science & Software Engineering modules." }
+                 { inst: "Croma Campus | Noida", role: "Data Science Trainee", date: "SEP 2025 - PRESENT", active: true, log: "Developing Python scripts for data cleaning & predictive modeling (Regression/Classification). Mastered Power BI DAX & Dashboard design." },
+                 { inst: "Micro Info Tech Services | Haryana", role: "Web Development Intern", date: "MAY 2025 - JUN 2025", active: false, log: "Developed responsive web pages (100% design fidelity). Implemented Git workflows, reducing merge conflicts by 20%." },
+                 { inst: "UptoSkills | Remote", role: "Web Development Intern", date: "JAN 2025 - APR 2025", active: false, log: "Built dynamic MERN Stack solutions. Integrated Redux.js state management & backend APIs." },
+                 { inst: "MSU Saharanpur", role: "BCA Graduate (1st Div)", date: "AUG 2022 - AUG 2025", active: false, log: "Core Computer Science & Software Engineering modules. Graduated with First Division honors." }
                ].map((exp, idx) => (
                  <div key={idx} className={`pl-12 relative transition-all duration-700 ${exp.active ? 'opacity-100 scale-105' : 'opacity-20 group-hover:opacity-60'}`}>
                     <div className={`absolute left-[-1.5px] top-2 w-4 h-4 rounded-full ${exp.active ? 'bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,1)]' : 'bg-neutral-800 border border-white/5'}`} />
@@ -538,7 +539,7 @@ const App: React.FC = () => {
              </div>
              <div className="relative z-10 mt-6">
                <p className="text-[10px] font-black uppercase text-neutral-600 mb-2 tracking-[0.2em]">Visual Trace</p>
-               <h4 className="text-3xl font-display font-black uppercase leading-none group-hover:text-glow-pink">Visual <br/> Logbook</h4>
+               <h4 className="text-3xl font-display font-black uppercase leading-none group-hover:text-glow-pink">Life @ <br/> Noida</h4>
              </div>
           </motion.a>
 
@@ -548,7 +549,7 @@ const App: React.FC = () => {
           >
             <div className="relative mx-auto mb-6">
                <Zap size={40} className="text-emerald-500 group-hover:animate-bounce relative z-10" />
-               <div className="absolute inset-0 bg-emerald-500/40 blur-2xl rounded-full scale-150 animate-pulse" />
+               <div className="absolute inset-0 bg-emerald-500/40 blur-2xl rounded-full scale-150 animate-pulse shadow-[0_0_20px_rgba(16,185,129,0.5)]" />
             </div>
             <p className="text-[11px] font-black uppercase tracking-[0.5em] text-emerald-500">Core Engine</p>
             <p className="text-3xl font-display font-black text-white mt-2 uppercase italic tracking-tighter">Peak Stable</p>
@@ -618,9 +619,13 @@ const App: React.FC = () => {
 
         <footer className="mt-40 pt-20 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-16 mb-24">
            <div className="flex flex-wrap justify-center md:justify-start gap-12">
-              <div className="flex items-center gap-4 text-neutral-400">
+              <div className="flex items-center gap-4 text-neutral-400 hover:text-emerald-500 transition-colors">
                 <Mail size={18} className="text-emerald-500" />
                 <span className="text-[11px] font-black uppercase tracking-widest">{PROFILE.email}</span>
+              </div>
+              <div className="flex items-center gap-4 text-neutral-400 hover:text-emerald-500 transition-colors">
+                <MessageCircle size={18} className="text-emerald-500" />
+                <a href={PROFILE.whatsapp} target="_blank" className="text-[11px] font-black uppercase tracking-widest">Connect on WhatsApp</a>
               </div>
               <div className="flex items-center gap-4 text-neutral-400">
                 <MapPin size={18} className="text-emerald-500" />

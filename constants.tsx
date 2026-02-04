@@ -22,16 +22,17 @@ export interface Certification {
 
 export const PROFILE = {
   name: "Navneet Sharma",
-  role: "Aspiring Data Scientist & Full-Stack Developer",
+  role: "Data Scientist | AI/ML Engineer | Data Analyst",
   location: "NOIDA, UTTAR PRADESH",
   email: "navneetsharmaprogrammer@gmail.com",
+  phone: "+91-8630066072",
   systemId: "NS_8630066072",
-  linkedIn: "https://www.linkedin.com/in/navneetsharma-590862241",
+  linkedIn: "https://www.linkedin.com/in/navneet-sharma-590862241/",
   youtube: "https://www.youtube.com/@CodingWithNavneet",
   github: "https://github.com/NavneetSharmaProgrammer",
   instagram: "https://www.instagram.com/navneet_sharma_/",
-  // CURRENT RESUME URL
-  resumeUrl: "https://drive.google.com/file/d/17NcRr-YBBp9gAW5n9evWhQsAHjQHKI7Q/view?usp=sharing", 
+  whatsapp: "https://wa.me/918630066072",
+  resumeUrl: "https://drive.google.com/file/d/17NcRr-YBBp9gAW5n9evWhQsAHjQHKI7Q/view?usp=sharing",
   summary: "Aspiring Data Scientist & Full-Stack Developer with a First Division BCA. Specializing in AI/ML Pipelines and Power BI Analytics.",
   currentStatus: "Current: Data Science Trainee @ Croma Campus Pvt. Ltd."
 };
@@ -67,7 +68,7 @@ export const PROJECTS: Project[] = [
   {
     id: "thrift-by-musk",
     title: "THRIFT BY MUSK",
-    description: "Sustainable fashion resale platform designed for peer-to-peer clothing exchange.",
+    description: "Sustainable fashion resale platform promoting circular economy through peer-to-peer clothing exchange.",
     tags: ["E-COMMERCE", "MERN"],
     imageUrl: "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&q=80&w=800",
     link: "https://thriftbymusk.vercel.app/",
@@ -87,14 +88,14 @@ export const SKILL_CATEGORIES: SkillCategory[] = [
   },
   { 
     title: "Frontend/Full-Stack", 
-    skills: ["React.js / Next.js", "Redux.js", "Tailwind CSS"] 
+    skills: ["React.js / Next.js", "Redux.js", "Tailwind CSS", "Git Workflows"] 
   }
 ];
 
 export const CERTIFICATIONS: Certification[] = [
-  { title: "Data Science Professional", issuer: "Croma Campus", date: "Present" },
+  { title: "Data Science Professional", issuer: "Croma Campus", date: "SEP 2025 - PRESENT" },
   { title: "Python Bootcamp: Zero to Hero", issuer: "CodeWithHarry", date: "SEP 2025" },
-  { title: "Web Development Internship", issuer: "Micro Info Tech (MITS206093)", date: "JUN 2025" },
+  { title: "Web Development Internship (MITS206093)", issuer: "Micro Info Tech Services", date: "JUN 2025" },
   { title: "TCS iON Career Edge", issuer: "Tata Consultancy Services", date: "JAN 2025" },
   { title: "Responsive Web Design", issuer: "freeCodeCamp", date: "DEC 2024" }
 ];
