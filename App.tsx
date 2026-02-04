@@ -34,8 +34,48 @@ import {
   Mail,
   MessageCircle
 } from 'lucide-react';
-import { motion, useScroll, useTransform, AnimatePresence, Variants, useSpring, useMotionValue } from 'framer-motion';
+import { 
+  motion, 
+  useScroll, 
+  useTransform, 
+  AnimatePresence, 
+  Variants, 
+  useSpring, 
+  useMotionValue,
+  useVelocity,
+  useAnimationFrame
+} from 'framer-motion';
 import { PROFILE, PROJECTS, SKILL_CATEGORIES } from './constants';
+
+// --- KINETIC TYPOGRAPHY COMPONENT ---
+const KineticText = ({ text, className, glow = false, stagger = 0.02 }: { text: string; className?: string; glow?: boolean; stagger?: number }) => {
+  return (
+    <span className={`inline-flex whitespace-pre flex-wrap ${className}`}>
+      {text.split(" ").map((word, wordIndex) => (
+        <span key={wordIndex} className="inline-flex whitespace-nowrap mr-[0.25em]">
+          {word.split("").map((char, charIndex) => (
+            <motion.span
+              key={`${wordIndex}-${charIndex}`}
+              className="inline-block cursor-default origin-bottom"
+              initial={{ y: 0 }}
+              whileHover={{
+                scaleY: 1.5,
+                scaleX: 0.85,
+                y: -5,
+                rotate: Math.random() * 15 - 7.5,
+                color: glow ? '#10b981' : undefined,
+                textShadow: glow ? '0 0 20px rgba(16,185,129,0.8)' : undefined,
+              }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            >
+              {char}
+            </motion.span>
+          ))}
+        </span>
+      ))}
+    </span>
+  );
+};
 
 // --- NEURAL CANVAS BACKGROUND ---
 const NeuralCanvas = ({ vibe }: { vibe: string }) => {
@@ -113,7 +153,7 @@ const NeuralCanvas = ({ vibe }: { vibe: string }) => {
 };
 
 // --- 3D TILT WRAPPER ---
-const TiltCard = ({ children, className, colSpan = 1, rowSpan = 1 }: any) => {
+const TiltCard = ({ children, className, colSpan = 1, rowSpan = 1, delay = 0 }: any) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -133,8 +173,30 @@ const TiltCard = ({ children, className, colSpan = 1, rowSpan = 1 }: any) => {
     y.set(0);
   }
 
+  // Entrance Variants
+  const cardVariants: Variants = {
+    hidden: { opacity: 0, y: 100, scale: 0.9, rotateX: 10 },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1, 
+      rotateX: 0,
+      transition: { 
+        type: "spring", 
+        stiffness: 70, 
+        damping: 15, 
+        mass: 1,
+        delay: delay
+      } 
+    }
+  };
+
   return (
     <motion.div
+      variants={cardVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-50px" }}
       style={{ rotateX, rotateY, gridColumn: `span ${colSpan}`, gridRow: `span ${rowSpan}` }}
       onMouseMove={handleMouse}
       onMouseLeave={handleMouseLeave}
@@ -187,6 +249,12 @@ const App: React.FC = () => {
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const [stats, setStats] = useState({ mouseV: 0, clickCount: 0 });
   const [scanning, setScanning] = useState(false);
+  
+  // Scrollytelling Hooks
+  const { scrollY } = useScroll();
+  const scrollVelocity = useVelocity(scrollY);
+  const skewVelocity = useTransform(scrollVelocity, [-1000, 1000], [-10, 10]); // Velocity based skew
+  const smoothSkew = useSpring(skewVelocity, { stiffness: 400, damping: 30 }); // Smooth physics skew
 
   useEffect(() => {
     let lastX = 0, lastY = 0;
@@ -224,8 +292,17 @@ const App: React.FC = () => {
   };
 
   const itemVariants: Variants = {
-    hidden: { opacity: 0, scale: 0.9, y: 40 },
-    show: { opacity: 1, scale: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 15 } }
+    hidden: { opacity: 0, scale: 0.8, y: 50 },
+    show: { 
+      opacity: 1, 
+      scale: 1, 
+      y: 0, 
+      transition: { 
+        type: "spring", 
+        stiffness: 100, 
+        damping: 15 
+      } 
+    }
   };
 
   // --- PHYSICS CONFIG FOR SQUISHY INTERACTION ---
@@ -248,6 +325,7 @@ const App: React.FC = () => {
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             className="flex items-center gap-4 group"
           >
             <div className="relative">
@@ -263,7 +341,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <p className="font-display font-black text-3xl tracking-tighter uppercase italic leading-none">
-                NAVNEET<span className="text-emerald-500">.</span>OS
+                <KineticText text="NAVNEET.OS" />
               </p>
               <div className="flex gap-2 mt-1">
                  <span className="text-[7px] font-black uppercase text-neutral-500 tracking-widest bg-white/5 px-2 py-0.5 rounded">Core 2.0.26</span>
@@ -318,9 +396,11 @@ const App: React.FC = () => {
                 <span className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-500">Cognitive Layer Active</span>
               </div>
               <h1 className="text-6xl md:text-9xl font-display font-black tracking-tighter leading-[0.8] uppercase">
-                Data <br/>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500 group-hover:from-white group-hover:to-white transition-all duration-1000">Evolved</span> <br/>
-                Into Art<span className="text-emerald-500">.</span>
+                <KineticText text="Data" /> <br/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500 group-hover:from-white group-hover:to-white transition-all duration-1000">
+                  <KineticText text="Evolved" glow />
+                </span> <br/>
+                <KineticText text="Into Art." />
               </h1>
               <div className="space-y-4">
                 <p className="text-neutral-400 text-2xl max-w-xl font-medium leading-relaxed">
@@ -362,7 +442,7 @@ const App: React.FC = () => {
             </div>
           </TiltCard>
 
-          <TiltCard colSpan={2} rowSpan={2} className="bento-card group flex flex-col p-0">
+          <TiltCard colSpan={2} rowSpan={2} delay={0.1} className="bento-card group flex flex-col p-0">
             <div className="scanline opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/95 z-10" />
             <img 
@@ -374,7 +454,9 @@ const App: React.FC = () => {
               <div className="flex gap-3 mb-6">
                  {PROJECTS[0].tags.map(t => <span key={t} className="glass-pill">{t}</span>)}
               </div>
-              <h3 className="text-6xl font-display font-black uppercase tracking-tighter mb-5 group-hover:text-glow-emerald transition-all duration-700">{PROJECTS[0].title}</h3>
+              <h3 className="text-6xl font-display font-black uppercase tracking-tighter mb-5 group-hover:text-glow-emerald transition-all duration-700">
+                <KineticText text={PROJECTS[0].title} />
+              </h3>
               <p className="text-neutral-300 text-xl leading-relaxed max-w-lg opacity-0 group-hover:opacity-100 transition-all transform translate-y-8 group-hover:translate-y-0 duration-500">
                 {PROJECTS[0].description}
               </p>
@@ -390,7 +472,13 @@ const App: React.FC = () => {
             </div>
           </TiltCard>
 
-          <motion.div variants={itemVariants} className="bento-card p-10 flex flex-col justify-between group overflow-hidden bg-gradient-to-br from-emerald-500/5 to-transparent">
+          <motion.div 
+            variants={itemVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            className="bento-card p-10 flex flex-col justify-between group overflow-hidden bg-gradient-to-br from-emerald-500/5 to-transparent"
+          >
             <div className="absolute top-0 right-0 p-4">
                <Fingerprint size={60} className="text-emerald-500/10 group-hover:text-emerald-500/20 transition-colors" />
             </div>
@@ -425,7 +513,7 @@ const App: React.FC = () => {
             </div>
           </motion.div>
 
-          <TiltCard className="bento-card p-10 flex flex-col justify-between group">
+          <TiltCard delay={0.2} className="bento-card p-10 flex flex-col justify-between group">
              <div className="flex justify-between items-start relative z-10">
                <div className="w-16 h-16 bg-white/5 rounded-[2rem] flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-black transition-all shadow-xl border border-white/5 group-hover:border-emerald-400">
                  <Video size={28} />
@@ -436,7 +524,7 @@ const App: React.FC = () => {
                </div>
              </div>
              <div className="relative z-10 mt-6">
-               <h4 className="text-2xl font-display font-black uppercase mb-2">{PROJECTS[1].title}</h4>
+               <h4 className="text-2xl font-display font-black uppercase mb-2"><KineticText text={PROJECTS[1].title} /></h4>
                <p className="text-[12px] text-neutral-500 leading-snug">{PROJECTS[1].description}</p>
              </div>
              <div className="pt-6 border-t border-white/5 flex gap-2 relative z-10">
@@ -444,7 +532,7 @@ const App: React.FC = () => {
              </div>
           </TiltCard>
 
-          <TiltCard className="bento-card p-10 flex flex-col justify-between group border-emerald-500/10">
+          <TiltCard delay={0.3} className="bento-card p-10 flex flex-col justify-between group border-emerald-500/10">
              <div className="flex justify-between items-center">
                <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-500">
                  <Search size={24} />
@@ -455,7 +543,7 @@ const App: React.FC = () => {
              </div>
              <div className="py-4">
                <p className="text-[10px] font-black uppercase text-neutral-600 mb-2">Model Inference #0xAF2</p>
-               <h4 className="text-2xl font-display font-black uppercase leading-[1.1]">{PROJECTS[2].title}</h4>
+               <h4 className="text-2xl font-display font-black uppercase leading-[1.1]"><KineticText text={PROJECTS[2].title} /></h4>
              </div>
              <div className="p-4 bg-zinc-950/80 border border-emerald-500/20 rounded-2xl">
                <p className="text-[11px] font-mono text-emerald-500 leading-relaxed whitespace-pre-wrap">
@@ -464,7 +552,13 @@ const App: React.FC = () => {
              </div>
           </TiltCard>
 
-          <motion.div variants={itemVariants} className="md:col-span-2 bento-card flex flex-col justify-center py-12 overflow-hidden group">
+          <motion.div 
+            variants={itemVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-100px" }}
+            className="md:col-span-2 bento-card flex flex-col justify-center py-12 overflow-hidden group"
+          >
             <div className="px-12 mb-8 flex items-center justify-between">
               <h3 className="text-[11px] font-black uppercase tracking-[0.5em] text-neutral-500 italic">Synthetic Processing Array</h3>
               <div className="flex gap-2">
@@ -473,7 +567,8 @@ const App: React.FC = () => {
               </div>
             </div>
             <div className="relative overflow-hidden flex items-center h-20">
-              <div className="animate-ticker">
+              {/* Velocity-based Skew Ticker */}
+              <motion.div style={{ skewX: smoothSkew }} className="animate-ticker origin-center">
                 {dataTools.map((tool, i) => (
                   <div key={i} className="px-14 flex items-center gap-8">
                     <span className="text-5xl font-display font-black uppercase tracking-tighter text-white/10 group-hover:text-white transition-all duration-700 cursor-default whitespace-nowrap hover:scale-125 hover:text-emerald-500">
@@ -482,7 +577,7 @@ const App: React.FC = () => {
                     <div className="w-3 h-3 bg-emerald-500/20 rounded-full border border-emerald-500/30" />
                   </div>
                 ))}
-              </div>
+              </motion.div>
               <div className="absolute left-0 top-0 bottom-0 w-48 bg-gradient-to-r from-[#0c0c0e] to-transparent z-10" />
               <div className="absolute right-0 top-0 bottom-0 w-48 bg-gradient-to-l from-[#0c0c0e] to-transparent z-10" />
             </div>
@@ -491,6 +586,9 @@ const App: React.FC = () => {
           <motion.a 
             href={PROFILE.youtube} target="_blank"
             variants={itemVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.95 }}
             transition={jellyConfig}
@@ -515,6 +613,9 @@ const App: React.FC = () => {
 
           <motion.div 
             variants={itemVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
             className="md:row-span-2 bento-card p-12 flex flex-col group"
           >
             <div className="flex items-center gap-4 mb-14">
@@ -532,13 +633,20 @@ const App: React.FC = () => {
                  { inst: "UptoSkills | Remote", role: "Web Development Intern", date: "JAN 2025 - APR 2025", active: false, log: "Built dynamic MERN Stack solutions. Integrated Redux.js state management & backend APIs." },
                  { inst: "MSU Saharanpur", role: "BCA Graduate (1st Div)", date: "AUG 2022 - AUG 2025", active: false, log: "Core Computer Science & Software Engineering modules. Graduated with First Division honors." }
                ].map((exp, idx) => (
-                 <div key={idx} className={`pl-12 relative transition-all duration-700 ${exp.active ? 'opacity-100 scale-105' : 'opacity-20 group-hover:opacity-60'}`}>
+                 <motion.div 
+                   key={idx} 
+                   initial={{ opacity: 0, x: -30 }}
+                   whileInView={{ opacity: 1, x: 0 }}
+                   transition={{ delay: idx * 0.15, type: "spring" }}
+                   viewport={{ once: true, margin: "-50px" }}
+                   className={`pl-12 relative transition-all duration-700 ${exp.active ? 'opacity-100 scale-105' : 'opacity-80 group-hover:opacity-100'}`}
+                 >
                     <div className={`absolute left-[-1.5px] top-2 w-4 h-4 rounded-full ${exp.active ? 'bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,1)]' : 'bg-neutral-800 border border-white/5'}`} />
                     <p className="text-[11px] font-black uppercase text-neutral-500 mb-2 tracking-[0.3em]">{exp.inst}</p>
                     <h5 className="text-xl font-bold leading-tight uppercase group-hover:text-emerald-400 transition-colors">{exp.role}</h5>
                     <p className="text-[10px] text-neutral-400 mt-2 line-clamp-2 italic">{exp.log}</p>
                     <p className="text-[11px] text-emerald-500/60 mt-3 font-mono bg-emerald-500/5 inline-block px-2 py-1 rounded">TIMESTAMP: {exp.date}</p>
-                 </div>
+                 </motion.div>
                ))}
             </div>
             <motion.a 
@@ -556,6 +664,9 @@ const App: React.FC = () => {
           <motion.a 
             href={PROFILE.instagram} target="_blank"
             variants={itemVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.95 }}
             transition={jellyConfig}
@@ -576,6 +687,9 @@ const App: React.FC = () => {
 
           <motion.div 
             variants={itemVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
             className="bento-card p-10 flex flex-col justify-center text-center group bg-emerald-500/5 border-emerald-500/20"
           >
             <div className="relative mx-auto mb-6">
@@ -651,29 +765,62 @@ const App: React.FC = () => {
         </AnimatePresence>
 
         <footer className="mt-40 pt-20 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-16 mb-24">
-           <div className="flex flex-wrap justify-center md:justify-start gap-12">
-              <motion.div 
-                whileHover={{ y: -5 }}
-                whileTap={{ scale: 0.9 }}
-                className="flex items-center gap-4 text-neutral-400 hover:text-emerald-500 transition-colors cursor-pointer"
-              >
-                <Mail size={18} className="text-emerald-500" />
-                <span className="text-[11px] font-black uppercase tracking-widest">{PROFILE.email}</span>
-              </motion.div>
-              <motion.div 
-                whileHover={{ y: -5 }}
-                whileTap={{ scale: 0.9 }}
-                className="flex items-center gap-4 text-neutral-400 hover:text-emerald-500 transition-colors cursor-pointer"
-              >
-                <MessageCircle size={18} className="text-emerald-500" />
-                <a href={PROFILE.whatsapp} target="_blank" className="text-[11px] font-black uppercase tracking-widest">Connect on WhatsApp</a>
-              </motion.div>
-              <div className="flex items-center gap-4 text-neutral-400">
-                <MapPin size={18} className="text-emerald-500" />
-                <span className="text-[11px] font-black uppercase tracking-widest">{PROFILE.location}</span>
-              </div>
+           <div className="flex flex-col gap-10 w-full md:w-auto">
+             <div className="flex flex-wrap justify-center md:justify-start gap-12">
+                <motion.div 
+                  whileHover={{ y: -5 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="flex items-center gap-4 text-neutral-400 hover:text-emerald-500 transition-colors cursor-pointer"
+                >
+                  <Mail size={18} className="text-emerald-500" />
+                  <span className="text-[11px] font-black uppercase tracking-widest">{PROFILE.email}</span>
+                </motion.div>
+                <motion.div 
+                  whileHover={{ y: -5 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="flex items-center gap-4 text-neutral-400 hover:text-emerald-500 transition-colors cursor-pointer"
+                >
+                  <MessageCircle size={18} className="text-emerald-500" />
+                  <a href={PROFILE.whatsapp} target="_blank" className="text-[11px] font-black uppercase tracking-widest">Connect on WhatsApp</a>
+                </motion.div>
+                <div className="flex items-center gap-4 text-neutral-400">
+                  <MapPin size={18} className="text-emerald-500" />
+                  <span className="text-[11px] font-black uppercase tracking-widest">{PROFILE.location}</span>
+                </div>
+             </div>
+
+             <div className="flex flex-wrap justify-center md:justify-start gap-6">
+               <motion.a 
+                 href={PROFILE.youtube} 
+                 target="_blank"
+                 whileHover={{ y: -3, scale: 1.1 }}
+                 whileTap={{ scale: 0.9 }}
+                 className="p-3 bg-white/5 rounded-full text-neutral-400 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+               >
+                 <Youtube size={20} />
+               </motion.a>
+               <motion.a 
+                 href={PROFILE.instagram} 
+                 target="_blank"
+                 whileHover={{ y: -3, scale: 1.1 }}
+                 whileTap={{ scale: 0.9 }}
+                 className="p-3 bg-white/5 rounded-full text-neutral-400 hover:text-pink-500 hover:bg-pink-500/10 transition-colors"
+               >
+                 <Instagram size={20} />
+               </motion.a>
+               <motion.a 
+                 href={PROFILE.github} 
+                 target="_blank"
+                 whileHover={{ y: -3, scale: 1.1 }}
+                 whileTap={{ scale: 0.9 }}
+                 className="p-3 bg-white/5 rounded-full text-neutral-400 hover:text-white hover:bg-white/10 transition-colors"
+               >
+                 <Github size={20} />
+               </motion.a>
+             </div>
            </div>
-           <div className="text-center md:text-right">
+
+           <div className="text-center md:text-right w-full md:w-auto">
              <p className="text-[11px] font-black uppercase text-white/10 tracking-[1.5em] mb-4 uppercase">SYSTEM ID: {PROFILE.systemId}</p>
              <div className="flex flex-col items-center md:items-end gap-1">
                 <p className="text-[9px] font-mono text-neutral-800 uppercase tracking-widest leading-none">Navneet_Sharma_2.0.exe --status=optimal</p>
