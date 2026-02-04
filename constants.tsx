@@ -23,7 +23,7 @@ export interface Certification {
 export const PROFILE = {
   name: "Navneet Sharma",
   role: "Aspiring Data Scientist & Full-Stack Developer",
-  location: "Noida, Uttar Pradesh, India",
+  location: "NOIDA, UTTAR PRADESH",
   email: "navneetsharmaprogrammer@gmail.com",
   systemId: "NS_8630066072",
   linkedIn: "https://www.linkedin.com/in/navneetsharma-590862241",
@@ -32,7 +32,8 @@ export const PROFILE = {
   instagram: "https://www.instagram.com/navneet_sharma_/",
   // CURRENT RESUME URL
   resumeUrl: "https://drive.google.com/file/d/17NcRr-YBBp9gAW5n9evWhQsAHjQHKI7Q/view?usp=sharing", 
-  summary: "BCA Graduate (First Division) from Maa Shakumbhari University. Specializing in AI/ML Pipelines and Power BI Analytics. Expert in engineering data-driven solutions and generative AI products.",
+  summary: "Aspiring Data Scientist & Full-Stack Developer with a First Division BCA. Specializing in AI/ML Pipelines and Power BI Analytics.",
+  currentStatus: "Current: Data Science Trainee @ Croma Campus Pvt. Ltd."
 };
 
 export const PROJECTS: Project[] = [
@@ -64,11 +65,12 @@ export const PROJECTS: Project[] = [
     stat: "ANALYTICS ENGINE"
   },
   {
-    id: "ncaids",
-    title: "NCAIDS PORTAL",
-    description: "Responsive website for Navneet College of AI & Data Science. Highlights academic offerings with dynamic UI.",
-    tags: ["REACT", "FULL-STACK"],
-    imageUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=800",
+    id: "thrift-by-musk",
+    title: "THRIFT BY MUSK",
+    description: "Sustainable fashion resale platform designed for peer-to-peer clothing exchange.",
+    tags: ["E-COMMERCE", "MERN"],
+    imageUrl: "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&q=80&w=800",
+    link: "https://thriftbymusk.vercel.app/",
     date: "2024",
     stat: "WEB MODULE"
   }
@@ -85,14 +87,14 @@ export const SKILL_CATEGORIES: SkillCategory[] = [
   },
   { 
     title: "Frontend/Full-Stack", 
-    skills: ["React.js / Next.js", "Redux.js", "Tailwind CSS", "Git Workflows"] 
+    skills: ["React.js / Next.js", "Redux.js", "Tailwind CSS"] 
   }
 ];
 
 export const CERTIFICATIONS: Certification[] = [
-  { title: "Data Science Professional", issuer: "Croma Campus", date: "SEP 2025 - PRESENT" },
+  { title: "Data Science Professional", issuer: "Croma Campus", date: "Present" },
   { title: "Python Bootcamp: Zero to Hero", issuer: "CodeWithHarry", date: "SEP 2025" },
-  { title: "Web Development Internship (MITS206093)", issuer: "Micro Info Tech Services", date: "JUN 2025" },
+  { title: "Web Development Internship", issuer: "Micro Info Tech (MITS206093)", date: "JUN 2025" },
   { title: "TCS iON Career Edge", issuer: "Tata Consultancy Services", date: "JAN 2025" },
   { title: "Responsive Web Design", issuer: "freeCodeCamp", date: "DEC 2024" }
 ];

@@ -250,7 +250,7 @@ const App: React.FC = () => {
               <div className="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center text-black font-black text-2xl shadow-[0_0_40px_rgba(16,185,129,0.3)] group-hover:rotate-12 transition-transform cursor-pointer">
                 NS
               </div>
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-black border-2 border-emerald-500 rounded-full animate-pulse" />
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-black border-2 border-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]" />
             </div>
             <div>
               <p className="font-display font-black text-3xl tracking-tighter uppercase italic leading-none">
@@ -305,9 +305,14 @@ const App: React.FC = () => {
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500 group-hover:from-white group-hover:to-white transition-all duration-1000">Evolved</span> <br/>
                 Into Art<span className="text-emerald-500">.</span>
               </h1>
-              <p className="text-neutral-400 text-2xl max-w-xl font-medium leading-relaxed">
-                Navneet Sharma here. {PROFILE.role} with a First Division BCA. Specializing in <span className="text-white italic">AI/ML Pipelines</span> and <span className="text-white">Power BI Analytics</span>.
-              </p>
+              <div className="space-y-4">
+                <p className="text-neutral-400 text-2xl max-w-xl font-medium leading-relaxed">
+                  Navneet Sharma here. {PROFILE.summary}
+                </p>
+                <p className="text-emerald-500 text-[11px] font-black uppercase tracking-widest bg-emerald-500/5 px-4 py-2 rounded-xl inline-block border border-emerald-500/20">
+                  {PROFILE.currentStatus}
+                </p>
+              </div>
             </div>
             <div className="relative z-10 flex flex-wrap gap-5 mt-16">
               <motion.a 
@@ -495,15 +500,16 @@ const App: React.FC = () => {
                <div className="absolute left-1.5 top-0 bottom-0 w-px bg-white/5 group-hover:bg-emerald-500/30 transition-all duration-1000" />
                
                {[
-                 { inst: "Croma Campus", role: "Data Science Trainee", date: "SEP 2025 - PRESENT", active: true },
-                 { inst: "Micro Info Tech", role: "Web Dev Intern", date: "MAY 2025 - JUN 2025", active: false },
-                 { inst: "UptoSkills", role: "Web Dev Intern", date: "JAN 2025 - APR 2025", active: false },
-                 { inst: "MSU Saharanpur", role: "BCA Graduate", date: "AUG 2022 - AUG 2025", active: false }
+                 { inst: "Croma Campus | Noida", role: "Data Science Trainee", date: "SEP 2025 - PRESENT", active: true, log: "Developing Python scripts for data cleaning & predictive modeling. Mastered Power BI DAX." },
+                 { inst: "Micro Info Tech | Haryana", role: "Web Development Intern", date: "MAY 2025 - JUN 2025", active: false, log: "Developed responsive web pages (100% fidelity). Implemented Git workflows." },
+                 { inst: "UptoSkills | Remote", role: "Web Development Intern", date: "JAN 2025 - APR 2025", active: false, log: "Built dynamic MERN Stack solutions. Integrated Redux.js state management." },
+                 { inst: "MSU Saharanpur", role: "BCA Graduate (1st Div)", date: "AUG 2022 - AUG 2025", active: false, log: "Core Computer Science & Software Engineering modules." }
                ].map((exp, idx) => (
                  <div key={idx} className={`pl-12 relative transition-all duration-700 ${exp.active ? 'opacity-100 scale-105' : 'opacity-20 group-hover:opacity-60'}`}>
                     <div className={`absolute left-[-1.5px] top-2 w-4 h-4 rounded-full ${exp.active ? 'bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,1)]' : 'bg-neutral-800 border border-white/5'}`} />
                     <p className="text-[11px] font-black uppercase text-neutral-500 mb-2 tracking-[0.3em]">{exp.inst}</p>
                     <h5 className="text-xl font-bold leading-tight uppercase group-hover:text-emerald-400 transition-colors">{exp.role}</h5>
+                    <p className="text-[10px] text-neutral-400 mt-2 line-clamp-2 italic">{exp.log}</p>
                     <p className="text-[11px] text-emerald-500/60 mt-3 font-mono bg-emerald-500/5 inline-block px-2 py-1 rounded">TIMESTAMP: {exp.date}</p>
                  </div>
                ))}
@@ -532,7 +538,7 @@ const App: React.FC = () => {
              </div>
              <div className="relative z-10 mt-6">
                <p className="text-[10px] font-black uppercase text-neutral-600 mb-2 tracking-[0.2em]">Visual Trace</p>
-               <h4 className="text-3xl font-display font-black uppercase leading-none group-hover:text-glow-pink">Life @ <br/> Noida</h4>
+               <h4 className="text-3xl font-display font-black uppercase leading-none group-hover:text-glow-pink">Visual <br/> Logbook</h4>
              </div>
           </motion.a>
 
@@ -622,10 +628,10 @@ const App: React.FC = () => {
               </div>
            </div>
            <div className="text-center md:text-right">
-             <p className="text-[11px] font-black uppercase text-white/10 tracking-[1.5em] mb-4">SYSTEM ID: {PROFILE.systemId}</p>
+             <p className="text-[11px] font-black uppercase text-white/10 tracking-[1.5em] mb-4 uppercase">SYSTEM ID: {PROFILE.systemId}</p>
              <div className="flex flex-col items-center md:items-end gap-1">
-                <p className="text-[9px] font-mono text-neutral-800">NAVNEET_SHARMA_PORTFOLIO_V2.0.exe</p>
-                <div className="flex gap-2">
+                <p className="text-[9px] font-mono text-neutral-800 uppercase tracking-widest leading-none">Navneet_Sharma_2.0.exe --status=optimal</p>
+                <div className="flex gap-2 mt-2">
                    <span className="w-1.5 h-1.5 bg-emerald-500/20 rounded-full" />
                    <span className="w-1.5 h-1.5 bg-emerald-500/40 rounded-full" />
                    <span className="w-1.5 h-1.5 bg-emerald-500/60 rounded-full animate-pulse shadow-[0_0_5px_#10b981]" />
