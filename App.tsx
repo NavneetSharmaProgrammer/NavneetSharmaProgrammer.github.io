@@ -228,6 +228,9 @@ const App: React.FC = () => {
     show: { opacity: 1, scale: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 15 } }
   };
 
+  // --- PHYSICS CONFIG FOR SQUISHY INTERACTION ---
+  const jellyConfig = { type: 'spring' as const, stiffness: 700, damping: 15, mass: 1.5 };
+  
   const toggleScan = () => {
     setScanning(true);
     setTimeout(() => setScanning(false), 2000);
@@ -248,9 +251,14 @@ const App: React.FC = () => {
             className="flex items-center gap-4 group"
           >
             <div className="relative">
-              <div className="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center text-black font-black text-2xl shadow-[0_0_40px_rgba(16,185,129,0.3)] group-hover:rotate-12 transition-transform cursor-pointer">
+              <motion.div 
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                whileTap={{ scale: 0.85, rotate: -15, borderRadius: "50%" }}
+                transition={jellyConfig}
+                className="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center text-black font-black text-2xl shadow-[0_0_40px_rgba(16,185,129,0.3)] cursor-pointer"
+              >
                 NS
-              </div>
+              </motion.div>
               <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-black border-2 border-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]" />
             </div>
             <div>
@@ -265,20 +273,28 @@ const App: React.FC = () => {
           </motion.div>
           
           <div className="flex items-center gap-6">
-            <div className="hidden lg:flex items-center gap-3 px-5 py-2.5 bg-white/5 border border-white/10 rounded-2xl hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all cursor-pointer group" onClick={() => setIsCommandOpen(true)}>
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={jellyConfig}
+              className="hidden lg:flex items-center gap-3 px-5 py-2.5 bg-white/5 border border-white/10 rounded-2xl hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all cursor-pointer group" 
+              onClick={() => setIsCommandOpen(true)}
+            >
               <Command size={14} className="text-neutral-500 group-hover:text-emerald-500" />
               <span className="text-[10px] font-black uppercase text-neutral-500 group-hover:text-white">Neural Search [⌘K]</span>
-            </div>
+            </motion.div>
             
             <div className="flex bg-white/5 border border-white/10 rounded-2xl p-1.5 backdrop-blur-xl">
               {(['minimal', 'maximal', 'neural'] as const).map((v) => (
-                <button 
+                <motion.button 
                   key={v}
                   onClick={() => setVibe(v)}
+                  whileTap={{ scale: 0.85 }}
+                  transition={jellyConfig}
                   className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${vibe === v ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20' : 'text-neutral-500 hover:text-white'}`}
                 >
                   {v}
-                </button>
+                </motion.button>
               ))}
             </div>
           </div>
@@ -317,24 +333,27 @@ const App: React.FC = () => {
             </div>
             <div className="relative z-10 flex flex-wrap gap-5 mt-16">
               <motion.a 
-                whileHover={{ scale: 1.05, y: -8, rotate: -1 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.9, scaleX: 1.15, scaleY: 0.85 }}
+                transition={jellyConfig}
                 href={PROFILE.linkedIn} target="_blank" 
                 className="px-8 py-6 bg-emerald-500 text-black font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl flex items-center gap-4 shadow-[0_20px_50px_-10px_rgba(16,185,129,0.4)]"
               >
                 <Fingerprint size={20} /> Identity Profile
               </motion.a>
               <motion.a 
-                whileHover={{ scale: 1.05, y: -8, rotate: 1 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.9, scaleX: 1.15, scaleY: 0.85 }}
+                transition={jellyConfig}
                 href={PROFILE.github} target="_blank" 
                 className="px-8 py-6 bg-white/5 border border-white/10 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl hover:bg-white hover:text-black transition-all"
               >
                 Logic Repos
               </motion.a>
               <motion.a 
-                whileHover={{ scale: 1.05, y: -8, rotate: -2 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.9, scaleX: 1.15, scaleY: 0.85 }}
+                transition={jellyConfig}
                 href={PROFILE.resumeUrl} target="_blank" 
                 className="px-8 py-6 bg-white/5 border border-emerald-500/30 text-emerald-500 font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl hover:bg-emerald-500 hover:text-black transition-all flex items-center gap-4"
               >
@@ -377,9 +396,13 @@ const App: React.FC = () => {
             </div>
             <div className="flex justify-between items-center relative z-10">
                <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-500 italic">User DNA</h4>
-               <div className={`p-2 rounded-full transition-all duration-500 ${scanning ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,1)]' : 'bg-white/5 text-emerald-500 hover:bg-emerald-500/20'}`} onClick={toggleScan}>
+               <motion.div 
+                whileTap={{ scale: 0.8 }}
+                transition={jellyConfig}
+                className={`p-2 rounded-full transition-all duration-500 ${scanning ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,1)]' : 'bg-white/5 text-emerald-500 hover:bg-emerald-500/20'}`} onClick={toggleScan}
+               >
                  <Activity size={18} className={scanning ? 'animate-bounce' : 'animate-pulse'} />
-               </div>
+               </motion.div>
             </div>
             <div className="space-y-6 relative z-10">
                <div>
@@ -468,6 +491,9 @@ const App: React.FC = () => {
           <motion.a 
             href={PROFILE.youtube} target="_blank"
             variants={itemVariants}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.95 }}
+            transition={jellyConfig}
             className="bento-card p-10 flex flex-col justify-between group hover:border-red-500/40 relative"
           >
              <div className="absolute top-[-30%] right-[-30%] w-64 h-64 bg-red-600/5 blur-[100px] pointer-events-none" />
@@ -518,7 +544,9 @@ const App: React.FC = () => {
             <motion.a 
               href={PROFILE.resumeUrl}
               target="_blank"
-              whileHover={{ y: -5, scale: 1.02 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.9, scaleX: 1.15, scaleY: 0.85 }}
+              transition={jellyConfig}
               className="mt-16 w-full py-6 bg-white/5 border border-white/10 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.5em] hover:bg-emerald-500 hover:text-black hover:border-emerald-500 transition-all shadow-xl text-center flex items-center justify-center gap-3"
             >
               <Download size={14} /> Full Logic Sheet
@@ -528,6 +556,9 @@ const App: React.FC = () => {
           <motion.a 
             href={PROFILE.instagram} target="_blank"
             variants={itemVariants}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.95 }}
+            transition={jellyConfig}
             className="bento-card p-10 flex flex-col justify-between group overflow-hidden border-pink-500/10"
           >
              <div className="absolute inset-0 bg-gradient-to-tr from-[#f09433]/10 via-[#dc2743]/10 to-[#bc1888]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
@@ -598,6 +629,8 @@ const App: React.FC = () => {
                        href={cmd.link}
                        target="_blank"
                        whileHover={{ x: 5, scale: 1.02 }}
+                       whileTap={{ scale: 0.97 }}
+                       transition={jellyConfig}
                        className="flex items-center justify-between p-5 bg-white/5 border border-white/5 rounded-[1.5rem] hover:bg-emerald-500 hover:text-black cursor-pointer transition-all group"
                      >
                         <div className="flex items-center gap-4">
@@ -619,14 +652,22 @@ const App: React.FC = () => {
 
         <footer className="mt-40 pt-20 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-16 mb-24">
            <div className="flex flex-wrap justify-center md:justify-start gap-12">
-              <div className="flex items-center gap-4 text-neutral-400 hover:text-emerald-500 transition-colors">
+              <motion.div 
+                whileHover={{ y: -5 }}
+                whileTap={{ scale: 0.9 }}
+                className="flex items-center gap-4 text-neutral-400 hover:text-emerald-500 transition-colors cursor-pointer"
+              >
                 <Mail size={18} className="text-emerald-500" />
                 <span className="text-[11px] font-black uppercase tracking-widest">{PROFILE.email}</span>
-              </div>
-              <div className="flex items-center gap-4 text-neutral-400 hover:text-emerald-500 transition-colors">
+              </motion.div>
+              <motion.div 
+                whileHover={{ y: -5 }}
+                whileTap={{ scale: 0.9 }}
+                className="flex items-center gap-4 text-neutral-400 hover:text-emerald-500 transition-colors cursor-pointer"
+              >
                 <MessageCircle size={18} className="text-emerald-500" />
                 <a href={PROFILE.whatsapp} target="_blank" className="text-[11px] font-black uppercase tracking-widest">Connect on WhatsApp</a>
-              </div>
+              </motion.div>
               <div className="flex items-center gap-4 text-neutral-400">
                 <MapPin size={18} className="text-emerald-500" />
                 <span className="text-[11px] font-black uppercase tracking-widest">{PROFILE.location}</span>
