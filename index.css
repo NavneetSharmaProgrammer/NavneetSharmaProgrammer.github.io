@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-main: #050505;
+    --accent: #10b981;
+    --accent-glow: rgba(16, 185, 129, 0.3);
+  }
+
+  body {
+    background-color: var(--bg-main);
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+  .bento-card {
+    @apply bg-[#0c0c0e]/80 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] overflow-hidden relative transition-all duration-300 cursor-pointer;
+    transform-style: preserve-3d;
+  }
+  
+  .bento-card::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity duration-500 pointer-events-none;
+  }
+
+  .bento-card:hover::before {
+    @apply opacity-100;
+  }
+
+  .glass-pill {
+    @apply px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest text-white/60 backdrop-blur-md;
+  }
+
+  .text-glow-emerald { text-shadow: 0 0 30px rgba(16, 185, 129, 0.6); }
+  .text-glow-red { text-shadow: 0 0 30px rgba(239, 68, 68, 0.6); }
+  .text-glow-pink { text-shadow: 0 0 30px rgba(236, 72, 153, 0.6); }
+
+  .scanline {
+    @apply absolute w-full h-[2px] bg-emerald-500/30 blur-[2px] z-50 pointer-events-none;
+    animation: scan 3s linear infinite;
+  }
+
+  .data-stream {
+    @apply absolute text-[6px] font-mono text-emerald-500/10 whitespace-nowrap pointer-events-none z-0;
+  }
+
+  /* Holographic Glitch */
+  .glitch-text {
+    position: relative;
+    display: inline-block;
+  }
+  .glitch-text::before, .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--bg-main);
+  }
+  .glitch-text::before {
+    left: 2px;
+    text-shadow: -2px 0 #ff00c1;
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim 5s infinite linear alternate-reverse;
+  }
+  .glitch-text::after {
+    left: -2px;
+    text-shadow: -2px 0 #00fff9, 2px 2px #ff00c1;
+    animation: glitch-anim2 1s infinite linear alternate-reverse;
+  }
+}
+
+@keyframes glitch-anim {
+  0% { clip: rect(31px, 9999px, 94px, 0); }
+  20% { clip: rect(62px, 9999px, 42px, 0); }
+  /* ... more steps ... */
+  100% { clip: rect(89px, 9999px, 98px, 0); }
+}
+
+@keyframes glitch-anim2 {
+  0% { clip: rect(12px, 9999px, 56px, 0); }
+  /* ... more steps ... */
+  100% { clip: rect(45px, 9999px, 12px, 0); }
+}
+
+@keyframes scan {
+  from { top: -10%; }
+  to { top: 110%; }
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-ticker {
+  display: flex;
+  width: max-content;
+  animation: ticker 25s linear infinite;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.synapse-pulse {
+  stroke-dasharray: 10, 20;
+  animation: synapse-dash 5s linear infinite;
+}
+
+@keyframes synapse-dash {
+  to { stroke-dashoffset: -100; }
+}
