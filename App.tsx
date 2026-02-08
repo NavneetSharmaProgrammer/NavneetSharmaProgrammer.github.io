@@ -32,8 +32,7 @@ import {
   Download,
   MapPin,
   Mail,
-  MessageCircle,
-  Check
+  MessageCircle
 } from 'lucide-react';
 import { 
   motion, 
@@ -46,80 +45,35 @@ import {
   useVelocity,
   useAnimationFrame
 } from 'framer-motion';
-import { PROFILE, PROJECTS, SKILL_CATEGORIES, Project } from './constants';
+import { PROFILE, PROJECTS, SKILL_CATEGORIES } from './constants';
 
-// --- HYPERTEXT (SCRAMBLE EFFECT) ---
-const HyperText = ({ text, className, glow = false }: { text: string; className?: string; glow?: boolean }) => {
-  const [displayText, setDisplayText] = useState(text);
-  const [isScrambling, setIsScrambling] = useState(false);
-  const iterations = useRef(0);
-  
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
-
-  const scramble = () => {
-    if (isScrambling) return;
-    setIsScrambling(true);
-    let iter = 0;
-    
-    const interval = setInterval(() => {
-      setDisplayText(text.split("").map((letter, index) => {
-        if (index < iter) {
-          return text[index];
-        }
-        return characters[Math.floor(Math.random() * characters.length)];
-      }).join(""));
-      
-      if (iter >= text.length) {
-        clearInterval(interval);
-        setIsScrambling(false);
-      }
-      
-      iter += 1 / 3;
-    }, 30);
-  };
-
+// --- KINETIC TYPOGRAPHY COMPONENT ---
+const KineticText = ({ text, className, glow = false, stagger = 0.02 }: { text: string; className?: string; glow?: boolean; stagger?: number }) => {
   return (
-    <motion.span 
-      onHoverStart={scramble}
-      onViewportEnter={scramble} // Trigger on view
-      className={`inline-block cursor-default font-mono ${className} ${glow ? 'text-glow-emerald text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500' : ''}`}
-    >
-      {displayText}
-    </motion.span>
-  );
-};
-
-// --- MAGNETIC BUTTON ---
-const Magnetic = ({ children }: { children: React.ReactNode }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const position = { x: useMotionValue(0), y: useMotionValue(0) };
-
-  const handleMouse = (e: React.MouseEvent) => {
-    const { clientX, clientY } = e;
-    if (!ref.current) return;
-    const { height, width, left, top } = ref.current.getBoundingClientRect();
-    const middleX = clientX - (left + width / 2);
-    const middleY = clientY - (top + height / 2);
-    position.x.set(middleX * 0.2); // Magnetic strength
-    position.y.set(middleY * 0.2);
-  };
-
-  const reset = () => {
-    position.x.set(0);
-    position.y.set(0);
-  };
-
-  const { x, y } = position;
-  return (
-    <motion.div
-      style={{ x, y }}
-      ref={ref}
-      onMouseMove={handleMouse}
-      onMouseLeave={reset}
-      transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
-    >
-      {children}
-    </motion.div>
+    <span className={`inline-flex whitespace-pre flex-wrap ${className}`}>
+      {text.split(" ").map((word, wordIndex) => (
+        <span key={wordIndex} className="inline-flex whitespace-nowrap mr-[0.25em]">
+          {word.split("").map((char, charIndex) => (
+            <motion.span
+              key={`${wordIndex}-${charIndex}`}
+              className="inline-block cursor-default origin-bottom"
+              initial={{ y: 0 }}
+              whileHover={{
+                scaleY: 1.5,
+                scaleX: 0.85,
+                y: -5,
+                rotate: Math.random() * 15 - 7.5,
+                color: glow ? '#10b981' : undefined,
+                textShadow: glow ? '0 0 20px rgba(16,185,129,0.8)' : undefined,
+              }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            >
+              {char}
+            </motion.span>
+          ))}
+        </span>
+      ))}
+    </span>
   );
 };
 
@@ -198,101 +152,57 @@ const NeuralCanvas = ({ vibe }: { vibe: string }) => {
   return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" />;
 };
 
-// --- 3D TILT & SPOTLIGHT PROJECT CARD ---
-const ProjectCard = ({ project, colSpan = 1, rowSpan = 1, delay = 0 }: { project: Project, colSpan?: number, rowSpan?: number, delay?: number }) => {
+// --- 3D TILT WRAPPER ---
+const TiltCard = ({ children, className, colSpan = 1, rowSpan = 1, delay = 0 }: any) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
 
-  const rotateX = useSpring(useTransform(y, [-100, 100], [5, -5]), { stiffness: 400, damping: 25 });
-  const rotateY = useSpring(useTransform(x, [-100, 100], [-5, 5]), { stiffness: 400, damping: 25 });
-  const [isHovered, setIsHovered] = useState(false);
+  const rotateX = useSpring(useTransform(y, [-100, 100], [15, -15]), { stiffness: 400, damping: 25 });
+  const rotateY = useSpring(useTransform(x, [-100, 100], [-15, 15]), { stiffness: 400, damping: 25 });
 
-  function handleMouse(event: React.MouseEvent<HTMLDivElement>) {
+  function handleMouse(event: any) {
     const rect = event.currentTarget.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     x.set(event.clientX - centerX);
     y.set(event.clientY - centerY);
-    mouseX.set(event.clientX - rect.left);
-    mouseY.set(event.clientY - rect.top);
   }
+
+  function handleMouseLeave() {
+    x.set(0);
+    y.set(0);
+  }
+
+  // Entrance Variants
+  const cardVariants: Variants = {
+    hidden: { opacity: 0, y: 100, scale: 0.9, rotateX: 10 },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1, 
+      rotateX: 0,
+      transition: { 
+        type: "spring", 
+        stiffness: 70, 
+        damping: 15, 
+        mass: 1,
+        delay: delay
+      } 
+    }
+  };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.5 }}
-      style={{ 
-        rotateX, 
-        rotateY, 
-        gridColumn: `span ${colSpan}`, 
-        gridRow: `span ${rowSpan}`,
-        //@ts-ignore
-        "--mouse-x": mouseX, 
-        //@ts-ignore
-        "--mouse-y": mouseY 
-      }}
+      variants={cardVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-50px" }}
+      style={{ rotateX, rotateY, gridColumn: `span ${colSpan}`, gridRow: `span ${rowSpan}` }}
       onMouseMove={handleMouse}
-      onMouseLeave={() => {
-        x.set(0); y.set(0); setIsHovered(false);
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      className="bento-card spotlight-card group flex flex-col p-0 perspective-1000"
+      onMouseLeave={handleMouseLeave}
+      className={`perspective-1000 ${className}`}
     >
-      <div className="absolute inset-0 z-0 bg-neutral-900">
-        <AnimatePresence>
-          {isHovered && project.videoUrl ? (
-            <motion.video
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              src={project.videoUrl}
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-screen"
-            />
-          ) : (
-            <motion.img 
-              initial={{ opacity: 1 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              src={project.imageUrl} 
-              className="absolute inset-0 w-full h-full object-cover opacity-50 grayscale group-hover:grayscale-0 transition-all duration-700"
-              alt={project.title}
-            />
-          )}
-        </AnimatePresence>
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent z-10" />
-      </div>
-
-      <div className="relative z-20 mt-auto p-8 md:p-12">
-        <div className="flex gap-2 mb-4 flex-wrap">
-            {project.tags.map(t => <span key={t} className="glass-pill backdrop-blur-md bg-black/50">{t}</span>)}
-        </div>
-        <h3 className="text-4xl md:text-5xl font-display font-black uppercase tracking-tighter mb-4 group-hover:text-glow-emerald transition-all duration-300">
-          {project.title}
-        </h3>
-        <div className="overflow-hidden h-0 group-hover:h-auto transition-all duration-500">
-           <p className="text-neutral-300 text-sm md:text-base leading-relaxed max-w-lg mb-4">
-            {project.description}
-           </p>
-           <p className="text-xs font-mono text-emerald-400 mb-6"> > Key Tech: {project.keyTech}</p>
-        </div>
-        
-        <div className="pt-6 border-t border-white/10 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-emerald-500/20 rounded-lg">
-                <ShieldCheck size={16} className="text-emerald-500" />
-              </div>
-              <span className="text-[10px] md:text-[12px] font-black uppercase text-emerald-500 tracking-[0.2em]">{project.stat}</span>
-            </div>
-            <ArrowUpRight size={24} className="text-white opacity-50 group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
-        </div>
-      </div>
+      {children}
     </motion.div>
   );
 };
@@ -339,14 +249,6 @@ const App: React.FC = () => {
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const [stats, setStats] = useState({ mouseV: 0, clickCount: 0 });
   const [scanning, setScanning] = useState(false);
-  const [copied, setCopied] = useState(false);
-
-  // Experience Scroll Ref
-  const experienceRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: experienceRef,
-    offset: ["start end", "end end"]
-  });
   
   // Scrollytelling Hooks
   const { scrollY } = useScroll();
@@ -377,22 +279,11 @@ const App: React.FC = () => {
     };
   }, []);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(PROFILE.email);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   const dataTools = useMemo(() => [
-    "Python", "SQL (T-SQL)", "C++", "Scikit-Learn", "TensorFlow", "PyTorch", "LangChain", 
-    "OpenAI API", "Whisper", "Pandas", "NumPy", "BeautifulSoup", "NetworkX", "Power BI (DAX)", 
-    "Matplotlib", "Seaborn", "Flask", "React.js", "Tailwind CSS", "Git", "Docker", "FFmpeg"
-  ], []);
-
-  const experience = useMemo(() => [
-    { inst: "Croma Campus | Noida", role: "Data Science Trainee", date: "SEP 2025 - PRESENT", active: true, log: "Building Python scripts for data cleaning & predictive modeling. Mastering Power BI DAX & Dashboard design." },
-    { inst: "Micro Info Tech Services | Haryana", role: "Web Development Intern", date: "MAY 2025 - JUN 2025", active: false, log: "Developed responsive web pages (100% fidelity). Implemented Git workflows, reducing merge conflicts by 20%." },
-    { inst: "UptoSkills | Remote", role: "Web Development Intern", date: "JAN 2025 - APR 2025", active: false, log: "Built dynamic MERN Stack solutions. Integrated Redux.js state management & backend APIs." }
+    "Python", "SQL", "Power BI", "Pandas", "NumPy", "Scikit-Learn", "LLMs", "LangChain", 
+    "PyTorch", "Flask", "FFmpeg", "ElevenLabs", "Matplotlib", "Seaborn", "Git", "Jupyter",
+    "TensorFlow", "XGBoost", "HuggingFace", "FastAPI", "PostgreSQL", "React", "D3.js",
+    "NLP", "Regression", "DAX", "MERN Stack", "VBA", "Tableau", "OpenCV", "Tailwind CSS", "Redux.js"
   ], []);
 
   const gridVariants: Variants = {
@@ -414,6 +305,7 @@ const App: React.FC = () => {
     }
   };
 
+  // --- PHYSICS CONFIG FOR SQUISHY INTERACTION ---
   const jellyConfig = { type: 'spring' as const, stiffness: 700, damping: 15, mass: 1.5 };
   
   const toggleScan = () => {
@@ -422,11 +314,8 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen ${vibe === 'minimal' ? 'bg-[#fafafa] text-black' : 'bg-[#050505] text-white'} selection:bg-emerald-500 selection:text-black font-sans transition-colors duration-1000 overflow-x-hidden relative`}>
+    <div className={`min-h-screen ${vibe === 'minimal' ? 'bg-[#fafafa] text-black' : 'bg-[#050505] text-white'} selection:bg-emerald-500 selection:text-black font-sans transition-colors duration-1000 overflow-x-hidden`}>
       
-      {/* CRT OVERLAY */}
-      <div className="fixed inset-0 crt-overlay pointer-events-none z-[9999] opacity-30" />
-
       <NeuralCanvas vibe={vibe} />
       <SystemSentienceHUD />
 
@@ -452,7 +341,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <p className="font-display font-black text-3xl tracking-tighter uppercase italic leading-none">
-                <HyperText text="NAVNEET.OS" />
+                <KineticText text="NAVNEET.OS" />
               </p>
               <div className="flex gap-2 mt-1">
                  <span className="text-[7px] font-black uppercase text-neutral-500 tracking-widest bg-white/5 px-2 py-0.5 rounded">Core 2.0.26</span>
@@ -462,15 +351,16 @@ const App: React.FC = () => {
           </motion.div>
           
           <div className="flex items-center gap-6">
-            <Magnetic>
-              <div 
-                className="hidden lg:flex items-center gap-3 px-5 py-2.5 bg-white/5 border border-white/10 rounded-2xl hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all cursor-pointer group" 
-                onClick={() => setIsCommandOpen(true)}
-              >
-                <Command size={14} className="text-neutral-500 group-hover:text-emerald-500" />
-                <span className="text-[10px] font-black uppercase text-neutral-500 group-hover:text-white">Neural Search [⌘K]</span>
-              </div>
-            </Magnetic>
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={jellyConfig}
+              className="hidden lg:flex items-center gap-3 px-5 py-2.5 bg-white/5 border border-white/10 rounded-2xl hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all cursor-pointer group" 
+              onClick={() => setIsCommandOpen(true)}
+            >
+              <Command size={14} className="text-neutral-500 group-hover:text-emerald-500" />
+              <span className="text-[10px] font-black uppercase text-neutral-500 group-hover:text-white">Neural Search [⌘K]</span>
+            </motion.div>
             
             <div className="flex bg-white/5 border border-white/10 rounded-2xl p-1.5 backdrop-blur-xl">
               {(['minimal', 'maximal', 'neural'] as const).map((v) => (
@@ -495,7 +385,7 @@ const App: React.FC = () => {
           className="grid grid-cols-1 md:grid-cols-4 gap-6"
         >
           
-          <motion.div className="col-span-1 md:col-span-2 md:row-span-2 bento-card p-12 md:p-20 flex flex-col justify-between group perspective-1000">
+          <TiltCard colSpan={2} rowSpan={2} className="bento-card p-12 md:p-20 flex flex-col justify-between group">
             <div className="scanline opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:opacity-15 transition-opacity pointer-events-none">
                <Layers size={300} strokeWidth={0.5} className="animate-float" />
@@ -503,64 +393,85 @@ const App: React.FC = () => {
             <div className="relative z-10 space-y-10">
               <div className="inline-flex items-center gap-3 px-5 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
                 <BrainCircuit size={16} className="text-emerald-500 animate-pulse" />
-                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-500">{PROFILE.currentStatus}</span>
+                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-500">Cognitive Layer Active</span>
               </div>
               <h1 className="text-6xl md:text-9xl font-display font-black tracking-tighter leading-[0.8] uppercase">
-                <HyperText text="DATA" /> <br/>
+                <KineticText text="Data" /> <br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500 group-hover:from-white group-hover:to-white transition-all duration-1000">
-                  <HyperText text="EVOLVED" glow />
+                  <KineticText text="Evolved" glow />
                 </span> <br/>
-                <HyperText text="INTO ART." />
+                <KineticText text="Into Art." />
               </h1>
               <div className="space-y-4">
                 <p className="text-neutral-400 text-2xl max-w-xl font-medium leading-relaxed">
-                  {PROFILE.summary}
+                  Navneet Sharma here. {PROFILE.summary}
                 </p>
-                <div className="flex flex-col gap-2">
-                  <p className="text-emerald-500 text-[11px] font-black uppercase tracking-widest bg-emerald-500/5 px-4 py-2 rounded-xl inline-block border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-                    {PROFILE.currentRole}
-                  </p>
-                  <p className="text-neutral-500 text-[11px] font-black uppercase tracking-widest px-1">
-                    {PROFILE.location}
-                  </p>
-                </div>
+                <p className="text-emerald-500 text-[11px] font-black uppercase tracking-widest bg-emerald-500/5 px-4 py-2 rounded-xl inline-block border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                  {PROFILE.currentStatus}
+                </p>
               </div>
             </div>
-            <div className="relative z-10 mt-16">
-              <div className="flex flex-wrap gap-5">
-                <Magnetic>
-                  <motion.a 
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.9 }}
-                    href={PROFILE.resumeUrl} target="_blank" 
-                    className="px-8 py-6 bg-emerald-500 text-black font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl flex items-center gap-4 shadow-[0_20px_50px_-10px_rgba(16,185,129,0.4)]"
-                  >
-                    <Download size={20} /> DOWNLOAD_RESUME
-                  </motion.a>
-                </Magnetic>
-                <Magnetic>
-                  <motion.a 
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.9 }}
-                    href={`mailto:${PROFILE.email}`}
-                    className="px-8 py-6 bg-white/5 border border-white/10 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl hover:bg-white hover:text-black transition-all flex items-center gap-4"
-                  >
-                    <Mail size={20} /> INITIATE_CONTACT
-                  </motion.a>
-                </Magnetic>
+            <div className="relative z-10 flex flex-wrap gap-5 mt-16">
+              <motion.a 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.9, scaleX: 1.15, scaleY: 0.85 }}
+                transition={jellyConfig}
+                href={PROFILE.linkedIn} target="_blank" 
+                className="px-8 py-6 bg-emerald-500 text-black font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl flex items-center gap-4 shadow-[0_20px_50px_-10px_rgba(16,185,129,0.4)]"
+              >
+                <Fingerprint size={20} /> Identity Profile
+              </motion.a>
+              <motion.a 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.9, scaleX: 1.15, scaleY: 0.85 }}
+                transition={jellyConfig}
+                href={PROFILE.github} target="_blank" 
+                className="px-8 py-6 bg-white/5 border border-white/10 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl hover:bg-white hover:text-black transition-all"
+              >
+                Logic Repos
+              </motion.a>
+              <motion.a 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.9, scaleX: 1.15, scaleY: 0.85 }}
+                transition={jellyConfig}
+                href={PROFILE.resumeUrl} target="_blank" 
+                className="px-8 py-6 bg-white/5 border border-emerald-500/30 text-emerald-500 font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl hover:bg-emerald-500 hover:text-black transition-all flex items-center gap-4"
+              >
+                <Download size={20} /> Download Resume
+              </motion.a>
+            </div>
+          </TiltCard>
+
+          <TiltCard colSpan={2} rowSpan={2} delay={0.1} className="bento-card group flex flex-col p-0">
+            <div className="scanline opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/95 z-10" />
+            <img 
+              src={PROJECTS[0].imageUrl} 
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s] grayscale group-hover:grayscale-0"
+              alt={PROJECTS[0].title}
+            />
+            <div className="relative z-20 mt-auto p-12">
+              <div className="flex gap-3 mb-6">
+                 {PROJECTS[0].tags.map(t => <span key={t} className="glass-pill">{t}</span>)}
               </div>
-              <p className="mt-6 text-[10px] font-mono text-emerald-500/80 flex items-center gap-2">
-                <Activity size={12}/> GitHub Activity: 400+ Contributions in the last year
+              <h3 className="text-6xl font-display font-black uppercase tracking-tighter mb-5 group-hover:text-glow-emerald transition-all duration-700">
+                <KineticText text={PROJECTS[0].title} />
+              </h3>
+              <p className="text-neutral-300 text-xl leading-relaxed max-w-lg opacity-0 group-hover:opacity-100 transition-all transform translate-y-8 group-hover:translate-y-0 duration-500">
+                {PROJECTS[0].description}
               </p>
+              <div className="mt-10 pt-10 border-t border-white/10 flex items-center justify-between">
+                 <div className="flex items-center gap-3">
+                   <div className="p-2 bg-emerald-500/20 rounded-lg">
+                     <ShieldCheck size={20} className="text-emerald-500" />
+                   </div>
+                   <span className="text-[12px] font-black uppercase text-emerald-500 tracking-[0.3em]">Verified Logic Core</span>
+                 </div>
+                 <ArrowUpRight size={32} className="text-white opacity-20 group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
+              </div>
             </div>
-          </motion.div>
+          </TiltCard>
 
-          {/* PROJECT CARDS - REFACTORED TO USE ProjectCard */}
-          {PROJECTS.map((proj, i) => (
-             <ProjectCard key={proj.id} project={proj} colSpan={2} rowSpan={2} delay={i * 0.1} />
-          ))}
-
-          {/* USER DNA CARD */}
           <motion.div 
             variants={itemVariants}
             initial="hidden"
@@ -602,6 +513,45 @@ const App: React.FC = () => {
             </div>
           </motion.div>
 
+          <TiltCard delay={0.2} className="bento-card p-10 flex flex-col justify-between group">
+             <div className="flex justify-between items-start relative z-10">
+               <div className="w-16 h-16 bg-white/5 rounded-[2rem] flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-black transition-all shadow-xl border border-white/5 group-hover:border-emerald-400">
+                 <Video size={28} />
+               </div>
+               <div className="text-right">
+                 <p className="text-[24px] font-display font-black leading-none text-emerald-500 text-glow-emerald">2026</p>
+                 <p className="text-[9px] font-black uppercase text-neutral-600 tracking-tighter mt-1">Autonomous Gen-AI</p>
+               </div>
+             </div>
+             <div className="relative z-10 mt-6">
+               <h4 className="text-2xl font-display font-black uppercase mb-2"><KineticText text={PROJECTS[1].title} /></h4>
+               <p className="text-[12px] text-neutral-500 leading-snug">{PROJECTS[1].description}</p>
+             </div>
+             <div className="pt-6 border-t border-white/5 flex gap-2 relative z-10">
+               {PROJECTS[1].tags.map(t => <span key={t} className="glass-pill !bg-emerald-500/10 !text-emerald-500">{t}</span>)}
+             </div>
+          </TiltCard>
+
+          <TiltCard delay={0.3} className="bento-card p-10 flex flex-col justify-between group border-emerald-500/10">
+             <div className="flex justify-between items-center">
+               <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-500">
+                 <Search size={24} />
+               </div>
+               <div className="flex gap-1.5">
+                 {[1,2,3,4,5].map(i => <div key={i} className="w-1.5 h-4 bg-white/10 group-hover:bg-emerald-500/60 transition-colors" style={{ transitionDelay: `${i*100}ms` }} />)}
+               </div>
+             </div>
+             <div className="py-4">
+               <p className="text-[10px] font-black uppercase text-neutral-600 mb-2">Model Inference #0xAF2</p>
+               <h4 className="text-2xl font-display font-black uppercase leading-[1.1]"><KineticText text={PROJECTS[2].title} /></h4>
+             </div>
+             <div className="p-4 bg-zinc-950/80 border border-emerald-500/20 rounded-2xl">
+               <p className="text-[11px] font-mono text-emerald-500 leading-relaxed whitespace-pre-wrap">
+                 {"$ model.predict(X_test)\n >> Status: CONVERGED\n >> Acc: 0.85"}
+               </p>
+             </div>
+          </TiltCard>
+
           <motion.div 
             variants={itemVariants}
             initial="hidden"
@@ -610,7 +560,7 @@ const App: React.FC = () => {
             className="md:col-span-2 bento-card flex flex-col justify-center py-12 overflow-hidden group"
           >
             <div className="px-12 mb-8 flex items-center justify-between">
-              <h3 className="text-[11px] font-black uppercase tracking-[0.5em] text-neutral-500 italic">Processing Array</h3>
+              <h3 className="text-[11px] font-black uppercase tracking-[0.5em] text-neutral-500 italic">Synthetic Processing Array</h3>
               <div className="flex gap-2">
                  <Mic size={14} className="text-neutral-700 hover:text-emerald-500 transition-colors cursor-pointer" />
                  <Sparkles size={16} className="text-emerald-500 group-hover:rotate-180 transition-transform duration-[1.5s]" />
@@ -621,7 +571,7 @@ const App: React.FC = () => {
               <motion.div style={{ skewX: smoothSkew }} className="animate-ticker origin-center">
                 {dataTools.map((tool, i) => (
                   <div key={i} className="px-14 flex items-center gap-8">
-                    <span className="text-5xl font-display font-black uppercase tracking-tighter text-white/10 group-hover:text-white transition-all duration-700 cursor-default whitespace-nowrap hover:scale-125 hover:text-emerald-500 shadow-glow hover:text-glow-emerald">
+                    <span className="text-5xl font-display font-black uppercase tracking-tighter text-white/10 group-hover:text-white transition-all duration-700 cursor-default whitespace-nowrap hover:scale-125 hover:text-emerald-500">
                       {tool}
                     </span>
                     <div className="w-3 h-3 bg-emerald-500/20 rounded-full border border-emerald-500/30" />
@@ -661,42 +611,28 @@ const App: React.FC = () => {
              <ArrowUpRight size={24} className="text-neutral-700 group-hover:text-white transition-colors self-end mt-4" />
           </motion.a>
 
-          {/* EXPERIENCE LOG WITH SCROLL PATH */}
           <motion.div 
-            ref={experienceRef}
             variants={itemVariants}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
-            className="md:row-span-2 bento-card p-12 flex flex-col group relative"
+            className="md:row-span-2 bento-card p-12 flex flex-col group"
           >
-            <div className="flex items-center gap-4 mb-14 sticky top-12 z-20 bg-[#0c0c0e]/90 backdrop-blur-xl p-4 -ml-4 rounded-xl border border-white/5">
+            <div className="flex items-center gap-4 mb-14">
                <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/20 group-hover:bg-emerald-500/20 transition-all">
                  <Award size={28} className="text-emerald-500" />
                </div>
-               <h3 className="text-2xl font-display font-black uppercase tracking-tighter italic">Experience Log</h3>
+               <h3 className="text-2xl font-display font-black uppercase tracking-tighter italic">Timeline<span className="text-emerald-500">_</span>Trace</h3>
             </div>
-            
-            <div className="flex-1 space-y-14 relative z-10">
-               {/* Scroll Drawing Path */}
-               <svg className="absolute left-1.5 top-0 bottom-0 w-1 h-full overflow-visible z-0 pointer-events-none">
-                  <motion.path 
-                    d={`M 1 0 V ${experience.length * 200}`} // Approximate height
-                    stroke="#10b981"
-                    strokeWidth="2"
-                    strokeOpacity="0.3"
-                    fill="none"
-                  />
-                  <motion.path 
-                    d={`M 1 0 V ${experience.length * 200}`}
-                    stroke="#10b981"
-                    strokeWidth="2"
-                    fill="none"
-                    style={{ pathLength: scrollYProgress }}
-                  />
-               </svg>
+            <div className="flex-1 space-y-14 relative">
+               <div className="absolute left-1.5 top-0 bottom-0 w-px bg-white/5 group-hover:bg-emerald-500/30 transition-all duration-1000" />
                
-               {experience.map((exp, idx) => (
+               {[
+                 { inst: "Croma Campus | Noida", role: "Data Science Trainee", date: "SEP 2025 - PRESENT", active: true, log: "Developing Python scripts for data cleaning & predictive modeling (Regression/Classification). Mastered Power BI DAX & Dashboard design." },
+                 { inst: "Micro Info Tech Services | Haryana", role: "Web Development Intern", date: "MAY 2025 - JUN 2025", active: false, log: "Developed responsive web pages (100% design fidelity). Implemented Git workflows, reducing merge conflicts by 20%." },
+                 { inst: "UptoSkills | Remote", role: "Web Development Intern", date: "JAN 2025 - APR 2025", active: false, log: "Built dynamic MERN Stack solutions. Integrated Redux.js state management & backend APIs." },
+                 { inst: "MSU Saharanpur", role: "BCA Graduate (1st Div)", date: "AUG 2022 - AUG 2025", active: false, log: "Core Computer Science & Software Engineering modules. Graduated with First Division honors." }
+               ].map((exp, idx) => (
                  <motion.div 
                    key={idx} 
                    initial={{ opacity: 0, x: -30 }}
@@ -705,13 +641,11 @@ const App: React.FC = () => {
                    viewport={{ once: true, margin: "-50px" }}
                    className={`pl-12 relative transition-all duration-700 ${exp.active ? 'opacity-100 scale-105' : 'opacity-80 group-hover:opacity-100'}`}
                  >
-                    <div className={`absolute left-[-3px] top-2 w-5 h-5 rounded-full z-10 border-4 border-[#0c0c0e] ${exp.active ? 'bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,1)]' : 'bg-neutral-800'}`} />
-                    <div className="sticky top-32 z-10 bg-[#0c0c0e]/80 backdrop-blur-md inline-block px-3 py-1 rounded-lg border border-white/5 mb-2">
-                       <p className="text-[10px] font-black uppercase text-emerald-500 tracking-[0.2em]">{exp.date}</p>
-                    </div>
-                    <p className="text-[11px] font-black uppercase text-neutral-500 mb-1 tracking-[0.3em]">{exp.inst}</p>
-                    <h5 className="text-xl font-bold leading-tight uppercase group-hover:text-emerald-400 transition-colors mb-2">{exp.role}</h5>
-                    <p className="text-[12px] text-neutral-400 leading-relaxed italic">{exp.log}</p>
+                    <div className={`absolute left-[-1.5px] top-2 w-4 h-4 rounded-full ${exp.active ? 'bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,1)]' : 'bg-neutral-800 border border-white/5'}`} />
+                    <p className="text-[11px] font-black uppercase text-neutral-500 mb-2 tracking-[0.3em]">{exp.inst}</p>
+                    <h5 className="text-xl font-bold leading-tight uppercase group-hover:text-emerald-400 transition-colors">{exp.role}</h5>
+                    <p className="text-[10px] text-neutral-400 mt-2 line-clamp-2 italic">{exp.log}</p>
+                    <p className="text-[11px] text-emerald-500/60 mt-3 font-mono bg-emerald-500/5 inline-block px-2 py-1 rounded">TIMESTAMP: {exp.date}</p>
                  </motion.div>
                ))}
             </div>
@@ -721,7 +655,7 @@ const App: React.FC = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.9, scaleX: 1.15, scaleY: 0.85 }}
               transition={jellyConfig}
-              className="mt-16 w-full py-6 bg-white/5 border border-white/10 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.5em] hover:bg-emerald-500 hover:text-black hover:border-emerald-500 transition-all shadow-xl text-center flex items-center justify-center gap-3 relative z-20"
+              className="mt-16 w-full py-6 bg-white/5 border border-white/10 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.5em] hover:bg-emerald-500 hover:text-black hover:border-emerald-500 transition-all shadow-xl text-center flex items-center justify-center gap-3"
             >
               <Download size={14} /> Full Logic Sheet
             </motion.a>
@@ -751,35 +685,22 @@ const App: React.FC = () => {
              </div>
           </motion.a>
 
-          {/* ISOMETRIC STATS / TRUST SIGNALS */}
           <motion.div 
             variants={itemVariants}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
-            className="bento-card p-10 flex flex-col justify-center text-center group bg-emerald-500/5 border-emerald-500/20 overflow-hidden"
+            className="bento-card p-10 flex flex-col justify-center text-center group bg-emerald-500/5 border-emerald-500/20"
           >
-            {/* Simple Isometric Grid Simulation */}
-            <div className="absolute inset-0 opacity-20 pointer-events-none transform rotate-45 scale-150 translate-y-10">
-               <div className="grid grid-cols-6 gap-2">
-                  {Array.from({length: 36}).map((_, i) => (
-                     <motion.div 
-                       key={i}
-                       initial={{ opacity: 0, scale: 0 }}
-                       whileInView={{ opacity: 1, scale: 1 }}
-                       transition={{ delay: i * 0.05 }}
-                       className={`w-8 h-8 rounded-md ${Math.random() > 0.5 ? 'bg-emerald-500' : 'bg-neutral-800'}`}
-                     />
-                  ))}
-               </div>
-            </div>
-
-            <div className="relative mx-auto mb-6 z-10">
+            <div className="relative mx-auto mb-6">
                <Zap size={40} className="text-emerald-500 group-hover:animate-bounce relative z-10" />
                <div className="absolute inset-0 bg-emerald-500/40 blur-2xl rounded-full scale-150 animate-pulse shadow-[0_0_20px_rgba(16,185,129,0.5)]" />
             </div>
-            <p className="text-[11px] font-black uppercase tracking-[0.5em] text-emerald-500 relative z-10">Core Engine</p>
-            <p className="text-3xl font-display font-black text-white mt-2 uppercase italic tracking-tighter relative z-10">Peak Stable</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.5em] text-emerald-500">Core Engine</p>
+            <p className="text-3xl font-display font-black text-white mt-2 uppercase italic tracking-tighter">Peak Stable</p>
+            <div className="flex justify-center gap-2 mt-6">
+              {[1,2,3,4,5,6].map(i => <div key={i} className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" style={{ animationDelay: `${i*150}ms` }} />)}
+            </div>
           </motion.div>
 
         </motion.div>
@@ -849,12 +770,10 @@ const App: React.FC = () => {
                 <motion.div 
                   whileHover={{ y: -5 }}
                   whileTap={{ scale: 0.9 }}
-                  onClick={handleCopy}
-                  className="flex items-center gap-4 text-neutral-400 hover:text-emerald-500 transition-colors cursor-pointer relative"
+                  className="flex items-center gap-4 text-neutral-400 hover:text-emerald-500 transition-colors cursor-pointer"
                 >
-                  {copied ? <Check size={18} className="text-emerald-500" /> : <Mail size={18} className="text-emerald-500" />}
-                  <span className="text-[11px] font-black uppercase tracking-widest">{copied ? "COPIED TO CLIPBOARD" : PROFILE.email}</span>
-                  {copied && <motion.span initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} className="absolute -top-8 left-0 text-[9px] bg-emerald-500 text-black px-2 py-1 rounded">CMD EXECUTED</motion.span>}
+                  <Mail size={18} className="text-emerald-500" />
+                  <span className="text-[11px] font-black uppercase tracking-widest">{PROFILE.email}</span>
                 </motion.div>
                 <motion.div 
                   whileHover={{ y: -5 }}
