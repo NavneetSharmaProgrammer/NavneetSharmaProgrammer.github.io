@@ -45,7 +45,7 @@ import {
   useVelocity,
   useAnimationFrame
 } from 'framer-motion';
-import { PROFILE, PROJECTS, SKILL_CATEGORIES } from './constants';
+import { PROFILE, PROJECTS, CERTIFICATIONS, SKILL_CATEGORIES } from './constants';
 
 // --- KINETIC TYPOGRAPHY COMPONENT ---
 const KineticText = ({ text, className, glow = false, stagger = 0.02 }: { text: string; className?: string; glow?: boolean; stagger?: number }) => {
@@ -207,6 +207,28 @@ const TiltCard = ({ children, className, colSpan = 1, rowSpan = 1, delay = 0 }: 
   );
 };
 
+// --- GLITCH CERTIFICATION COMPONENT ---
+const GlitchCertification = ({ cert, index }: { cert: { title: string, issuer: string, date: string }, index: number }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true, margin: "-20px" }}
+      className="flex items-center justify-between p-4 border-b border-white/5 group hover:border-emerald-500/30 transition-colors animate-glitch-reveal"
+      style={{ animationDelay: `${index * 0.15}s` }}
+    >
+      <div className="flex items-center gap-4">
+         <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full opacity-50 group-hover:opacity-100 group-hover:shadow-[0_0_10px_#10b981] transition-all" />
+         <div>
+            <h4 className="font-bold text-sm text-white/90 group-hover:text-emerald-400 transition-colors">{cert.title}</h4>
+            <p className="text-[10px] text-neutral-500 uppercase tracking-widest">{cert.issuer}</p>
+         </div>
+      </div>
+      <span className="font-mono text-[10px] text-neutral-600 group-hover:text-white transition-colors">{cert.date}</span>
+    </motion.div>
+  );
+};
+
 // --- SYSTEM SENTIENCE HUD ---
 const SystemSentienceHUD = () => {
   const [thoughts, setThoughts] = useState("System Initialized...");
@@ -251,10 +273,15 @@ const App: React.FC = () => {
   const [scanning, setScanning] = useState(false);
   
   // Scrollytelling Hooks
+  const experienceRef = useRef(null);
+  const { scrollYProgress } = useScroll({ target: experienceRef, offset: ["start center", "end center"] });
   const { scrollY } = useScroll();
   const scrollVelocity = useVelocity(scrollY);
   const skewVelocity = useTransform(scrollVelocity, [-1000, 1000], [-10, 10]); // Velocity based skew
   const smoothSkew = useSpring(skewVelocity, { stiffness: 400, damping: 30 }); // Smooth physics skew
+
+  // Memoized grid for isometric city to avoid hydration mismatch
+  const randomGrid = useMemo(() => Array.from({length: 36}).map(() => Math.random() > 0.5), []);
 
   useEffect(() => {
     let lastX = 0, lastY = 0;
@@ -284,6 +311,13 @@ const App: React.FC = () => {
     "PyTorch", "Flask", "FFmpeg", "ElevenLabs", "Matplotlib", "Seaborn", "Git", "Jupyter",
     "TensorFlow", "XGBoost", "HuggingFace", "FastAPI", "PostgreSQL", "React", "D3.js",
     "NLP", "Regression", "DAX", "MERN Stack", "VBA", "Tableau", "OpenCV", "Tailwind CSS", "Redux.js"
+  ], []);
+
+  const experience = useMemo(() => [
+    { inst: "Croma Campus | Noida", role: "Data Science Trainee", date: "SEP 2025 - PRESENT", active: true, log: "Developing Python scripts for data cleaning & predictive modeling (Regression/Classification). Mastered Power BI DAX & Dashboard design." },
+    { inst: "Micro Info Tech Services | Haryana", role: "Web Development Intern", date: "MAY 2025 - JUN 2025", active: false, log: "Developed responsive web pages (100% design fidelity). Implemented Git workflows, reducing merge conflicts by 20%." },
+    { inst: "UptoSkills | Remote", role: "Web Development Intern", date: "JAN 2025 - APR 2025", active: false, log: "Built dynamic MERN Stack solutions. Integrated Redux.js state management & backend APIs." },
+    { inst: "MSU Saharanpur", role: "BCA Graduate (1st Div)", date: "AUG 2022 - AUG 2025", active: false, log: "Core Computer Science & Software Engineering modules. Graduated with First Division honors." }
   ], []);
 
   const gridVariants: Variants = {
@@ -611,66 +645,59 @@ const App: React.FC = () => {
              <ArrowUpRight size={24} className="text-neutral-700 group-hover:text-white transition-colors self-end mt-4" />
           </motion.a>
 
+          {/* EXPERIENCE LOG (TIMELINE) WITH STICKY HEADERS */}
           <motion.div 
-            variants={itemVariants}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="md:row-span-2 bento-card p-12 flex flex-col group"
+            ref={experienceRef}
+            variants={{ hidden: {opacity:0, y:20}, show: {opacity:1, y:0} }}
+            className="md:row-span-2 bento-card p-0 flex flex-col group relative bg-[#0c0c0e] rounded-3xl border border-white/5 overflow-hidden"
           >
-            <div className="flex items-center gap-4 mb-14">
-               <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/20 group-hover:bg-emerald-500/20 transition-all">
-                 <Award size={28} className="text-emerald-500" />
-               </div>
-               <h3 className="text-2xl font-display font-black uppercase tracking-tighter italic">Timeline<span className="text-emerald-500">_</span>Trace</h3>
+            {/* Header */}
+            <div className="p-8 pb-4 flex items-center gap-4 sticky top-0 z-30 bg-[#0c0c0e]/95 backdrop-blur-xl border-b border-white/5">
+               <Award size={28} className="text-emerald-500" />
+               <h3 className="text-2xl font-display font-black uppercase tracking-tighter italic">Experience Log</h3>
             </div>
-            <div className="flex-1 space-y-14 relative">
-               <div className="absolute left-1.5 top-0 bottom-0 w-px bg-white/5 group-hover:bg-emerald-500/30 transition-all duration-1000" />
+            
+            {/* Scrollable Content Area */}
+            <div className="relative p-8 pt-0 flex-1 overflow-visible">
+               {/* Scroll Circuit Line */}
+               <div className="absolute left-[54px] top-4 bottom-10 w-[2px] bg-neutral-800 z-0">
+                  <motion.div 
+                    style={{ height: useTransform(scrollYProgress, [0, 1], ["0%", "100%"]) }}
+                    className="w-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.8)]"
+                  />
+               </div>
                
-               {[
-                 { inst: "Croma Campus | Noida", role: "Data Science Trainee", date: "SEP 2025 - PRESENT", active: true, log: "Developing Python scripts for data cleaning & predictive modeling (Regression/Classification). Mastered Power BI DAX & Dashboard design." },
-                 { inst: "Micro Info Tech Services | Haryana", role: "Web Development Intern", date: "MAY 2025 - JUN 2025", active: false, log: "Developed responsive web pages (100% design fidelity). Implemented Git workflows, reducing merge conflicts by 20%." },
-                 { inst: "UptoSkills | Remote", role: "Web Development Intern", date: "JAN 2025 - APR 2025", active: false, log: "Built dynamic MERN Stack solutions. Integrated Redux.js state management & backend APIs." },
-                 { inst: "MSU Saharanpur", role: "BCA Graduate (1st Div)", date: "AUG 2022 - AUG 2025", active: false, log: "Core Computer Science & Software Engineering modules. Graduated with First Division honors." }
-               ].map((exp, idx) => (
-                 <motion.div 
-                   key={idx} 
-                   initial={{ opacity: 0, x: -30 }}
-                   whileInView={{ opacity: 1, x: 0 }}
-                   transition={{ delay: idx * 0.15, type: "spring" }}
-                   viewport={{ once: true, margin: "-50px" }}
-                   className={`pl-12 relative transition-all duration-700 ${exp.active ? 'opacity-100 scale-105' : 'opacity-80 group-hover:opacity-100'}`}
-                 >
-                    <div className={`absolute left-[-1.5px] top-2 w-4 h-4 rounded-full ${exp.active ? 'bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,1)]' : 'bg-neutral-800 border border-white/5'}`} />
-                    <p className="text-[11px] font-black uppercase text-neutral-500 mb-2 tracking-[0.3em]">{exp.inst}</p>
-                    <h5 className="text-xl font-bold leading-tight uppercase group-hover:text-emerald-400 transition-colors">{exp.role}</h5>
-                    <p className="text-[10px] text-neutral-400 mt-2 line-clamp-2 italic">{exp.log}</p>
-                    <p className="text-[11px] text-emerald-500/60 mt-3 font-mono bg-emerald-500/5 inline-block px-2 py-1 rounded">TIMESTAMP: {exp.date}</p>
-                 </motion.div>
+               {experience.map((exp, idx) => (
+                 <div key={idx} className="relative pl-12 py-8 group/item">
+                    {/* Sticky Date Header */}
+                    <div className="sticky top-20 z-20 flex items-center -ml-16 mb-6">
+                         <div className={`w-5 h-5 rounded-full border-4 border-[#0c0c0e] relative z-10 ${exp.active ? 'bg-emerald-500' : 'bg-neutral-800 group-hover/item:bg-emerald-400 transition-colors'}`} />
+                         <div className="ml-10 bg-[#0c0c0e]/90 backdrop-blur-xl px-4 py-1.5 rounded-lg border border-white/10 text-emerald-500 font-mono text-[10px] font-bold tracking-widest shadow-xl">
+                            {exp.date}
+                         </div>
+                    </div>
+
+                    {/* Content */}
+                    <motion.div 
+                      initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, margin: "-50px" }}
+                      className="bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-emerald-500/20 transition-all hover:bg-white/[0.07]"
+                    >
+                       <p className="text-[10px] font-black uppercase text-neutral-500 mb-2 tracking-[0.2em]">{exp.inst}</p>
+                       <h5 className="text-xl font-bold leading-tight uppercase mb-3 text-white">{exp.role}</h5>
+                       <p className="text-xs text-neutral-400 leading-relaxed font-light">{exp.log}</p>
+                    </motion.div>
+                 </div>
                ))}
             </div>
-            <motion.a 
-              href={PROFILE.resumeUrl}
-              target="_blank"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.9, scaleX: 1.15, scaleY: 0.85 }}
-              transition={jellyConfig}
-              className="mt-16 w-full py-6 bg-white/5 border border-white/10 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.5em] hover:bg-emerald-500 hover:text-black hover:border-emerald-500 transition-all shadow-xl text-center flex items-center justify-center gap-3"
-            >
-              <Download size={14} /> Full Logic Sheet
-            </motion.a>
           </motion.div>
 
+          {/* VISUAL TRACE (INSTAGRAM) */}
           <motion.a 
             href={PROFILE.instagram} target="_blank"
-            variants={itemVariants}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.95 }}
-            transition={jellyConfig}
-            className="bento-card p-10 flex flex-col justify-between group overflow-hidden border-pink-500/10"
+            variants={{ hidden: {opacity:0, y:20}, show: {opacity:1, y:0} }}
+            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.95 }}
+            className="bento-card p-10 flex flex-col justify-between group overflow-hidden border-pink-500/10 bg-[#0c0c0e] rounded-3xl border border-white/5 relative"
           >
              <div className="absolute inset-0 bg-gradient-to-tr from-[#f09433]/10 via-[#dc2743]/10 to-[#bc1888]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
              <div className="flex justify-between items-start relative z-10">
@@ -685,79 +712,71 @@ const App: React.FC = () => {
              </div>
           </motion.a>
 
+          {/* ISOMETRIC CITY (STATS) */}
           <motion.div 
-            variants={itemVariants}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="bento-card p-10 flex flex-col justify-center text-center group bg-emerald-500/5 border-emerald-500/20"
+            variants={{ hidden: {opacity:0, y:20}, show: {opacity:1, y:0} }}
+            className="bento-card p-10 flex flex-col justify-center text-center group bg-emerald-500/5 border-emerald-500/20 overflow-hidden rounded-3xl relative"
           >
-            <div className="relative mx-auto mb-6">
-               <Zap size={40} className="text-emerald-500 group-hover:animate-bounce relative z-10" />
-               <div className="absolute inset-0 bg-emerald-500/40 blur-2xl rounded-full scale-150 animate-pulse shadow-[0_0_20px_rgba(16,185,129,0.5)]" />
+            <div className="absolute inset-0 opacity-20 pointer-events-none transform rotate-45 scale-150 translate-y-10">
+               <div className="grid grid-cols-6 gap-2">
+                  {randomGrid.map((isEmerald, i) => (
+                     <div key={i} className={`w-8 h-8 rounded-md transition-colors duration-1000 ${isEmerald ? 'bg-emerald-500/40' : 'bg-neutral-800/40'} hover:bg-emerald-400`} />
+                  ))}
+               </div>
             </div>
-            <p className="text-[11px] font-black uppercase tracking-[0.5em] text-emerald-500">Core Engine</p>
-            <p className="text-3xl font-display font-black text-white mt-2 uppercase italic tracking-tighter">Peak Stable</p>
-            <div className="flex justify-center gap-2 mt-6">
-              {[1,2,3,4,5,6].map(i => <div key={i} className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" style={{ animationDelay: `${i*150}ms` }} />)}
+            <div className="relative mx-auto mb-6 z-10">
+               <Zap size={40} className="text-emerald-500" />
+               <div className="absolute inset-0 bg-emerald-500/40 blur-2xl rounded-full scale-150 animate-pulse" />
             </div>
+            <p className="text-[11px] font-black uppercase tracking-[0.5em] text-emerald-500 relative z-10">Core Engine</p>
+            <p className="text-3xl font-display font-black text-white mt-2 uppercase italic tracking-tighter relative z-10">Peak Stable</p>
+          </motion.div>
+
+          {/* GLITCH REVEAL CERTIFICATIONS */}
+           <motion.div 
+            variants={{ hidden: {opacity:0, y:20}, show: {opacity:1, y:0} }}
+            className="md:col-span-2 bento-card p-10 flex flex-col group bg-[#0c0c0e] rounded-3xl border border-white/5 relative overflow-hidden"
+          >
+             <div className="flex justify-between items-end mb-8 border-b border-white/10 pb-4">
+               <div>
+                  <h3 className="text-xl font-display font-black uppercase tracking-tight mb-1">Certifications</h3>
+                  <p className="text-[10px] font-mono text-emerald-500 uppercase">Verified Credentials</p>
+               </div>
+               <Award size={20} className="text-neutral-500" />
+             </div>
+             <div className="flex flex-col gap-2">
+                {CERTIFICATIONS.map((cert, i) => (
+                   <GlitchCertification key={i} cert={cert} index={i} />
+                ))}
+             </div>
           </motion.div>
 
         </motion.div>
 
+        {/* COMMAND PALETTE OVERLAY */}
         <AnimatePresence>
           {isCommandOpen && (
             <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[200] flex items-center justify-center p-6 md:p-12 backdrop-blur-xl bg-black/60"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm"
               onClick={() => setIsCommandOpen(false)}
             >
               <motion.div 
-                initial={{ scale: 0.95, y: 30 }}
-                animate={{ scale: 1, y: 0 }}
-                exit={{ scale: 0.95, y: 30 }}
-                className="w-full max-w-2xl bg-[#0c0c0e] border border-white/10 rounded-[3rem] p-10 md:p-14 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)]"
+                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
+                className="w-full max-w-2xl bg-[#0c0c0e] border border-white/10 rounded-[2rem] p-10 shadow-2xl"
                 onClick={e => e.stopPropagation()}
               >
-                <div className="flex items-center gap-6 mb-10 pb-6 border-b border-white/10">
-                   <Terminal size={32} className="text-emerald-500" />
-                   <input 
-                     autoFocus
-                     placeholder="Query Logic Core..."
-                     className="bg-transparent border-none outline-none text-3xl w-full font-display font-bold placeholder:text-neutral-800 text-white italic"
-                   />
+                <div className="flex items-center gap-4 mb-8 border-b border-white/10 pb-4">
+                   <Terminal size={24} className="text-emerald-500" />
+                   <input autoFocus placeholder="Search..." className="bg-transparent text-2xl font-bold w-full outline-none text-white placeholder:text-neutral-700" />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                   {[
-                     { label: 'RAG AI Logic', icon: BrainCircuit, link: '#' },
-                     { label: 'Download Resume', icon: Download, link: PROFILE.resumeUrl },
-                     { label: 'LinkedIn Uplink', icon: Linkedin, link: PROFILE.linkedIn },
-                     { label: 'Github Repos', icon: Github, link: PROFILE.github },
-                     { label: 'YouTube Archive', icon: Youtube, link: PROFILE.youtube },
-                     { label: 'Instagram Trace', icon: Instagram, link: PROFILE.instagram }
-                   ].map((cmd, i) => (
-                     <motion.a 
-                       key={i} 
-                       href={cmd.link}
-                       target="_blank"
-                       whileHover={{ x: 5, scale: 1.02 }}
-                       whileTap={{ scale: 0.97 }}
-                       transition={jellyConfig}
-                       className="flex items-center justify-between p-5 bg-white/5 border border-white/5 rounded-[1.5rem] hover:bg-emerald-500 hover:text-black cursor-pointer transition-all group"
-                     >
-                        <div className="flex items-center gap-4">
-                           <cmd.icon size={20} className="text-neutral-500 group-hover:text-black transition-colors" />
-                           <span className="text-[11px] font-black uppercase tracking-widest">{cmd.label}</span>
-                        </div>
-                        <ArrowUpRight size={18} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-                     </motion.a>
-                   ))}
-                </div>
-                <div className="mt-12 flex justify-between items-center text-[10px] font-black uppercase text-neutral-700 tracking-[0.2em]">
-                  <span className="flex items-center gap-2 italic"> <MousePointer2 size={12} /> Press ESC to Close System Interface</span>
-                  <span className="text-emerald-500/60 animate-pulse">Connection: Stable</span>
+                <div className="grid grid-cols-2 gap-4">
+                   <a href={PROFILE.resumeUrl} target="_blank" className="p-4 bg-white/5 rounded-xl hover:bg-emerald-500 hover:text-black transition-colors flex items-center gap-3">
+                      <Download size={18} /> <span className="font-bold text-sm">Download Resume</span>
+                   </a>
+                   <a href={PROFILE.linkedIn} target="_blank" className="p-4 bg-white/5 rounded-xl hover:bg-blue-500 hover:text-white transition-colors flex items-center gap-3">
+                      <Linkedin size={18} /> <span className="font-bold text-sm">LinkedIn</span>
+                   </a>
                 </div>
               </motion.div>
             </motion.div>
