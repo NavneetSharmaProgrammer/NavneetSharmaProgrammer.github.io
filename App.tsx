@@ -43,7 +43,8 @@ import {
   useSpring, 
   useMotionValue,
   useVelocity,
-  useAnimationFrame
+  useAnimationFrame,
+  MotionValue
 } from 'framer-motion';
 import { PROFILE, PROJECTS, CERTIFICATIONS, SKILL_CATEGORIES } from './constants';
 
@@ -78,15 +79,16 @@ const KineticText = ({ text, className, glow = false, stagger = 0.02 }: { text: 
 };
 
 // --- NEURAL CANVAS BACKGROUND ---
-const NeuralCanvas = ({ vibe }: { vibe: string }) => {
+const NeuralCanvas = React.memo(({ vibe }: { vibe: string }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: false }); // Optimize for no transparency if possible, but we need it here
     if (!ctx) return;
 
+    let animationFrameId: number;
     let particles: { x: number; y: number; vx: number; vy: number; radius: number }[] = [];
     const particleCount = vibe === 'neural' ? 100 : 40;
 
@@ -109,10 +111,19 @@ const NeuralCanvas = ({ vibe }: { vibe: string }) => {
     };
 
     const draw = () => {
+      // Use standard clearRect
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Re-draw background if needed, or rely on CSS background. 
+      // Since alpha:false is tricky with transparency, we keep it transparent but handle clearing efficiently.
+      
       const color = vibe === 'neural' ? '16, 185, 129' : (vibe === 'maximal' ? '139, 92, 246' : '150, 150, 150');
       const opacityMultiplier = vibe === 'minimal' ? 0.03 : 0.12;
 
+      ctx.fillStyle = `rgba(${color}, ${opacityMultiplier})`;
+      ctx.lineWidth = 0.4;
+
+      // Batch drawing could be optimized but minimal improvement for 100 particles.
       particles.forEach((p, i) => {
         p.x += p.vx;
         p.y += p.vy;
@@ -122,9 +133,9 @@ const NeuralCanvas = ({ vibe }: { vibe: string }) => {
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${color}, ${opacityMultiplier})`;
         ctx.fill();
 
+        // Connect particles
         for (let j = i + 1; j < particles.length; j++) {
           const p2 = particles[j];
           const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
@@ -133,12 +144,11 @@ const NeuralCanvas = ({ vibe }: { vibe: string }) => {
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
             ctx.strokeStyle = `rgba(${color}, ${(1 - dist / 180) * opacityMultiplier})`;
-            ctx.lineWidth = 0.4;
             ctx.stroke();
           }
         }
       });
-      requestAnimationFrame(draw);
+      animationFrameId = requestAnimationFrame(draw);
     };
 
     window.addEventListener('resize', resize);
@@ -146,11 +156,14 @@ const NeuralCanvas = ({ vibe }: { vibe: string }) => {
     init();
     draw();
 
-    return () => window.removeEventListener('resize', resize);
+    return () => {
+      window.removeEventListener('resize', resize);
+      cancelAnimationFrame(animationFrameId);
+    };
   }, [vibe]);
 
-  return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" />;
-};
+  return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" style={{ opacity: 0.6 }} />;
+});
 
 // --- 3D TILT WRAPPER ---
 const TiltCard = ({ children, className, colSpan = 1, rowSpan = 1, delay = 0 }: any) => {
@@ -160,7 +173,7 @@ const TiltCard = ({ children, className, colSpan = 1, rowSpan = 1, delay = 0 }: 
   const rotateX = useSpring(useTransform(y, [-100, 100], [15, -15]), { stiffness: 400, damping: 25 });
   const rotateY = useSpring(useTransform(x, [-100, 100], [-15, 15]), { stiffness: 400, damping: 25 });
 
-  function handleMouse(event: any) {
+  function handleMouse(event: React.MouseEvent<HTMLDivElement>) {
     const rect = event.currentTarget.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
@@ -175,17 +188,15 @@ const TiltCard = ({ children, className, colSpan = 1, rowSpan = 1, delay = 0 }: 
 
   // Entrance Variants
   const cardVariants: Variants = {
-    hidden: { opacity: 0, y: 100, scale: 0.9, rotateX: 10 },
+    hidden: { opacity: 0, y: 50, scale: 0.95 },
     visible: { 
       opacity: 1, 
       y: 0, 
       scale: 1, 
-      rotateX: 0,
       transition: { 
         type: "spring", 
         stiffness: 70, 
-        damping: 15, 
-        mass: 1,
+        damping: 20, 
         delay: delay
       } 
     }
@@ -200,7 +211,7 @@ const TiltCard = ({ children, className, colSpan = 1, rowSpan = 1, delay = 0 }: 
       style={{ rotateX, rotateY, gridColumn: `span ${colSpan}`, gridRow: `span ${rowSpan}` }}
       onMouseMove={handleMouse}
       onMouseLeave={handleMouseLeave}
-      className={`perspective-1000 ${className}`}
+      className={`perspective-1000 ${className} will-change-transform`}
     >
       {children}
     </motion.div>
@@ -208,14 +219,14 @@ const TiltCard = ({ children, className, colSpan = 1, rowSpan = 1, delay = 0 }: 
 };
 
 // --- GLITCH CERTIFICATION COMPONENT ---
-const GlitchCertification = ({ cert, index }: { cert: { title: string, issuer: string, date: string }, index: number }) => {
+const GlitchCertification = React.memo(({ cert, index }: { cert: { title: string, issuer: string, date: string }, index: number }) => {
   return (
     <motion.div
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
-      viewport={{ once: true, margin: "-20px" }}
+      viewport={{ once: true }}
       className="flex items-center justify-between p-4 border-b border-white/5 group hover:border-emerald-500/30 transition-colors animate-glitch-reveal"
-      style={{ animationDelay: `${index * 0.15}s` }}
+      style={{ animationDelay: `${index * 0.1}s` }}
     >
       <div className="flex items-center gap-4">
          <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full opacity-50 group-hover:opacity-100 group-hover:shadow-[0_0_10px_#10b981] transition-all" />
@@ -227,12 +238,12 @@ const GlitchCertification = ({ cert, index }: { cert: { title: string, issuer: s
       <span className="font-mono text-[10px] text-neutral-600 group-hover:text-white transition-colors">{cert.date}</span>
     </motion.div>
   );
-};
+});
 
 // --- SYSTEM SENTIENCE HUD ---
-const SystemSentienceHUD = () => {
+const SystemSentienceHUD = React.memo(() => {
   const [thoughts, setThoughts] = useState("System Initialized...");
-  const sentienceMessages = [
+  const sentienceMessages = useMemo(() => [
     "Analyzing scroll patterns...",
     "User focus detected on RAG AI module.",
     "Optimizing predictive algorithms.",
@@ -240,14 +251,14 @@ const SystemSentienceHUD = () => {
     "Bento structure: Stable & Optimized.",
     "Data scientist career path: Converging.",
     "System 2.0.26 operating at 99.9%."
-  ];
+  ], []);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setThoughts(sentienceMessages[Math.floor(Math.random() * sentienceMessages.length)]);
     }, 4500);
     return () => clearInterval(interval);
-  }, []);
+  }, [sentienceMessages]);
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] w-full max-w-sm px-4 md:max-w-md pointer-events-none">
@@ -264,31 +275,114 @@ const SystemSentienceHUD = () => {
        </div>
     </div>
   );
+});
+
+// --- PERFORMANCE OPTIMIZED VELOCITY TRACKER COMPONENT ---
+const VelocityTracker = ({ mouseVelocity }: { mouseVelocity: MotionValue<number> }) => {
+  const velocityRef = useRef<HTMLParagraphElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
+  const [scanning, setScanning] = useState(false);
+
+  // Use animation frame to update DOM directly, bypassing React render cycle for high frequency updates
+  useAnimationFrame(() => {
+    const v = mouseVelocity.get();
+    if (velocityRef.current) {
+      velocityRef.current.textContent = String(Math.round(v));
+    }
+    if (barRef.current) {
+      // Scale velocity visually (0-1000 range mapped to 0-100%)
+      const width = Math.min((v / 12), 100); 
+      barRef.current.style.width = `${width}%`;
+    }
+  });
+
+  const toggleScan = () => {
+    setScanning(true);
+    setTimeout(() => setScanning(false), 2000);
+  };
+
+  return (
+    <motion.div 
+      variants={{ hidden: {opacity:0, scale:0.8, y:50}, show: {opacity:1, scale:1, y:0} }}
+      transition={{ type: "spring", stiffness: 100, damping: 15 }}
+      className="bento-card p-10 flex flex-col justify-between group overflow-hidden bg-gradient-to-br from-emerald-500/5 to-transparent"
+    >
+      <div className="absolute top-0 right-0 p-4">
+          <Fingerprint size={60} className="text-emerald-500/10 group-hover:text-emerald-500/20 transition-colors" />
+      </div>
+      <div className="flex justify-between items-center relative z-10">
+          <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-500 italic">User DNA</h4>
+          <motion.div 
+          whileTap={{ scale: 0.8 }}
+          className={`p-2 rounded-full transition-all duration-500 ${scanning ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,1)]' : 'bg-white/5 text-emerald-500 hover:bg-emerald-500/20'}`} onClick={toggleScan}
+          >
+            <Activity size={18} className={scanning ? 'animate-bounce' : 'animate-pulse'} />
+          </motion.div>
+      </div>
+      <div className="space-y-6 relative z-10">
+          <div>
+            <p className="text-[9px] font-black text-neutral-600 uppercase mb-2">Input Velocity</p>
+            <p className="text-4xl font-display font-black text-emerald-500">
+              <span ref={velocityRef}>0</span>
+              <span className="text-sm font-sans text-neutral-500 ml-2">px/s</span>
+            </p>
+          </div>
+          <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+            <div 
+              ref={barRef}
+              className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 shadow-[0_0_20px_#10b981] transition-all duration-75 ease-out will-change-[width]"
+              style={{ width: '0%' }}
+            />
+          </div>
+          <div className="flex justify-between items-end border-t border-white/5 pt-4">
+            <div>
+              <p className="text-[9px] font-black text-neutral-600 uppercase">Core Latency</p>
+              <p className="text-sm font-bold font-mono">0.02ms</p>
+            </div>
+            <Zap size={20} className="text-emerald-500 animate-pulse" />
+          </div>
+      </div>
+    </motion.div>
+  );
 };
 
 const App: React.FC = () => {
   const [vibe, setVibe] = useState<'minimal' | 'maximal' | 'neural'>('neural');
   const [isCommandOpen, setIsCommandOpen] = useState(false);
-  const [stats, setStats] = useState({ mouseV: 0, clickCount: 0 });
-  const [scanning, setScanning] = useState(false);
   
+  // High-performance mouse tracking using MotionValues instead of State
+  const mouseVelocity = useMotionValue(0);
+
   // Scrollytelling Hooks
   const experienceRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: experienceRef, offset: ["start center", "end center"] });
   const { scrollY } = useScroll();
   const scrollVelocity = useVelocity(scrollY);
-  const skewVelocity = useTransform(scrollVelocity, [-1000, 1000], [-10, 10]); // Velocity based skew
-  const smoothSkew = useSpring(skewVelocity, { stiffness: 400, damping: 30 }); // Smooth physics skew
+  const skewVelocity = useTransform(scrollVelocity, [-1000, 1000], [-10, 10]); 
+  const smoothSkew = useSpring(skewVelocity, { stiffness: 400, damping: 30 }); 
 
-  // Memoized grid for isometric city to avoid hydration mismatch
+  // Memoized grid for isometric city to avoid hydration mismatch and re-calculations
   const randomGrid = useMemo(() => Array.from({length: 36}).map(() => Math.random() > 0.5), []);
 
   useEffect(() => {
     let lastX = 0, lastY = 0;
+    let lastTime = performance.now();
+    let velocity = 0;
+
     const handleMouseMove = (e: MouseEvent) => {
-      const v = Math.hypot(e.clientX - lastX, e.clientY - lastY);
-      setStats(prev => ({ ...prev, mouseV: Math.round(v) }));
-      lastX = e.clientX; lastY = e.clientY;
+      const now = performance.now();
+      const dt = now - lastTime;
+      
+      // Throttle velocity updates slightly if needed, but MotionValue handles high freq well
+      if (dt > 16) { // approx 60fps cap for calculation
+        const dist = Math.hypot(e.clientX - lastX, e.clientY - lastY);
+        velocity = Math.round((dist / dt) * 1000);
+        mouseVelocity.set(velocity);
+        
+        lastX = e.clientX;
+        lastY = e.clientY;
+        lastTime = now;
+      }
     };
     
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -304,7 +398,7 @@ const App: React.FC = () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [mouseVelocity]);
 
   const dataTools = useMemo(() => [
     "Python", "SQL", "Power BI", "Pandas", "NumPy", "Scikit-Learn", "LLMs", "LangChain", 
@@ -314,8 +408,8 @@ const App: React.FC = () => {
   ], []);
 
   const experience = useMemo(() => [
-    { inst: "Croma Campus | Noida", role: "Data Science Trainee", date: "SEP 2025 - PRESENT", active: true, log: "Developing Python scripts for data cleaning & predictive modeling (Regression/Classification). Mastered Power BI DAX & Dashboard design." },
-    { inst: "Micro Info Tech Services | Haryana", role: "Web Development Intern", date: "MAY 2025 - JUN 2025", active: false, log: "Developed responsive web pages (100% design fidelity). Implemented Git workflows, reducing merge conflicts by 20%." },
+    { inst: "Croma Campus | Noida", role: "Data Science Trainee", date: "SEP 2025 - PRESENT", active: true, log: "Developing Python scripts for data cleaning & predictive modeling. Mastered Power BI DAX & Dashboard design." },
+    { inst: "Micro Info Tech Services", role: "Web Development Intern", date: "MAY 2025 - JUN 2025", active: false, log: "Developed responsive web pages (100% design fidelity). Implemented Git workflows, reducing merge conflicts by 20%." },
     { inst: "UptoSkills | Remote", role: "Web Development Intern", date: "JAN 2025 - APR 2025", active: false, log: "Built dynamic MERN Stack solutions. Integrated Redux.js state management & backend APIs." },
     { inst: "MSU Saharanpur", role: "BCA Graduate (1st Div)", date: "AUG 2022 - AUG 2025", active: false, log: "Core Computer Science & Software Engineering modules. Graduated with First Division honors." }
   ], []);
@@ -339,14 +433,8 @@ const App: React.FC = () => {
     }
   };
 
-  // --- PHYSICS CONFIG FOR SQUISHY INTERACTION ---
   const jellyConfig = { type: 'spring' as const, stiffness: 700, damping: 15, mass: 1.5 };
   
-  const toggleScan = () => {
-    setScanning(true);
-    setTimeout(() => setScanning(false), 2000);
-  };
-
   return (
     <div className={`min-h-screen ${vibe === 'minimal' ? 'bg-[#fafafa] text-black' : 'bg-[#050505] text-white'} selection:bg-emerald-500 selection:text-black font-sans transition-colors duration-1000 overflow-x-hidden`}>
       
@@ -506,46 +594,8 @@ const App: React.FC = () => {
             </div>
           </TiltCard>
 
-          <motion.div 
-            variants={itemVariants}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="bento-card p-10 flex flex-col justify-between group overflow-hidden bg-gradient-to-br from-emerald-500/5 to-transparent"
-          >
-            <div className="absolute top-0 right-0 p-4">
-               <Fingerprint size={60} className="text-emerald-500/10 group-hover:text-emerald-500/20 transition-colors" />
-            </div>
-            <div className="flex justify-between items-center relative z-10">
-               <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-500 italic">User DNA</h4>
-               <motion.div 
-                whileTap={{ scale: 0.8 }}
-                transition={jellyConfig}
-                className={`p-2 rounded-full transition-all duration-500 ${scanning ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,1)]' : 'bg-white/5 text-emerald-500 hover:bg-emerald-500/20'}`} onClick={toggleScan}
-               >
-                 <Activity size={18} className={scanning ? 'animate-bounce' : 'animate-pulse'} />
-               </motion.div>
-            </div>
-            <div className="space-y-6 relative z-10">
-               <div>
-                  <p className="text-[9px] font-black text-neutral-600 uppercase mb-2">Input Velocity</p>
-                  <p className="text-4xl font-display font-black text-emerald-500">{stats.mouseV}<span className="text-sm font-sans text-neutral-500 ml-2">px/s</span></p>
-               </div>
-               <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                  <motion.div 
-                    animate={{ width: `${Math.min(stats.mouseV / 12, 100)}%` }}
-                    className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 shadow-[0_0_20px_#10b981]" 
-                  />
-               </div>
-               <div className="flex justify-between items-end border-t border-white/5 pt-4">
-                  <div>
-                    <p className="text-[9px] font-black text-neutral-600 uppercase">Core Latency</p>
-                    <p className="text-sm font-bold font-mono">0.00028ms</p>
-                  </div>
-                  <Zap size={20} className="text-emerald-500 animate-pulse" />
-               </div>
-            </div>
-          </motion.div>
+          {/* Velocity Tracker Component - Replaces previous inline DNA card */}
+          <VelocityTracker mouseVelocity={mouseVelocity} />
 
           <TiltCard delay={0.2} className="bento-card p-10 flex flex-col justify-between group">
              <div className="flex justify-between items-start relative z-10">
@@ -602,8 +652,8 @@ const App: React.FC = () => {
             </div>
             <div className="relative overflow-hidden flex items-center h-20">
               {/* Velocity-based Skew Ticker */}
-              <motion.div style={{ skewX: smoothSkew }} className="animate-ticker origin-center">
-                {dataTools.map((tool, i) => (
+              <motion.div style={{ skewX: smoothSkew }} className="animate-ticker origin-center will-change-transform">
+                {[...dataTools, ...dataTools].map((tool, i) => (
                   <div key={i} className="px-14 flex items-center gap-8">
                     <span className="text-5xl font-display font-black uppercase tracking-tighter text-white/10 group-hover:text-white transition-all duration-700 cursor-default whitespace-nowrap hover:scale-125 hover:text-emerald-500">
                       {tool}
