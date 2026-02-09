@@ -7,6 +7,7 @@ export interface Project {
   link?: string;
   date: string;
   stat?: string;
+  type?: 'AI' | 'WEB' | 'GEN';
 }
 
 export interface SkillCategory {
@@ -42,7 +43,7 @@ export const PROFILE = {
   instagram: "https://www.instagram.com/navneet_sharma_/",
   whatsapp: "https://wa.me/918630066072",
   resumeUrl: "https://drive.google.com/file/d/17NcRr-YBBp9gAW5n9evWhQsAHjQHKI7Q/view?usp=sharing",
-  summary: "BCA Graduate (First Division) specializing in the Neural-Data nexus. I bridge the gap between complex AI/ML pipelines and high-performance full-stack applications. Currently scaling data literacy and predictive accuracy.",
+  summary: "BCA Graduate (First Division) specializing in the Neural-Data nexus. I bridge the gap between complex AI/ML pipelines and high-performance full-stack applications. Currently scaling data literacy and predictive accuracy as a Data Science Trainee @ Croma Campus.",
   mission: "Focus Areas: RAG Pipelines, Predictive Analytics, MERN Stack, & Generative AI.",
   currentStatus: "Current: Data Science Trainee @ Croma Campus"
 };
@@ -50,40 +51,34 @@ export const PROFILE = {
 export const PROJECTS: Project[] = [
   {
     id: "rag-ai",
-    title: "RAG AI TEACHING ASSISTANT",
-    description: "Semantic-aware assistant. Decodes lecture streams via Whisper & answers queries using LangChain vector search. Solves navigation of 100+ hrs of video.",
-    tags: ["NLP", "VECTOR-DB", "WHISPER"],
+    title: "RAG AI ASSISTANT",
+    description: "Built a semantic-aware system that uses Whisper for transcription and LangChain vector search to answer queries directly from video metadata.",
+    tags: ["NLP", "Vector-DB", "Whisper", "Flask"],
     imageUrl: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800",
     date: "2025",
-    stat: "FLAGSHIP AI"
+    stat: "FLAGSHIP AI",
+    type: 'AI'
   },
   {
     id: "vidsnap-ai",
-    title: "VidSnapAI",
-    description: "Autonomous Content Engine. Orchestrated a Generative AI pipeline that automates viral video creation via ElevenLabs & FFmpeg.",
-    tags: ["AUTO-GEN", "FLASK", "FFMPEG"],
+    title: "VidSnap AI",
+    description: "Autonomous Content Engine. Orchestrated a Generative AI pipeline that automates viral video creation via ElevenLabs & FFmpeg managed via Flask.",
+    tags: ["Gen-AI", "ElevenLabs", "FFmpeg", "Python"],
     imageUrl: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=800",
     date: "2025",
-    stat: "GEN-AI PRODUCT"
-  },
-  {
-    id: "sales-forecast",
-    title: "SALES FORECAST MODEL",
-    description: "Predictive modeling pipeline using Regression algorithms to forecast revenue trends with 85% Accuracy on retail datasets.",
-    tags: ["SCIKIT-LEARN", "PREDICTIVE"],
-    imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800",
-    date: "2024",
-    stat: "ANALYTICS ENGINE"
+    stat: "GEN-AI PRODUCT",
+    type: 'GEN'
   },
   {
     id: "thrift-by-musk",
-    title: "THRIFT BY MUSK",
-    description: "Boosted user retention by 30% through engineered 'Saved Items' and mobile-first responsiveness. Zero layout shifts (CLS).",
-    tags: ["E-COMMERCE", "MERN", "REDUX"],
+    title: "Thrift by Musk",
+    description: "E-Commerce Module. Boosted user retention by 30% through engineered 'Saved Items' and mobile-first responsiveness. Zero layout shifts (CLS).",
+    tags: ["React", "Redux", "Vercel", "Performance"],
     imageUrl: "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&q=80&w=800",
     link: "https://thriftbymusk.vercel.app/",
     date: "2024",
-    stat: "WEB MODULE"
+    stat: "WEB METRIC",
+    type: 'WEB'
   }
 ];
 
@@ -93,7 +88,7 @@ export const WORK_LOG: ExperienceItem[] = [
     role: "Data Science Trainee", 
     date: "SEP 2025 - PRESENT", 
     active: true, 
-    log: "Dashboard Mastery: Designed interactive Power BI dashboards with 100% curriculum mastery. Predictive Modeling: Engineering scripts for Regression/Classification on finance & retail datasets." 
+    log: "Dashboard Mastery: Designed interactive Power BI dashboards with 100% curriculum mastery. Predictive Modeling: Engineering scripts for Regression and Classification models to solve real-world finance and retail datasets." 
   },
   { 
     inst: "Micro Info Tech Services", 

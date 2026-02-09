@@ -23,7 +23,10 @@ import {
   Download,
   MapPin,
   Mail,
-  MessageCircle
+  MessageCircle,
+  Code,
+  Globe,
+  Smartphone
 } from 'lucide-react';
 import { 
   motion, 
@@ -512,17 +515,20 @@ const App: React.FC = () => {
                   {PROFILE.summary}
                 </p>
                 
-                {/* Mission Control Section */}
-                <div className="mt-6 p-5 bg-emerald-500/5 rounded-2xl border border-emerald-500/10 backdrop-blur-sm relative overflow-hidden group/mission">
-                    <div className="absolute inset-0 bg-emerald-500/5 translate-x-[-100%] group-hover/mission:translate-x-0 transition-transform duration-700"></div>
+                {/* Mission Control Section - Tactile Interaction */}
+                <motion.div 
+                  whileHover={{ scale: 1.02 }}
+                  className="mt-6 p-6 bg-gradient-to-r from-emerald-500/5 to-cyan-500/5 rounded-2xl border border-emerald-500/10 backdrop-blur-sm relative overflow-hidden group/mission cursor-default"
+                >
+                    <div className="absolute inset-0 bg-emerald-500/10 translate-x-[-100%] group-hover/mission:translate-x-0 transition-transform duration-700 ease-out"></div>
                     <div className="relative z-10">
-                        <div className="flex items-center gap-2 mb-2">
-                            <Activity size={14} className="text-emerald-500 animate-pulse" />
-                            <p className="text-emerald-500 font-black text-[10px] tracking-widest uppercase">Mission Control</p>
+                        <div className="flex items-center gap-2 mb-3">
+                            <Activity size={16} className="text-emerald-500 animate-pulse" />
+                            <p className="text-emerald-500 font-black text-[11px] tracking-widest uppercase">Mission Control</p>
                         </div>
-                        <p className="text-neutral-300 text-sm font-medium leading-relaxed">{PROFILE.mission}</p>
+                        <p className="text-neutral-200 text-sm font-medium leading-relaxed font-mono">{PROFILE.mission}</p>
                     </div>
-                </div>
+                </motion.div>
 
                 <p className="text-emerald-500 text-[11px] font-black uppercase tracking-widest bg-emerald-500/5 px-4 py-2 rounded-xl inline-block border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
                   {PROFILE.currentStatus}
@@ -560,6 +566,7 @@ const App: React.FC = () => {
             </div>
           </TiltCard>
 
+          {/* PROJECT 1: RAG AI (Main Image Card) */}
           <TiltCard colSpan={2} rowSpan={2} delay={0.1} className="bento-card group flex flex-col p-0">
             <div className="scanline opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/95 z-10" />
@@ -583,16 +590,17 @@ const App: React.FC = () => {
                    <div className="p-2 bg-emerald-500/20 rounded-lg">
                      <ShieldCheck size={20} className="text-emerald-500" />
                    </div>
-                   <span className="text-[12px] font-black uppercase text-emerald-500 tracking-[0.3em]">Verified Logic Core</span>
+                   <span className="text-[12px] font-black uppercase text-emerald-500 tracking-[0.3em]">{PROJECTS[0].stat}</span>
                  </div>
                  <ArrowUpRight size={32} className="text-white opacity-20 group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
               </div>
             </div>
           </TiltCard>
 
-          {/* Velocity Tracker Component - Replaces previous inline DNA card */}
+          {/* Velocity Tracker Component */}
           <VelocityTracker mouseVelocity={mouseVelocity} />
 
+          {/* PROJECT 2: VidSnap AI (Gen-AI Product) */}
           <TiltCard delay={0.2} className="bento-card p-10 flex flex-col justify-between group">
              <div className="flex justify-between items-start relative z-10">
                <div className="w-16 h-16 bg-white/5 rounded-[2rem] flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-black transition-all shadow-xl border border-white/5 group-hover:border-emerald-400">
@@ -600,35 +608,47 @@ const App: React.FC = () => {
                </div>
                <div className="text-right">
                  <p className="text-[24px] font-display font-black leading-none text-emerald-500 text-glow-emerald">2026</p>
-                 <p className="text-[9px] font-black uppercase text-neutral-600 tracking-tighter mt-1">Autonomous Gen-AI</p>
+                 <p className="text-[9px] font-black uppercase text-neutral-600 tracking-tighter mt-1">{PROJECTS[1].stat}</p>
                </div>
              </div>
              <div className="relative z-10 mt-6">
                <h4 className="text-2xl font-display font-black uppercase mb-2"><KineticText text={PROJECTS[1].title} /></h4>
                <p className="text-[12px] text-neutral-500 leading-snug">{PROJECTS[1].description}</p>
              </div>
-             <div className="pt-6 border-t border-white/5 flex gap-2 relative z-10">
+             <div className="pt-6 border-t border-white/5 flex gap-2 relative z-10 flex-wrap">
                {PROJECTS[1].tags.map(t => <span key={t} className="glass-pill !bg-emerald-500/10 !text-emerald-500">{t}</span>)}
              </div>
           </TiltCard>
 
+          {/* PROJECT 3: Thrift by Musk (Web Performance Module) */}
           <TiltCard delay={0.3} className="bento-card p-10 flex flex-col justify-between group border-emerald-500/10">
              <div className="flex justify-between items-center">
-               <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-500">
-                 <Search size={24} />
+               <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-500 group-hover:rotate-12 transition-transform">
+                 {/* Swapped icon to Smartphone/Globe for Web Module */}
+                 <Smartphone size={24} />
                </div>
                <div className="flex gap-1.5">
                  {[1,2,3,4,5].map(i => <div key={i} className="w-1.5 h-4 bg-white/10 group-hover:bg-emerald-500/60 transition-colors" style={{ transitionDelay: `${i*100}ms` }} />)}
                </div>
              </div>
              <div className="py-4">
-               <p className="text-[10px] font-black uppercase text-neutral-600 mb-2">Model Inference #0xAF2</p>
+               <p className="text-[10px] font-black uppercase text-neutral-600 mb-2">{PROJECTS[2].stat}</p>
                <h4 className="text-2xl font-display font-black uppercase leading-[1.1]"><KineticText text={PROJECTS[2].title} /></h4>
              </div>
-             <div className="p-4 bg-zinc-950/80 border border-emerald-500/20 rounded-2xl">
-               <p className="text-[11px] font-mono text-emerald-500 leading-relaxed whitespace-pre-wrap">
-                 {"$ model.predict(X_test)\n >> Status: CONVERGED\n >> Acc: 0.85"}
-               </p>
+             
+             {/* Web Metrics Visualization instead of Code Snippet */}
+             <div className="p-4 bg-zinc-950/80 border border-emerald-500/20 rounded-2xl relative overflow-hidden">
+                <div className="flex justify-between items-end mb-2 relative z-10">
+                    <span className="text-[10px] text-neutral-500 font-mono">CLS SCORE</span>
+                    <span className="text-emerald-500 font-black font-mono">0.00</span>
+                </div>
+                <div className="h-1 w-full bg-white/10 rounded-full mb-3">
+                   <div className="h-full w-full bg-emerald-500 rounded-full"></div>
+                </div>
+                <div className="flex justify-between items-end relative z-10">
+                    <span className="text-[10px] text-neutral-500 font-mono">RETENTION</span>
+                    <span className="text-emerald-500 font-black font-mono">+30%</span>
+                </div>
              </div>
           </TiltCard>
 
