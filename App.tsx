@@ -4,17 +4,26 @@ import {
   Linkedin, 
   ArrowUpRight,
   Award,
+  ChevronRight,
   BrainCircuit,
   Terminal,
   Activity,
   Zap,
+  ExternalLink,
   Instagram,
+  FileText,
   Youtube,
+  PlayCircle,
   Video,
+  Database,
   Search,
   Sparkles,
+  MousePointer2,
+  Cpu,
   Command,
+  Settings,
   ShieldCheck,
+  ZapOff,
   Camera,
   Layers,
   Fingerprint,
@@ -23,10 +32,7 @@ import {
   Download,
   MapPin,
   Mail,
-  MessageCircle,
-  Code,
-  Globe,
-  Smartphone
+  MessageCircle
 } from 'lucide-react';
 import { 
   motion, 
@@ -40,10 +46,10 @@ import {
   useAnimationFrame,
   MotionValue
 } from 'framer-motion';
-import { PROFILE, PROJECTS, CERTIFICATIONS, WORK_LOG, SKILL_CATEGORIES } from './constants';
+import { PROFILE, PROJECTS, CERTIFICATIONS, SKILL_CATEGORIES } from './constants';
 
 // --- KINETIC TYPOGRAPHY COMPONENT ---
-const KineticText = ({ text, className, glow = false }: { text: string; className?: string; glow?: boolean }) => {
+const KineticText = ({ text, className, glow = false, stagger = 0.02 }: { text: string; className?: string; glow?: boolean; stagger?: number }) => {
   return (
     <span className={`inline-flex whitespace-pre flex-wrap ${className}`}>
       {text.split(" ").map((word, wordIndex) => (
@@ -72,14 +78,14 @@ const KineticText = ({ text, className, glow = false }: { text: string; classNam
   );
 };
 
-// --- NEURAL CANVAS BACKGROUND (Memoized for Performance) ---
+// --- NEURAL CANVAS BACKGROUND ---
 const NeuralCanvas = React.memo(({ vibe }: { vibe: string }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: false }); // Optimize for no transparency if possible, but we need it here
     if (!ctx) return;
 
     let animationFrameId: number;
@@ -105,7 +111,11 @@ const NeuralCanvas = React.memo(({ vibe }: { vibe: string }) => {
     };
 
     const draw = () => {
+      // Use standard clearRect
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Re-draw background if needed, or rely on CSS background. 
+      // Since alpha:false is tricky with transparency, we keep it transparent but handle clearing efficiently.
       
       const color = vibe === 'neural' ? '16, 185, 129' : (vibe === 'maximal' ? '139, 92, 246' : '150, 150, 150');
       const opacityMultiplier = vibe === 'minimal' ? 0.03 : 0.12;
@@ -113,6 +123,7 @@ const NeuralCanvas = React.memo(({ vibe }: { vibe: string }) => {
       ctx.fillStyle = `rgba(${color}, ${opacityMultiplier})`;
       ctx.lineWidth = 0.4;
 
+      // Batch drawing could be optimized but minimal improvement for 100 particles.
       particles.forEach((p, i) => {
         p.x += p.vx;
         p.y += p.vy;
@@ -124,6 +135,7 @@ const NeuralCanvas = React.memo(({ vibe }: { vibe: string }) => {
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fill();
 
+        // Connect particles
         for (let j = i + 1; j < particles.length; j++) {
           const p2 = particles[j];
           const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
@@ -154,15 +166,7 @@ const NeuralCanvas = React.memo(({ vibe }: { vibe: string }) => {
 });
 
 // --- 3D TILT WRAPPER ---
-interface TiltCardProps {
-  children: React.ReactNode;
-  className?: string;
-  colSpan?: number;
-  rowSpan?: number;
-  delay?: number;
-}
-
-const TiltCard = ({ children, className = "", colSpan = 1, rowSpan = 1, delay = 0 }: TiltCardProps) => {
+const TiltCard = ({ children, className, colSpan = 1, rowSpan = 1, delay = 0 }: any) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -182,6 +186,7 @@ const TiltCard = ({ children, className = "", colSpan = 1, rowSpan = 1, delay = 
     y.set(0);
   }
 
+  // Entrance Variants
   const cardVariants: Variants = {
     hidden: { opacity: 0, y: 50, scale: 0.95 },
     visible: { 
@@ -285,7 +290,7 @@ const VelocityTracker = ({ mouseVelocity }: { mouseVelocity: MotionValue<number>
       velocityRef.current.textContent = String(Math.round(v));
     }
     if (barRef.current) {
-      // Scale velocity visually (0-1200 range mapped to 0-100%)
+      // Scale velocity visually (0-1000 range mapped to 0-100%)
       const width = Math.min((v / 12), 100); 
       barRef.current.style.width = `${width}%`;
     }
@@ -362,6 +367,7 @@ const App: React.FC = () => {
   useEffect(() => {
     let lastX = 0, lastY = 0;
     let lastTime = performance.now();
+    let velocity = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
       const now = performance.now();
@@ -370,7 +376,7 @@ const App: React.FC = () => {
       // Throttle velocity updates slightly if needed, but MotionValue handles high freq well
       if (dt > 16) { // approx 60fps cap for calculation
         const dist = Math.hypot(e.clientX - lastX, e.clientY - lastY);
-        const velocity = Math.round((dist / dt) * 1000);
+        velocity = Math.round((dist / dt) * 1000);
         mouseVelocity.set(velocity);
         
         lastX = e.clientX;
@@ -394,12 +400,19 @@ const App: React.FC = () => {
     };
   }, [mouseVelocity]);
 
-  // Flatten skill categories for the ticker
-  const dataTools = useMemo(() => {
-    return SKILL_CATEGORIES.flatMap(cat => cat.skills);
-  }, []);
+  const dataTools = useMemo(() => [
+    "Python", "SQL", "Power BI", "Pandas", "NumPy", "Scikit-Learn", "LLMs", "LangChain", 
+    "PyTorch", "Flask", "FFmpeg", "ElevenLabs", "Matplotlib", "Seaborn", "Git", "Jupyter",
+    "TensorFlow", "XGBoost", "HuggingFace", "FastAPI", "PostgreSQL", "React", "D3.js",
+    "NLP", "Regression", "DAX", "MERN Stack", "VBA", "Tableau", "OpenCV", "Tailwind CSS", "Redux.js"
+  ], []);
 
-  const experience = WORK_LOG;
+  const experience = useMemo(() => [
+    { inst: "Croma Campus | Noida", role: "Data Science Trainee", date: "SEP 2025 - PRESENT", active: true, log: "Developing Python scripts for data cleaning & predictive modeling. Mastered Power BI DAX & Dashboard design." },
+    { inst: "Micro Info Tech Services", role: "Web Development Intern", date: "MAY 2025 - JUN 2025", active: false, log: "Developed responsive web pages (100% design fidelity). Implemented Git workflows, reducing merge conflicts by 20%." },
+    { inst: "UptoSkills | Remote", role: "Web Development Intern", date: "JAN 2025 - APR 2025", active: false, log: "Built dynamic MERN Stack solutions. Integrated Redux.js state management & backend APIs." },
+    { inst: "MSU Saharanpur", role: "BCA Graduate (1st Div)", date: "AUG 2022 - AUG 2025", active: false, log: "Core Computer Science & Software Engineering modules. Graduated with First Division honors." }
+  ], []);
 
   const gridVariants: Variants = {
     hidden: { opacity: 0 },
@@ -505,31 +518,16 @@ const App: React.FC = () => {
                 <span className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-500">Cognitive Layer Active</span>
               </div>
               <h1 className="text-6xl md:text-9xl font-display font-black tracking-tighter leading-[0.8] uppercase">
-                <KineticText text="AI/ML" /> <br/>
+                <KineticText text="Data" /> <br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500 group-hover:from-white group-hover:to-white transition-all duration-1000">
-                  <KineticText text="Architect" glow />
-                </span>
+                  <KineticText text="Evolved" glow />
+                </span> <br/>
+                <KineticText text="Into Art." />
               </h1>
               <div className="space-y-4">
-                <p className="text-neutral-400 text-xl max-w-xl font-medium leading-relaxed">
-                  {PROFILE.summary}
+                <p className="text-neutral-400 text-2xl max-w-xl font-medium leading-relaxed">
+                  Navneet Sharma here. {PROFILE.summary}
                 </p>
-                
-                {/* Mission Control Section - Tactile Interaction */}
-                <motion.div 
-                  whileHover={{ scale: 1.02 }}
-                  className="mt-6 p-6 bg-gradient-to-r from-emerald-500/5 to-cyan-500/5 rounded-2xl border border-emerald-500/10 backdrop-blur-sm relative overflow-hidden group/mission cursor-default"
-                >
-                    <div className="absolute inset-0 bg-emerald-500/10 translate-x-[-100%] group-hover/mission:translate-x-0 transition-transform duration-700 ease-out"></div>
-                    <div className="relative z-10">
-                        <div className="flex items-center gap-2 mb-3">
-                            <Activity size={16} className="text-emerald-500 animate-pulse" />
-                            <p className="text-emerald-500 font-black text-[11px] tracking-widest uppercase">Mission Control</p>
-                        </div>
-                        <p className="text-neutral-200 text-sm font-medium leading-relaxed font-mono">{PROFILE.mission}</p>
-                    </div>
-                </motion.div>
-
                 <p className="text-emerald-500 text-[11px] font-black uppercase tracking-widest bg-emerald-500/5 px-4 py-2 rounded-xl inline-block border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
                   {PROFILE.currentStatus}
                 </p>
@@ -566,7 +564,6 @@ const App: React.FC = () => {
             </div>
           </TiltCard>
 
-          {/* PROJECT 1: RAG AI (Main Image Card) */}
           <TiltCard colSpan={2} rowSpan={2} delay={0.1} className="bento-card group flex flex-col p-0">
             <div className="scanline opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/95 z-10" />
@@ -590,17 +587,16 @@ const App: React.FC = () => {
                    <div className="p-2 bg-emerald-500/20 rounded-lg">
                      <ShieldCheck size={20} className="text-emerald-500" />
                    </div>
-                   <span className="text-[12px] font-black uppercase text-emerald-500 tracking-[0.3em]">{PROJECTS[0].stat}</span>
+                   <span className="text-[12px] font-black uppercase text-emerald-500 tracking-[0.3em]">Verified Logic Core</span>
                  </div>
                  <ArrowUpRight size={32} className="text-white opacity-20 group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
               </div>
             </div>
           </TiltCard>
 
-          {/* Velocity Tracker Component */}
+          {/* Velocity Tracker Component - Replaces previous inline DNA card */}
           <VelocityTracker mouseVelocity={mouseVelocity} />
 
-          {/* PROJECT 2: VidSnap AI (Gen-AI Product) */}
           <TiltCard delay={0.2} className="bento-card p-10 flex flex-col justify-between group">
              <div className="flex justify-between items-start relative z-10">
                <div className="w-16 h-16 bg-white/5 rounded-[2rem] flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-black transition-all shadow-xl border border-white/5 group-hover:border-emerald-400">
@@ -608,47 +604,35 @@ const App: React.FC = () => {
                </div>
                <div className="text-right">
                  <p className="text-[24px] font-display font-black leading-none text-emerald-500 text-glow-emerald">2026</p>
-                 <p className="text-[9px] font-black uppercase text-neutral-600 tracking-tighter mt-1">{PROJECTS[1].stat}</p>
+                 <p className="text-[9px] font-black uppercase text-neutral-600 tracking-tighter mt-1">Autonomous Gen-AI</p>
                </div>
              </div>
              <div className="relative z-10 mt-6">
                <h4 className="text-2xl font-display font-black uppercase mb-2"><KineticText text={PROJECTS[1].title} /></h4>
                <p className="text-[12px] text-neutral-500 leading-snug">{PROJECTS[1].description}</p>
              </div>
-             <div className="pt-6 border-t border-white/5 flex gap-2 relative z-10 flex-wrap">
+             <div className="pt-6 border-t border-white/5 flex gap-2 relative z-10">
                {PROJECTS[1].tags.map(t => <span key={t} className="glass-pill !bg-emerald-500/10 !text-emerald-500">{t}</span>)}
              </div>
           </TiltCard>
 
-          {/* PROJECT 3: Thrift by Musk (Web Performance Module) */}
           <TiltCard delay={0.3} className="bento-card p-10 flex flex-col justify-between group border-emerald-500/10">
              <div className="flex justify-between items-center">
-               <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-500 group-hover:rotate-12 transition-transform">
-                 {/* Swapped icon to Smartphone/Globe for Web Module */}
-                 <Smartphone size={24} />
+               <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-500">
+                 <Search size={24} />
                </div>
                <div className="flex gap-1.5">
                  {[1,2,3,4,5].map(i => <div key={i} className="w-1.5 h-4 bg-white/10 group-hover:bg-emerald-500/60 transition-colors" style={{ transitionDelay: `${i*100}ms` }} />)}
                </div>
              </div>
              <div className="py-4">
-               <p className="text-[10px] font-black uppercase text-neutral-600 mb-2">{PROJECTS[2].stat}</p>
+               <p className="text-[10px] font-black uppercase text-neutral-600 mb-2">Model Inference #0xAF2</p>
                <h4 className="text-2xl font-display font-black uppercase leading-[1.1]"><KineticText text={PROJECTS[2].title} /></h4>
              </div>
-             
-             {/* Web Metrics Visualization instead of Code Snippet */}
-             <div className="p-4 bg-zinc-950/80 border border-emerald-500/20 rounded-2xl relative overflow-hidden">
-                <div className="flex justify-between items-end mb-2 relative z-10">
-                    <span className="text-[10px] text-neutral-500 font-mono">CLS SCORE</span>
-                    <span className="text-emerald-500 font-black font-mono">0.00</span>
-                </div>
-                <div className="h-1 w-full bg-white/10 rounded-full mb-3">
-                   <div className="h-full w-full bg-emerald-500 rounded-full"></div>
-                </div>
-                <div className="flex justify-between items-end relative z-10">
-                    <span className="text-[10px] text-neutral-500 font-mono">RETENTION</span>
-                    <span className="text-emerald-500 font-black font-mono">+30%</span>
-                </div>
+             <div className="p-4 bg-zinc-950/80 border border-emerald-500/20 rounded-2xl">
+               <p className="text-[11px] font-mono text-emerald-500 leading-relaxed whitespace-pre-wrap">
+                 {"$ model.predict(X_test)\n >> Status: CONVERGED\n >> Acc: 0.85"}
+               </p>
              </div>
           </TiltCard>
 
@@ -763,7 +747,7 @@ const App: React.FC = () => {
             href={PROFILE.instagram} target="_blank"
             variants={{ hidden: {opacity:0, y:20}, show: {opacity:1, y:0} }}
             whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.95 }}
-            className="bento-card p-10 flex flex-col justify-between group overflow-hidden border-pink-500/10 bg-[#0c0c0e] rounded-3xl relative"
+            className="bento-card p-10 flex flex-col justify-between group overflow-hidden border-pink-500/10 bg-[#0c0c0e] rounded-3xl border border-white/5 relative"
           >
              <div className="absolute inset-0 bg-gradient-to-tr from-[#f09433]/10 via-[#dc2743]/10 to-[#bc1888]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
              <div className="flex justify-between items-start relative z-10">
@@ -851,9 +835,6 @@ const App: React.FC = () => {
 
         <footer className="mt-40 pt-20 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-16 mb-24">
            <div className="flex flex-col gap-10 w-full md:w-auto">
-             <div className="max-w-md">
-                <p className="text-sm text-neutral-400 italic font-medium leading-relaxed mb-6">"The reasonable man adapts himself to the world; the unreasonable one persists in trying to adapt the world to himself. Therefore all progress depends on the unreasonable man." — George Bernard Shaw</p>
-             </div>
              <div className="flex flex-wrap justify-center md:justify-start gap-12">
                 <motion.div 
                   whileHover={{ y: -5 }}
@@ -871,6 +852,10 @@ const App: React.FC = () => {
                   <MessageCircle size={18} className="text-emerald-500" />
                   <a href={PROFILE.whatsapp} target="_blank" className="text-[11px] font-black uppercase tracking-widest">Connect on WhatsApp</a>
                 </motion.div>
+                <div className="flex items-center gap-4 text-neutral-400">
+                  <MapPin size={18} className="text-emerald-500" />
+                  <span className="text-[11px] font-black uppercase tracking-widest">{PROFILE.location}</span>
+                </div>
              </div>
 
              <div className="flex flex-wrap justify-center md:justify-start gap-6">
@@ -905,7 +890,7 @@ const App: React.FC = () => {
            </div>
 
            <div className="text-center md:text-right w-full md:w-auto">
-             <p className="text-[11px] font-black uppercase text-white/10 tracking-[1.5em] mb-4">SYSTEM ID: {PROFILE.systemId}</p>
+             <p className="text-[11px] font-black uppercase text-white/10 tracking-[1.5em] mb-4 uppercase">SYSTEM ID: {PROFILE.systemId}</p>
              <div className="flex flex-col items-center md:items-end gap-1">
                 <p className="text-[9px] font-mono text-neutral-800 uppercase tracking-widest leading-none">Navneet_Sharma_2.0.exe --status=optimal</p>
                 <div className="flex gap-2 mt-2">
