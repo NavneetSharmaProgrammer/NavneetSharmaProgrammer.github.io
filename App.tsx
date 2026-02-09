@@ -763,7 +763,7 @@ const App: React.FC = () => {
             href={PROFILE.instagram} target="_blank"
             variants={{ hidden: {opacity:0, y:20}, show: {opacity:1, y:0} }}
             whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.95 }}
-            className="bento-card p-10 flex flex-col justify-between group overflow-hidden border-pink-500/10 bg-[#0c0c0e] rounded-3xl border border-white/5 relative"
+            className="bento-card p-10 flex flex-col justify-between group overflow-hidden border-pink-500/10 bg-[#0c0c0e] rounded-3xl relative"
           >
              <div className="absolute inset-0 bg-gradient-to-tr from-[#f09433]/10 via-[#dc2743]/10 to-[#bc1888]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
              <div className="flex justify-between items-start relative z-10">
@@ -905,7 +905,7 @@ const App: React.FC = () => {
            </div>
 
            <div className="text-center md:text-right w-full md:w-auto">
-             <p className="text-[11px] font-black uppercase text-white/10 tracking-[1.5em] mb-4 uppercase">SYSTEM ID: {PROFILE.systemId}</p>
+             <p className="text-[11px] font-black uppercase text-white/10 tracking-[1.5em] mb-4">SYSTEM ID: {PROFILE.systemId}</p>
              <div className="flex flex-col items-center md:items-end gap-1">
                 <p className="text-[9px] font-mono text-neutral-800 uppercase tracking-widest leading-none">Navneet_Sharma_2.0.exe --status=optimal</p>
                 <div className="flex gap-2 mt-2">
