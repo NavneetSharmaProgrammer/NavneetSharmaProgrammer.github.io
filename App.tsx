@@ -4,26 +4,17 @@ import {
   Linkedin, 
   ArrowUpRight,
   Award,
-  ChevronRight,
   BrainCircuit,
   Terminal,
   Activity,
   Zap,
-  ExternalLink,
   Instagram,
-  FileText,
   Youtube,
-  PlayCircle,
   Video,
-  Database,
   Search,
   Sparkles,
-  MousePointer2,
-  Cpu,
   Command,
-  Settings,
   ShieldCheck,
-  ZapOff,
   Camera,
   Layers,
   Fingerprint,
@@ -46,10 +37,10 @@ import {
   useAnimationFrame,
   MotionValue
 } from 'framer-motion';
-import { PROFILE, PROJECTS, CERTIFICATIONS, SKILL_CATEGORIES } from './constants';
+import { PROFILE, PROJECTS, CERTIFICATIONS, WORK_LOG, SKILL_CATEGORIES } from './constants';
 
 // --- KINETIC TYPOGRAPHY COMPONENT ---
-const KineticText = ({ text, className, glow = false, stagger = 0.02 }: { text: string; className?: string; glow?: boolean; stagger?: number }) => {
+const KineticText = ({ text, className, glow = false }: { text: string; className?: string; glow?: boolean }) => {
   return (
     <span className={`inline-flex whitespace-pre flex-wrap ${className}`}>
       {text.split(" ").map((word, wordIndex) => (
@@ -78,14 +69,14 @@ const KineticText = ({ text, className, glow = false, stagger = 0.02 }: { text: 
   );
 };
 
-// --- NEURAL CANVAS BACKGROUND ---
+// --- NEURAL CANVAS BACKGROUND (Memoized for Performance) ---
 const NeuralCanvas = React.memo(({ vibe }: { vibe: string }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d', { alpha: false }); // Optimize for no transparency if possible, but we need it here
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     let animationFrameId: number;
@@ -111,11 +102,7 @@ const NeuralCanvas = React.memo(({ vibe }: { vibe: string }) => {
     };
 
     const draw = () => {
-      // Use standard clearRect
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      // Re-draw background if needed, or rely on CSS background. 
-      // Since alpha:false is tricky with transparency, we keep it transparent but handle clearing efficiently.
       
       const color = vibe === 'neural' ? '16, 185, 129' : (vibe === 'maximal' ? '139, 92, 246' : '150, 150, 150');
       const opacityMultiplier = vibe === 'minimal' ? 0.03 : 0.12;
@@ -123,7 +110,6 @@ const NeuralCanvas = React.memo(({ vibe }: { vibe: string }) => {
       ctx.fillStyle = `rgba(${color}, ${opacityMultiplier})`;
       ctx.lineWidth = 0.4;
 
-      // Batch drawing could be optimized but minimal improvement for 100 particles.
       particles.forEach((p, i) => {
         p.x += p.vx;
         p.y += p.vy;
@@ -135,7 +121,6 @@ const NeuralCanvas = React.memo(({ vibe }: { vibe: string }) => {
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fill();
 
-        // Connect particles
         for (let j = i + 1; j < particles.length; j++) {
           const p2 = particles[j];
           const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
@@ -166,7 +151,15 @@ const NeuralCanvas = React.memo(({ vibe }: { vibe: string }) => {
 });
 
 // --- 3D TILT WRAPPER ---
-const TiltCard = ({ children, className, colSpan = 1, rowSpan = 1, delay = 0 }: any) => {
+interface TiltCardProps {
+  children: React.ReactNode;
+  className?: string;
+  colSpan?: number;
+  rowSpan?: number;
+  delay?: number;
+}
+
+const TiltCard = ({ children, className = "", colSpan = 1, rowSpan = 1, delay = 0 }: TiltCardProps) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -186,7 +179,6 @@ const TiltCard = ({ children, className, colSpan = 1, rowSpan = 1, delay = 0 }: 
     y.set(0);
   }
 
-  // Entrance Variants
   const cardVariants: Variants = {
     hidden: { opacity: 0, y: 50, scale: 0.95 },
     visible: { 
@@ -290,7 +282,7 @@ const VelocityTracker = ({ mouseVelocity }: { mouseVelocity: MotionValue<number>
       velocityRef.current.textContent = String(Math.round(v));
     }
     if (barRef.current) {
-      // Scale velocity visually (0-1000 range mapped to 0-100%)
+      // Scale velocity visually (0-1200 range mapped to 0-100%)
       const width = Math.min((v / 12), 100); 
       barRef.current.style.width = `${width}%`;
     }
@@ -367,7 +359,6 @@ const App: React.FC = () => {
   useEffect(() => {
     let lastX = 0, lastY = 0;
     let lastTime = performance.now();
-    let velocity = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
       const now = performance.now();
@@ -376,7 +367,7 @@ const App: React.FC = () => {
       // Throttle velocity updates slightly if needed, but MotionValue handles high freq well
       if (dt > 16) { // approx 60fps cap for calculation
         const dist = Math.hypot(e.clientX - lastX, e.clientY - lastY);
-        velocity = Math.round((dist / dt) * 1000);
+        const velocity = Math.round((dist / dt) * 1000);
         mouseVelocity.set(velocity);
         
         lastX = e.clientX;
@@ -400,19 +391,12 @@ const App: React.FC = () => {
     };
   }, [mouseVelocity]);
 
-  const dataTools = useMemo(() => [
-    "Python", "SQL", "Power BI", "Pandas", "NumPy", "Scikit-Learn", "LLMs", "LangChain", 
-    "PyTorch", "Flask", "FFmpeg", "ElevenLabs", "Matplotlib", "Seaborn", "Git", "Jupyter",
-    "TensorFlow", "XGBoost", "HuggingFace", "FastAPI", "PostgreSQL", "React", "D3.js",
-    "NLP", "Regression", "DAX", "MERN Stack", "VBA", "Tableau", "OpenCV", "Tailwind CSS", "Redux.js"
-  ], []);
+  // Flatten skill categories for the ticker
+  const dataTools = useMemo(() => {
+    return SKILL_CATEGORIES.flatMap(cat => cat.skills);
+  }, []);
 
-  const experience = useMemo(() => [
-    { inst: "Croma Campus | Noida", role: "Data Science Trainee", date: "SEP 2025 - PRESENT", active: true, log: "Developing Python scripts for data cleaning & predictive modeling. Mastered Power BI DAX & Dashboard design." },
-    { inst: "Micro Info Tech Services", role: "Web Development Intern", date: "MAY 2025 - JUN 2025", active: false, log: "Developed responsive web pages (100% design fidelity). Implemented Git workflows, reducing merge conflicts by 20%." },
-    { inst: "UptoSkills | Remote", role: "Web Development Intern", date: "JAN 2025 - APR 2025", active: false, log: "Built dynamic MERN Stack solutions. Integrated Redux.js state management & backend APIs." },
-    { inst: "MSU Saharanpur", role: "BCA Graduate (1st Div)", date: "AUG 2022 - AUG 2025", active: false, log: "Core Computer Science & Software Engineering modules. Graduated with First Division honors." }
-  ], []);
+  const experience = WORK_LOG;
 
   const gridVariants: Variants = {
     hidden: { opacity: 0 },
@@ -518,16 +502,28 @@ const App: React.FC = () => {
                 <span className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-500">Cognitive Layer Active</span>
               </div>
               <h1 className="text-6xl md:text-9xl font-display font-black tracking-tighter leading-[0.8] uppercase">
-                <KineticText text="Data" /> <br/>
+                <KineticText text="AI/ML" /> <br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500 group-hover:from-white group-hover:to-white transition-all duration-1000">
-                  <KineticText text="Evolved" glow />
-                </span> <br/>
-                <KineticText text="Into Art." />
+                  <KineticText text="Architect" glow />
+                </span>
               </h1>
               <div className="space-y-4">
-                <p className="text-neutral-400 text-2xl max-w-xl font-medium leading-relaxed">
-                  Navneet Sharma here. {PROFILE.summary}
+                <p className="text-neutral-400 text-xl max-w-xl font-medium leading-relaxed">
+                  {PROFILE.summary}
                 </p>
+                
+                {/* Mission Control Section */}
+                <div className="mt-6 p-5 bg-emerald-500/5 rounded-2xl border border-emerald-500/10 backdrop-blur-sm relative overflow-hidden group/mission">
+                    <div className="absolute inset-0 bg-emerald-500/5 translate-x-[-100%] group-hover/mission:translate-x-0 transition-transform duration-700"></div>
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Activity size={14} className="text-emerald-500 animate-pulse" />
+                            <p className="text-emerald-500 font-black text-[10px] tracking-widest uppercase">Mission Control</p>
+                        </div>
+                        <p className="text-neutral-300 text-sm font-medium leading-relaxed">{PROFILE.mission}</p>
+                    </div>
+                </div>
+
                 <p className="text-emerald-500 text-[11px] font-black uppercase tracking-widest bg-emerald-500/5 px-4 py-2 rounded-xl inline-block border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
                   {PROFILE.currentStatus}
                 </p>
@@ -835,6 +831,9 @@ const App: React.FC = () => {
 
         <footer className="mt-40 pt-20 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-16 mb-24">
            <div className="flex flex-col gap-10 w-full md:w-auto">
+             <div className="max-w-md">
+                <p className="text-sm text-neutral-400 italic font-medium leading-relaxed mb-6">"The reasonable man adapts himself to the world; the unreasonable one persists in trying to adapt the world to himself. Therefore all progress depends on the unreasonable man." — George Bernard Shaw</p>
+             </div>
              <div className="flex flex-wrap justify-center md:justify-start gap-12">
                 <motion.div 
                   whileHover={{ y: -5 }}
@@ -852,10 +851,6 @@ const App: React.FC = () => {
                   <MessageCircle size={18} className="text-emerald-500" />
                   <a href={PROFILE.whatsapp} target="_blank" className="text-[11px] font-black uppercase tracking-widest">Connect on WhatsApp</a>
                 </motion.div>
-                <div className="flex items-center gap-4 text-neutral-400">
-                  <MapPin size={18} className="text-emerald-500" />
-                  <span className="text-[11px] font-black uppercase tracking-widest">{PROFILE.location}</span>
-                </div>
              </div>
 
              <div className="flex flex-wrap justify-center md:justify-start gap-6">
