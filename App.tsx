@@ -34,21 +34,71 @@ import {
   useMotionValue,
   useVelocity,
   useAnimationFrame,
-  MotionValue
+  MotionValue,
+  useMotionTemplate
 } from 'framer-motion';
 import { PROFILE, PROJECTS, CERTIFICATIONS, WORK_LOG, SKILL_CATEGORIES } from './constants';
 
-// --- KINETIC TYPOGRAPHY COMPONENT ---
-const KineticText = ({ text, className, glow = false }: { text: string; className?: string; glow?: boolean }) => {
+// --- ERROR BOUNDARY COMPONENT ---
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode; fallback?: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode; fallback?: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(_: Error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback || (
+        <div className="p-2 text-[10px] font-mono text-red-500 bg-red-900/10 border border-red-500/20 rounded flex items-center gap-2">
+          <Activity size={12} className="animate-pulse" />
+          MODULE ERROR
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// --- KINETIC TYPOGRAPHY COMPONENT (Enhanced with Entrance Animation) ---
+const KineticText = ({ text, className, glow = false, delay = 0 }: { text: string; className?: string; glow?: boolean, delay?: number }) => {
+  const charVariants: Variants = {
+    hidden: { opacity: 0, y: 20, rotateX: 90, skewX: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      rotateX: 0, 
+      skewX: 0,
+      transition: { type: "spring", damping: 12, stiffness: 200 } 
+    }
+  };
+
   return (
-    <span className={`inline-flex whitespace-pre flex-wrap ${className}`}>
+    <motion.span 
+      className={`inline-flex whitespace-pre flex-wrap ${className}`}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-10%" }}
+      transition={{ staggerChildren: 0.03, delayChildren: delay }}
+    >
       {text.split(" ").map((word, wordIndex) => (
         <span key={wordIndex} className="inline-flex whitespace-nowrap mr-[0.25em]">
           {word.split("").map((char, charIndex) => (
             <motion.span
               key={`${wordIndex}-${charIndex}`}
-              className="inline-block cursor-default origin-bottom"
-              initial={{ y: 0 }}
+              variants={charVariants}
+              className="inline-block cursor-default origin-bottom will-change-transform"
               whileHover={{
                 scaleY: 1.5,
                 scaleX: 0.85,
@@ -56,21 +106,84 @@ const KineticText = ({ text, className, glow = false }: { text: string; classNam
                 rotate: Math.random() * 15 - 7.5,
                 color: glow ? 'var(--accent-main)' : undefined,
                 textShadow: glow ? '0 0 20px var(--accent-glow)' : undefined,
+                transition: { type: "spring", stiffness: 400, damping: 10 }
               }}
-              transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
               {char}
             </motion.span>
           ))}
         </span>
       ))}
-    </span>
+    </motion.span>
   );
 };
 
+// --- PARALLAX IMAGE COMPONENT ---
+const ParallaxImage = ({ src, alt, className }: { src: string, alt: string, className?: string }) => {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"]);
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.1, 1, 1.1]);
+
+  return (
+    <div ref={ref} className={`overflow-hidden h-full w-full relative ${className}`}>
+      <motion.img 
+        style={{ y, scale }}
+        src={src} 
+        alt={alt} 
+        className="absolute inset-0 w-full h-full object-cover will-change-transform"
+      />
+    </div>
+  );
+};
+
+// --- GITHUB ISO CITY COMPONENT ---
+// A CSS-Only Isometric City Implementation
+const GithubCityBetter = React.memo(() => {
+    return (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden -z-0">
+             <div className="relative transform skew-y-12 scale-110 opacity-90 -translate-y-8">
+                <div className="grid grid-cols-7 gap-2">
+                    {Array.from({length: 49}).map((_, i) => {
+                        const h = Math.random() > 0.8 ? 50 : Math.random() * 25 + 5;
+                        const isActive = h > 30;
+                        return (
+                            <motion.div 
+                                key={i}
+                                initial={{ height: 0 }}
+                                whileInView={{ height: h }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 1, delay: i * 0.02, type: 'spring' }}
+                                className={`w-3 relative shadow-xl ${isActive ? 'bg-theme-accent' : 'bg-theme-border'}`}
+                                style={{ boxShadow: '-2px 2px 0px rgba(0,0,0,0.3)' }}
+                            >
+                                {isActive && <div className="absolute top-0 left-0 w-full h-1 bg-white/40 animate-pulse" />}
+                            </motion.div>
+                        )
+                    })}
+                </div>
+             </div>
+        </div>
+    )
+})
+
+
 // --- NEURAL CANVAS BACKGROUND (Memoized for Performance) ---
-const NeuralCanvas = React.memo(({ vibe }: { vibe: string }) => {
+const NeuralCanvas = React.memo(({ vibe, accentColor }: { vibe: string, accentColor: MotionValue<string> }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [currentColor, setCurrentColor] = useState("16, 185, 129"); // Default Emerald
+
+  // Sync MotionValue color to state for Canvas to read
+  useEffect(() => {
+    return accentColor.on("change", (latest) => {
+      // Basic hex to rgb conversion for canvas
+      const hex = latest.replace('#', '');
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      setCurrentColor(`${r}, ${g}, ${b}`);
+    });
+  }, [accentColor]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -85,15 +198,6 @@ const NeuralCanvas = React.memo(({ vibe }: { vibe: string }) => {
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-    };
-
-    // Theme Colors for Canvas (Must match CSS Variables)
-    const getThemeColor = () => {
-      switch(vibe) {
-        case 'minimal': return '37, 99, 235'; // Royal Blue
-        case 'maximal': return '244, 63, 94'; // Rose
-        default: return '16, 185, 129'; // Emerald (Neural)
-      }
     };
 
     const init = () => {
@@ -112,12 +216,11 @@ const NeuralCanvas = React.memo(({ vibe }: { vibe: string }) => {
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      const color = getThemeColor();
       const opacityMultiplier = vibe === 'minimal' ? 0.05 : 0.12;
       const connectionDist = vibe === 'maximal' ? 220 : 180;
-      const connectionDistSq = connectionDist * connectionDist; // Optimization: Use squared distance
+      const connectionDistSq = connectionDist * connectionDist; 
 
-      ctx.fillStyle = `rgba(${color}, ${opacityMultiplier})`;
+      ctx.fillStyle = `rgba(${currentColor}, ${opacityMultiplier})`;
       ctx.lineWidth = 0.4;
 
       particles.forEach((p, i) => {
@@ -135,15 +238,14 @@ const NeuralCanvas = React.memo(({ vibe }: { vibe: string }) => {
           const p2 = particles[j];
           const dx = p.x - p2.x;
           const dy = p.y - p2.y;
-          // Optimization: Avoid expensive Math.sqrt by comparing squared distances
           const distSq = dx * dx + dy * dy;
           
           if (distSq < connectionDistSq) {
-            const dist = Math.sqrt(distSq); // Only calc sqrt when drawing
+            const dist = Math.sqrt(distSq); 
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(${color}, ${(1 - dist / connectionDist) * opacityMultiplier})`;
+            ctx.strokeStyle = `rgba(${currentColor}, ${(1 - dist / connectionDist) * opacityMultiplier})`;
             ctx.stroke();
           }
         }
@@ -160,7 +262,7 @@ const NeuralCanvas = React.memo(({ vibe }: { vibe: string }) => {
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [vibe]);
+  }, [vibe, currentColor]);
 
   return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" style={{ opacity: 0.6 }} />;
 });
@@ -196,11 +298,12 @@ const TiltCard = ({ children, className = "", colSpan = 1, rowSpan = 1, delay = 
   }
 
   const cardVariants: Variants = {
-    hidden: { opacity: 0, y: 50, scale: 0.95 },
+    hidden: { opacity: 0, y: 100, scale: 0.9, rotateX: 20 },
     visible: { 
       opacity: 1, 
       y: 0, 
       scale: 1, 
+      rotateX: 0,
       transition: { 
         type: "spring", 
         stiffness: 70, 
@@ -213,9 +316,6 @@ const TiltCard = ({ children, className = "", colSpan = 1, rowSpan = 1, delay = 
   return (
     <motion.div
       variants={cardVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
       style={{ rotateX, rotateY, gridColumn: `span ${colSpan}`, gridRow: `span ${rowSpan}`, ...style }}
       onMouseMove={handleMouse}
       onMouseLeave={handleMouseLeave}
@@ -226,20 +326,21 @@ const TiltCard = ({ children, className = "", colSpan = 1, rowSpan = 1, delay = 
   );
 };
 
-// --- GLITCH CERTIFICATION COMPONENT ---
+// --- GLITCH CERTIFICATION COMPONENT (Updated with CSS Effect) ---
 const GlitchCertification = React.memo(({ cert, index }: { cert: { title: string, issuer: string, date: string }, index: number }) => {
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
+      initial={{ opacity: 0, x: -20 }}
+      whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
-      className="flex items-center justify-between p-4 border-b border-theme-border group hover:border-theme-accent hover:opacity-100 transition-colors animate-glitch-reveal"
+      transition={{ delay: index * 0.1 }}
+      className="cert-card flex items-center justify-between p-4 border-b border-theme-border group hover:border-theme-accent hover:opacity-100 transition-colors cursor-pointer animate-glitch-reveal"
       style={{ animationDelay: `${index * 0.1}s` }}
     >
       <div className="flex items-center gap-4">
-         <div className="w-1.5 h-1.5 bg-theme-accent rounded-full opacity-50 group-hover:opacity-100 group-hover:shadow-[0_0_10px_var(--accent-main)] transition-all" />
+         <div className="cert-icon w-1.5 h-1.5 bg-theme-accent rounded-full opacity-50 group-hover:opacity-100 transition-all" />
          <div>
-            <h4 className="font-bold text-sm text-theme-text opacity-90 group-hover:text-theme-accent transition-colors">{cert.title}</h4>
+            <h4 className="cert-title font-bold text-sm text-theme-text opacity-90 group-hover:text-theme-accent transition-colors will-change-transform">{cert.title}</h4>
             <p className="text-[10px] text-theme-subtext uppercase tracking-widest">{cert.issuer}</p>
          </div>
       </div>
@@ -291,14 +392,13 @@ const VelocityTracker = ({ mouseVelocity }: { mouseVelocity: MotionValue<number>
   const barRef = useRef<HTMLDivElement>(null);
   const [scanning, setScanning] = useState(false);
 
-  // Use animation frame to update DOM directly, bypassing React render cycle for high frequency updates
+  // Use animation frame to update DOM directly
   useAnimationFrame(() => {
     const v = mouseVelocity.get();
     if (velocityRef.current) {
       velocityRef.current.textContent = String(Math.round(v));
     }
     if (barRef.current) {
-      // Scale velocity visually (0-1200 range mapped to 0-100%)
       const width = Math.min((v / 12), 100); 
       barRef.current.style.width = `${width}%`;
     }
@@ -358,19 +458,35 @@ const App: React.FC = () => {
   const [vibe, setVibe] = useState<'minimal' | 'maximal' | 'neural'>('neural');
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   
-  // High-performance mouse tracking using MotionValues instead of State
+  // High-performance mouse tracking using MotionValues
   const mouseVelocity = useMotionValue(0);
 
-  // Scrollytelling Hooks
-  const experienceRef = useRef(null);
-  const { scrollYProgress } = useScroll({ target: experienceRef, offset: ["start center", "end center"] });
-  const { scrollY } = useScroll();
+  // Scrollytelling Hooks for Page-Wide Effects
+  const { scrollY, scrollYProgress } = useScroll();
   const scrollVelocity = useVelocity(scrollY);
   const skewVelocity = useTransform(scrollVelocity, [-1000, 1000], [-10, 10]); 
   const smoothSkew = useSpring(skewVelocity, { stiffness: 400, damping: 30 }); 
 
-  // Memoized grid for isometric city to avoid hydration mismatch and re-calculations
-  const randomGrid = useMemo(() => Array.from({length: 36}).map(() => Math.random() > 0.5), []);
+  // --- SCROLLYTELLING COLOR MORPH ---
+  // Shifts accent color based on scroll position (Emerald -> Blue -> Purple -> Rose)
+  const accentColor = useTransform(
+    scrollYProgress,
+    [0, 0.3, 0.6, 1],
+    ["#10b981", "#3b82f6", "#8b5cf6", "#f43f5e"]
+  );
+  
+  // Create RGB string for CSS variable usage (e.g. for rgba())
+  const accentColorRgb = useTransform(accentColor, (latest) => {
+    const hex = latest.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return `${r}, ${g}, ${b}`;
+  });
+
+  // Experience Section specific scroll
+  const experienceRef = useRef(null);
+  const { scrollYProgress: experienceProgress } = useScroll({ target: experienceRef, offset: ["start center", "end center"] });
 
   useEffect(() => {
     let lastX = 0, lastY = 0;
@@ -380,8 +496,7 @@ const App: React.FC = () => {
       const now = performance.now();
       const dt = now - lastTime;
       
-      // Throttle velocity updates slightly if needed, but MotionValue handles high freq well
-      if (dt > 16) { // approx 60fps cap for calculation
+      if (dt > 16) { 
         const dist = Math.hypot(e.clientX - lastX, e.clientY - lastY);
         const velocity = Math.round((dist / dt) * 1000);
         mouseVelocity.set(velocity);
@@ -407,7 +522,6 @@ const App: React.FC = () => {
     };
   }, [mouseVelocity]);
 
-  // Flatten skill categories for the ticker
   const dataTools = useMemo(() => {
     return SKILL_CATEGORIES.flatMap(cat => cat.skills);
   }, []);
@@ -436,9 +550,23 @@ const App: React.FC = () => {
   const jellyConfig = { type: 'spring' as const, stiffness: 700, damping: 15, mass: 1.5 };
   
   return (
-    <div className={`theme-${vibe} min-h-screen bg-theme-bg text-theme-text selection:bg-theme-accent selection:text-white font-sans transition-colors duration-700 overflow-x-hidden`}>
+    // Apply dynamic variables using style to the root
+    <motion.div 
+      style={{
+        "--accent-main": accentColor,
+        "--accent-rgb": accentColorRgb,
+        // We dynamically reconstruct these derived variables in JS because CSS vars in style prop
+        // don't automatically update calculated CSS vars in :root unless we use them directly.
+        "--accent-dim": useMotionTemplate`rgba(${accentColorRgb}, 0.1)`,
+        "--accent-glow": useMotionTemplate`rgba(${accentColorRgb}, 0.4)`,
+      } as any}
+      className={`theme-${vibe} min-h-screen bg-theme-bg text-theme-text selection:bg-theme-accent selection:text-white font-sans transition-colors duration-700 overflow-x-hidden`}
+    >
       
-      <NeuralCanvas vibe={vibe} />
+      <ErrorBoundary fallback={<div className="fixed inset-0 bg-[#050505] -z-10" />}>
+        <NeuralCanvas vibe={vibe} accentColor={accentColor} />
+      </ErrorBoundary>
+      
       <SystemSentienceHUD />
 
       <main className="max-w-[1550px] mx-auto p-4 md:p-12 relative z-10">
@@ -455,7 +583,7 @@ const App: React.FC = () => {
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 whileTap={{ scale: 0.85, rotate: -15, borderRadius: "50%" }}
                 transition={jellyConfig}
-                className="w-14 h-14 bg-theme-accent rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-[0_0_40px_var(--accent-glow)] cursor-pointer"
+                className="w-14 h-14 bg-theme-accent rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-[0_0_40px_var(--accent-glow)] cursor-pointer will-change-transform"
               >
                 NS
               </motion.div>
@@ -463,7 +591,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <p className="font-display font-black text-3xl tracking-tighter uppercase italic leading-none text-theme-text">
-                <KineticText text="NAVNEET.OS" />
+                <KineticText text="NAVNEET.OS" delay={0.2} />
               </p>
               <div className="flex gap-2 mt-1">
                  <span className="text-[7px] font-black uppercase text-theme-subtext tracking-widest bg-theme-border px-2 py-0.5 rounded">Core 2.0.26</span>
@@ -484,19 +612,21 @@ const App: React.FC = () => {
               <span className="text-[10px] font-black uppercase text-theme-subtext group-hover:text-theme-text">Neural Search [⌘K]</span>
             </motion.div>
             
-            <div className="flex bg-theme-card border border-theme-border rounded-2xl p-1.5 backdrop-blur-xl">
-              {(['minimal', 'maximal', 'neural'] as const).map((v) => (
-                <motion.button 
-                  key={v}
-                  onClick={() => setVibe(v)}
-                  whileTap={{ scale: 0.85 }}
-                  transition={jellyConfig}
-                  className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${vibe === v ? 'bg-theme-accent text-white shadow-lg shadow-theme-accent/20' : 'text-theme-subtext hover:text-theme-text'}`}
-                >
-                  {v}
-                </motion.button>
-              ))}
-            </div>
+            <ErrorBoundary>
+              <div className="flex bg-theme-card border border-theme-border rounded-2xl p-1.5 backdrop-blur-xl">
+                {(['minimal', 'maximal', 'neural'] as const).map((v) => (
+                  <motion.button 
+                    key={v}
+                    onClick={() => setVibe(v)}
+                    whileTap={{ scale: 0.85 }}
+                    transition={jellyConfig}
+                    className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${vibe === v ? 'bg-theme-accent text-white shadow-lg shadow-theme-accent/20' : 'text-theme-subtext hover:text-theme-text'}`}
+                  >
+                    {v}
+                  </motion.button>
+                ))}
+              </div>
+            </ErrorBoundary>
           </div>
         </nav>
 
@@ -517,10 +647,10 @@ const App: React.FC = () => {
                 <BrainCircuit size={16} className="text-theme-accent animate-pulse" />
                 <span className="text-[11px] font-black uppercase tracking-[0.3em] text-theme-accent">Cognitive Layer Active</span>
               </div>
-              <h1 className="text-6xl md:text-9xl font-display font-black tracking-tighter leading-[0.8] uppercase text-theme-text">
-                <KineticText text="AI/ML" /> <br/>
+              <h1 className="text-6xl md:text-9xl font-display font-black tracking-tighter leading-[0.8] uppercase text-theme-text overflow-visible">
+                <KineticText text="AI/ML" delay={0.4} /> <br/>
                 <span className="text-transparent bg-clip-text bg-theme-gradient transition-all duration-1000">
-                  <KineticText text="Architect" glow />
+                  <KineticText text="Architect" glow delay={0.6} />
                 </span>
               </h1>
               <div className="space-y-4">
@@ -579,16 +709,19 @@ const App: React.FC = () => {
             </div>
           </TiltCard>
 
-          {/* PROJECT 1: RAG AI (Main Image Card) */}
+          {/* PROJECT 1: RAG AI (Parallax Enabled) */}
           <TiltCard colSpan={2} rowSpan={2} delay={0.1} className="bento-card group flex flex-col p-0">
             <div className="scanline opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/95 z-10" />
-            <img 
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/95 z-20" />
+            
+            {/* Parallax Image Component */}
+            <ParallaxImage 
               src={PROJECTS[0].imageUrl} 
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s] grayscale group-hover:grayscale-0"
-              alt={PROJECTS[0].title}
+              alt={PROJECTS[0].title} 
+              className="absolute inset-0 z-0 opacity-60 group-hover:opacity-100 transition-opacity duration-700 grayscale group-hover:grayscale-0"
             />
-            <div className="relative z-20 mt-auto p-12">
+            
+            <div className="relative z-30 mt-auto p-12">
               <div className="flex gap-3 mb-6">
                  {PROJECTS[0].tags.map(t => <span key={t} className="glass-pill">{t}</span>)}
               </div>
@@ -741,13 +874,20 @@ const App: React.FC = () => {
                {/* Scroll Circuit Line */}
                <div className="absolute left-[54px] top-4 bottom-10 w-[2px] bg-theme-border z-0">
                   <motion.div 
-                    style={{ height: useTransform(scrollYProgress, [0, 1], ["0%", "100%"]) }}
-                    className="w-full bg-theme-accent shadow-[0_0_15px_var(--accent-glow)]"
+                    style={{ height: useTransform(experienceProgress, [0, 1], ["0%", "100%"]) }}
+                    className="w-full bg-theme-accent shadow-[0_0_15px_var(--accent-glow)] origin-top"
                   />
                </div>
                
                {experience.map((exp, idx) => (
-                 <div key={idx} className="relative pl-12 py-8 group/item">
+                 <motion.div 
+                   key={idx} 
+                   className="relative pl-12 py-8 group/item"
+                   initial={{ opacity: 0, x: -20 }}
+                   whileInView={{ opacity: 1, x: 0 }}
+                   viewport={{ once: true, margin: "-10%" }}
+                   transition={{ delay: idx * 0.1 }}
+                 >
                     {/* Sticky Date Header */}
                     <div className="sticky top-20 z-20 flex items-center -ml-16 mb-6">
                          <div className={`w-5 h-5 rounded-full border-4 border-theme-card relative z-10 ${exp.active ? 'bg-theme-accent' : 'bg-theme-border group-hover:bg-theme-accent opacity-60 transition-colors'}`} />
@@ -757,16 +897,12 @@ const App: React.FC = () => {
                     </div>
 
                     {/* Content */}
-                    <motion.div 
-                      initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true, margin: "-50px" }}
-                      className="bg-theme-bg/30 p-6 rounded-2xl border border-theme-border hover:border-theme-accent hover:border-opacity-20 transition-all hover:bg-theme-bg/50"
-                    >
+                    <div className="bg-theme-bg/30 p-6 rounded-2xl border border-theme-border hover:border-theme-accent hover:border-opacity-20 transition-all hover:bg-theme-bg/50">
                        <p className="text-[10px] font-black uppercase text-theme-subtext mb-2 tracking-[0.2em]">{exp.inst}</p>
                        <h5 className="text-xl font-bold leading-tight uppercase mb-3 text-theme-text">{exp.role}</h5>
                        <p className="text-xs text-theme-subtext leading-relaxed font-light">{exp.log}</p>
-                    </motion.div>
-                 </div>
+                    </div>
+                 </motion.div>
                ))}
             </div>
           </motion.div>
@@ -792,24 +928,19 @@ const App: React.FC = () => {
              </div>
           </motion.a>
 
-          {/* ISOMETRIC CITY (STATS) */}
+          {/* GITHUB CITY (TRUST SIGNALS) */}
           <motion.div 
             variants={{ hidden: {opacity:0, y:20}, show: {opacity:1, y:0} }}
             className="bento-card p-10 flex flex-col justify-center text-center group bg-theme-accent-dim border border-theme-accent border-opacity-20 overflow-hidden rounded-3xl relative"
           >
-            <div className="absolute inset-0 opacity-20 pointer-events-none transform rotate-45 scale-150 translate-y-10">
-               <div className="grid grid-cols-6 gap-2">
-                  {randomGrid.map((isAccent, i) => (
-                     <div key={i} className={`w-8 h-8 rounded-md transition-colors duration-1000 ${isAccent ? 'bg-theme-accent opacity-40' : 'bg-theme-border opacity-40'} hover:bg-theme-accent`} />
-                  ))}
+            <GithubCityBetter />
+            <div className="relative mx-auto mb-6 z-10">
+               <div className="p-3 bg-theme-card border border-theme-border rounded-2xl shadow-xl">
+                  <Github size={32} className="text-theme-accent" />
                </div>
             </div>
-            <div className="relative mx-auto mb-6 z-10">
-               <Zap size={40} className="text-theme-accent" />
-               <div className="absolute inset-0 bg-theme-accent blur-2xl rounded-full scale-150 animate-pulse opacity-40" />
-            </div>
-            <p className="text-[11px] font-black uppercase tracking-[0.5em] text-theme-accent relative z-10">Core Engine</p>
-            <p className="text-3xl font-display font-black text-theme-text mt-2 uppercase italic tracking-tighter relative z-10">Peak Stable</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.5em] text-theme-accent relative z-10">Trust Signals</p>
+            <p className="text-3xl font-display font-black text-theme-text mt-2 uppercase italic tracking-tighter relative z-10">Github Activity</p>
           </motion.div>
 
           {/* GLITCH REVEAL CERTIFICATIONS */}
@@ -932,7 +1063,7 @@ const App: React.FC = () => {
         </footer>
 
       </main>
-    </div>
+    </motion.div>
   );
 };
 
