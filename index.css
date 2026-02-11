@@ -113,7 +113,7 @@
     animation: glitch-anim2 1s infinite linear alternate-reverse;
   }
 
-  /* Glitch Reveal Animation */
+  /* Glitch Reveal Animation - Original */
   @keyframes glitch-reveal {
     0% { opacity: 0; transform: translateX(-20px) skewX(20deg); filter: blur(5px); }
     20% { opacity: 1; transform: translateX(5px) skewX(-20deg); }
@@ -124,6 +124,33 @@
   }
   .animate-glitch-reveal {
     animation: glitch-reveal 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+
+  /* RGB Shift & Skew for Certifications */
+  @keyframes rgb-shake {
+    0% { text-shadow: -2px 0 var(--accent-main), 2px 0 #f43f5e; transform: translate(0); }
+    25% { text-shadow: 2px 0 var(--accent-main), -2px 0 #f43f5e; transform: translate(-2px, 1px); }
+    50% { text-shadow: -1px 0 var(--accent-main), 1px 0 #f43f5e; transform: translate(1px, -1px); }
+    75% { text-shadow: 1px 0 var(--accent-main), -1px 0 #f43f5e; transform: translate(-1px, 1px); }
+    100% { text-shadow: -2px 0 var(--accent-main), 2px 0 #f43f5e; transform: translate(0); }
+  }
+
+  @keyframes glitch-skew {
+    0% { transform: skew(0deg); }
+    20% { transform: skew(-10deg); }
+    40% { transform: skew(10deg); }
+    60% { transform: skew(-5deg); }
+    80% { transform: skew(5deg); }
+    100% { transform: skew(0deg); }
+  }
+
+  .cert-card:hover .cert-title {
+    animation: rgb-shake 0.3s cubic-bezier(.36,.07,.19,.97) both infinite;
+  }
+  
+  .cert-card:hover .cert-icon {
+    animation: glitch-skew 0.3s infinite;
+    filter: drop-shadow(0 0 5px var(--accent-main));
   }
 }
 
