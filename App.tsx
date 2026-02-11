@@ -167,7 +167,7 @@ const NeuralCanvas = React.memo(({ vibe }: { vibe: string }) => {
 
 // --- 3D TILT WRAPPER ---
 interface TiltCardProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
   colSpan?: number;
   rowSpan?: number;
@@ -233,13 +233,13 @@ const GlitchCertification = React.memo(({ cert, index }: { cert: { title: string
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
-      className="flex items-center justify-between p-4 border-b border-theme-border group hover:border-theme-accent/30 transition-colors animate-glitch-reveal"
+      className="flex items-center justify-between p-4 border-b border-theme-border group hover:border-theme-accent hover:opacity-100 transition-colors animate-glitch-reveal"
       style={{ animationDelay: `${index * 0.1}s` }}
     >
       <div className="flex items-center gap-4">
          <div className="w-1.5 h-1.5 bg-theme-accent rounded-full opacity-50 group-hover:opacity-100 group-hover:shadow-[0_0_10px_var(--accent-main)] transition-all" />
          <div>
-            <h4 className="font-bold text-sm text-theme-text/90 group-hover:text-theme-accent transition-colors">{cert.title}</h4>
+            <h4 className="font-bold text-sm text-theme-text opacity-90 group-hover:text-theme-accent transition-colors">{cert.title}</h4>
             <p className="text-[10px] text-theme-subtext uppercase tracking-widest">{cert.issuer}</p>
          </div>
       </div>
@@ -316,13 +316,13 @@ const VelocityTracker = ({ mouseVelocity }: { mouseVelocity: MotionValue<number>
       className="bento-card p-10 flex flex-col justify-between group overflow-hidden bg-gradient-to-br from-theme-accent-dim to-transparent"
     >
       <div className="absolute top-0 right-0 p-4">
-          <Fingerprint size={60} className="text-theme-accent-dim group-hover:text-theme-accent/20 transition-colors" />
+          <Fingerprint size={60} className="text-theme-accent-dim group-hover:text-theme-accent hover:opacity-100 opacity-60 transition-colors" />
       </div>
       <div className="flex justify-between items-center relative z-10">
           <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-theme-subtext italic">User DNA</h4>
           <motion.div 
           whileTap={{ scale: 0.8 }}
-          className={`p-2 rounded-full transition-all duration-500 ${scanning ? 'bg-theme-accent text-white shadow-[0_0_15px_var(--accent-main)]' : 'bg-theme-accent-dim text-theme-accent hover:bg-theme-accent/20'}`} onClick={toggleScan}
+          className={`p-2 rounded-full transition-all duration-500 ${scanning ? 'bg-theme-accent text-white shadow-[0_0_15px_var(--accent-main)]' : 'bg-theme-accent-dim text-theme-accent hover:bg-theme-accent hover:opacity-80'}`} onClick={toggleScan}
           >
             <Activity size={18} className={scanning ? 'animate-bounce' : 'animate-pulse'} />
           </motion.div>
@@ -477,7 +477,7 @@ const App: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               transition={jellyConfig}
-              className="hidden lg:flex items-center gap-3 px-5 py-2.5 bg-theme-card border border-theme-border rounded-2xl hover:bg-theme-accent-dim hover:border-theme-accent/30 transition-all cursor-pointer group" 
+              className="hidden lg:flex items-center gap-3 px-5 py-2.5 bg-theme-card border border-theme-border rounded-2xl hover:bg-theme-accent-dim hover:border-theme-accent opacity-80 hover:opacity-100 transition-all cursor-pointer group" 
               onClick={() => setIsCommandOpen(true)}
             >
               <Command size={14} className="text-theme-subtext group-hover:text-theme-accent" />
@@ -513,7 +513,7 @@ const App: React.FC = () => {
                <Layers size={300} strokeWidth={0.5} className="animate-float text-theme-text" />
             </div>
             <div className="relative z-10 space-y-10">
-              <div className="inline-flex items-center gap-3 px-5 py-2 bg-theme-accent-dim border border-theme-accent/20 rounded-2xl">
+              <div className="inline-flex items-center gap-3 px-5 py-2 bg-theme-accent-dim border border-theme-accent rounded-2xl border-opacity-20">
                 <BrainCircuit size={16} className="text-theme-accent animate-pulse" />
                 <span className="text-[11px] font-black uppercase tracking-[0.3em] text-theme-accent">Cognitive Layer Active</span>
               </div>
@@ -539,11 +539,11 @@ const App: React.FC = () => {
                             <Activity size={16} className="text-theme-accent animate-pulse" />
                             <p className="text-theme-accent font-black text-[11px] tracking-widest uppercase">Mission Control</p>
                         </div>
-                        <p className="text-theme-text/80 text-sm font-medium leading-relaxed font-mono">{PROFILE.mission}</p>
+                        <p className="text-theme-text opacity-80 text-sm font-medium leading-relaxed font-mono">{PROFILE.mission}</p>
                     </div>
                 </motion.div>
 
-                <p className="text-theme-accent text-[11px] font-black uppercase tracking-widest bg-theme-accent-dim px-4 py-2 rounded-xl inline-block border border-theme-accent/20 shadow-[0_0_15px_var(--accent-dim)]">
+                <p className="text-theme-accent text-[11px] font-black uppercase tracking-widest bg-theme-accent-dim px-4 py-2 rounded-xl inline-block border border-theme-accent shadow-[0_0_15px_var(--accent-dim)] border-opacity-20">
                   {PROFILE.currentStatus}
                 </p>
               </div>
@@ -572,7 +572,7 @@ const App: React.FC = () => {
                 whileTap={{ scale: 0.9, scaleX: 1.15, scaleY: 0.85 }}
                 transition={jellyConfig}
                 href={PROFILE.resumeUrl} target="_blank" rel="noopener noreferrer"
-                className="px-8 py-6 bg-theme-card border border-theme-accent/30 text-theme-accent font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl hover:bg-theme-accent hover:text-white transition-all flex items-center gap-4"
+                className="px-8 py-6 bg-theme-card border border-theme-accent text-theme-accent font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl hover:bg-theme-accent hover:text-white transition-all flex items-center gap-4 border-opacity-30"
               >
                 <Download size={20} /> Download Resume
               </motion.a>
@@ -634,14 +634,14 @@ const App: React.FC = () => {
           </TiltCard>
 
           {/* PROJECT 3: Thrift by Musk (Web Performance Module) */}
-          <TiltCard delay={0.3} className="bento-card p-10 flex flex-col justify-between group border-theme-accent/10">
+          <TiltCard delay={0.3} className="bento-card p-10 flex flex-col justify-between group">
              <div className="flex justify-between items-center">
                <div className="p-3 bg-theme-accent-dim rounded-xl text-theme-accent group-hover:rotate-12 transition-transform">
                  {/* Swapped icon to Smartphone/Globe for Web Module */}
                  <Smartphone size={24} />
                </div>
                <div className="flex gap-1.5">
-                 {[1,2,3,4,5].map(i => <div key={i} className="w-1.5 h-4 bg-theme-border group-hover:bg-theme-accent/60 transition-colors" style={{ transitionDelay: `${i*100}ms` }} />)}
+                 {[1,2,3,4,5].map(i => <div key={i} className="w-1.5 h-4 bg-theme-border group-hover:bg-theme-accent opacity-60 transition-colors" style={{ transitionDelay: `${i*100}ms` }} />)}
                </div>
              </div>
              <div className="py-4">
@@ -684,10 +684,10 @@ const App: React.FC = () => {
               <motion.div style={{ skewX: smoothSkew }} className="animate-ticker origin-center will-change-transform">
                 {[...dataTools, ...dataTools].map((tool, i) => (
                   <div key={i} className="px-14 flex items-center gap-8">
-                    <span className="text-5xl font-display font-black uppercase tracking-tighter text-theme-subtext/20 group-hover:text-theme-text transition-all duration-700 cursor-default whitespace-nowrap hover:scale-125 hover:text-theme-accent">
+                    <span className="text-5xl font-display font-black uppercase tracking-tighter text-theme-subtext opacity-20 group-hover:text-theme-text transition-all duration-700 cursor-default whitespace-nowrap hover:scale-125 hover:text-theme-accent">
                       {tool}
                     </span>
-                    <div className="w-3 h-3 bg-theme-accent-dim rounded-full border border-theme-accent/30" />
+                    <div className="w-3 h-3 bg-theme-accent-dim rounded-full border border-theme-accent border-opacity-30" />
                   </div>
                 ))}
               </motion.div>
@@ -705,7 +705,7 @@ const App: React.FC = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.95 }}
             transition={jellyConfig}
-            className="bento-card p-10 flex flex-col justify-between group hover:border-red-500/40 relative"
+            className="bento-card p-10 flex flex-col justify-between group hover:border-red-500 hover:border-opacity-40 relative"
           >
              <div className="absolute top-[-30%] right-[-30%] w-64 h-64 bg-red-600/5 blur-[100px] pointer-events-none" />
              <div className="flex justify-between items-start relative z-10">
@@ -750,7 +750,7 @@ const App: React.FC = () => {
                  <div key={idx} className="relative pl-12 py-8 group/item">
                     {/* Sticky Date Header */}
                     <div className="sticky top-20 z-20 flex items-center -ml-16 mb-6">
-                         <div className={`w-5 h-5 rounded-full border-4 border-theme-card relative z-10 ${exp.active ? 'bg-theme-accent' : 'bg-theme-border group-hover/item:bg-theme-accent/60 transition-colors'}`} />
+                         <div className={`w-5 h-5 rounded-full border-4 border-theme-card relative z-10 ${exp.active ? 'bg-theme-accent' : 'bg-theme-border group-hover:bg-theme-accent opacity-60 transition-colors'}`} />
                          <div className="ml-10 bg-theme-card/90 backdrop-blur-xl px-4 py-1.5 rounded-lg border border-theme-border text-theme-accent font-mono text-[10px] font-bold tracking-widest shadow-xl">
                             {exp.date}
                          </div>
@@ -760,7 +760,7 @@ const App: React.FC = () => {
                     <motion.div 
                       initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true, margin: "-50px" }}
-                      className="bg-theme-bg/30 p-6 rounded-2xl border border-theme-border hover:border-theme-accent/20 transition-all hover:bg-theme-bg/50"
+                      className="bg-theme-bg/30 p-6 rounded-2xl border border-theme-border hover:border-theme-accent hover:border-opacity-20 transition-all hover:bg-theme-bg/50"
                     >
                        <p className="text-[10px] font-black uppercase text-theme-subtext mb-2 tracking-[0.2em]">{exp.inst}</p>
                        <h5 className="text-xl font-bold leading-tight uppercase mb-3 text-theme-text">{exp.role}</h5>
@@ -795,18 +795,18 @@ const App: React.FC = () => {
           {/* ISOMETRIC CITY (STATS) */}
           <motion.div 
             variants={{ hidden: {opacity:0, y:20}, show: {opacity:1, y:0} }}
-            className="bento-card p-10 flex flex-col justify-center text-center group bg-theme-accent-dim border-theme-accent/20 overflow-hidden rounded-3xl relative"
+            className="bento-card p-10 flex flex-col justify-center text-center group bg-theme-accent-dim border border-theme-accent border-opacity-20 overflow-hidden rounded-3xl relative"
           >
             <div className="absolute inset-0 opacity-20 pointer-events-none transform rotate-45 scale-150 translate-y-10">
                <div className="grid grid-cols-6 gap-2">
                   {randomGrid.map((isAccent, i) => (
-                     <div key={i} className={`w-8 h-8 rounded-md transition-colors duration-1000 ${isAccent ? 'bg-theme-accent/40' : 'bg-theme-border/40'} hover:bg-theme-accent`} />
+                     <div key={i} className={`w-8 h-8 rounded-md transition-colors duration-1000 ${isAccent ? 'bg-theme-accent opacity-40' : 'bg-theme-border opacity-40'} hover:bg-theme-accent`} />
                   ))}
                </div>
             </div>
             <div className="relative mx-auto mb-6 z-10">
                <Zap size={40} className="text-theme-accent" />
-               <div className="absolute inset-0 bg-theme-accent/40 blur-2xl rounded-full scale-150 animate-pulse" />
+               <div className="absolute inset-0 bg-theme-accent blur-2xl rounded-full scale-150 animate-pulse opacity-40" />
             </div>
             <p className="text-[11px] font-black uppercase tracking-[0.5em] text-theme-accent relative z-10">Core Engine</p>
             <p className="text-3xl font-display font-black text-theme-text mt-2 uppercase italic tracking-tighter relative z-10">Peak Stable</p>
