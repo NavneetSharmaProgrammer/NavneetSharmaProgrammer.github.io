@@ -4,68 +4,29 @@
 
 @layer base {
   :root {
-    /* Default: Neural Theme (Matrix/Sci-Fi) */
     --bg-main: #050505;
-    --bg-card: rgba(12, 12, 14, 0.6);
-    --text-main: #ffffff;
-    --text-sub: #a3a3a3;
-    --border-main: rgba(255, 255, 255, 0.08);
-    --accent-main: #10b981; /* Emerald */
-    --accent-dim: rgba(16, 185, 129, 0.1);
-    --accent-glow: rgba(16, 185, 129, 0.4);
-    --accent-gradient: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
-    --highlight-color: rgba(255, 255, 255, 0.05);
-  }
-
-  .theme-minimal {
-    /* Minimal Theme (Swiss/Clean Light) */
-    --bg-main: #ffffff;
-    --bg-card: rgba(244, 244, 245, 0.6); /* Zinc 100 */
-    --text-main: #09090b; /* Zinc 950 */
-    --text-sub: #52525b; /* Zinc 600 */
-    --border-main: rgba(0, 0, 0, 0.06);
-    --accent-main: #2563eb; /* Royal Blue */
-    --accent-dim: rgba(37, 99, 235, 0.08);
-    --accent-glow: rgba(37, 99, 235, 0.2);
-    --accent-gradient: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-    --highlight-color: rgba(0, 0, 0, 0.05);
-  }
-
-  .theme-maximal {
-    /* Maximal Theme (Cyber-Pop/Bold) */
-    --bg-main: #020617; /* Slate 950 */
-    --bg-card: rgba(15, 23, 42, 0.7); /* Slate 900 */
-    --text-main: #f8fafc;
-    --text-sub: #94a3b8;
-    --border-main: rgba(255, 255, 255, 0.15);
-    --accent-main: #f43f5e; /* Rose */
-    --accent-dim: rgba(244, 63, 94, 0.15);
-    --accent-glow: rgba(244, 63, 94, 0.6);
-    --accent-gradient: linear-gradient(135deg, #f43f5e 0%, #eab308 100%); /* Rose to Yellow */
-    --highlight-color: rgba(255, 255, 255, 0.08);
+    --accent: #10b981;
+    --accent-glow: rgba(16, 185, 129, 0.3);
   }
 
   body {
     background-color: var(--bg-main);
-    color: var(--text-main);
+    color: #ffffff;
     font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
-    transition: background-color 0.7s ease, color 0.7s ease;
   }
 }
 
 @layer components {
   .bento-card {
-    background-color: var(--bg-card);
-    @apply backdrop-blur-3xl border border-theme-border rounded-[2.5rem] overflow-hidden relative transition-all duration-300 cursor-pointer shadow-xl shadow-black/5;
+    @apply bg-[#0c0c0e]/80 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] overflow-hidden relative transition-all duration-300 cursor-pointer;
     transform-style: preserve-3d;
   }
   
   .bento-card::before {
     content: '';
-    @apply absolute inset-0 opacity-0 transition-opacity duration-500 pointer-events-none;
-    background: linear-gradient(to bottom right, var(--highlight-color), transparent);
+    @apply absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity duration-500 pointer-events-none;
   }
 
   .bento-card:hover::before {
@@ -73,24 +34,23 @@
   }
 
   .glass-pill {
-    @apply px-3 py-1 bg-theme-accent-dim rounded-full text-[9px] font-black uppercase tracking-widest text-theme-accent backdrop-blur-md;
-    border: 1px solid var(--accent-dim); /* Replaced border-theme-accent/20 to fix build error */
+    @apply px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest text-white/60 backdrop-blur-md;
   }
 
-  /* Dynamic Glow Text */
-  .text-glow-accent { text-shadow: 0 0 30px var(--accent-glow); }
-  
-  /* Brand Specific Glows (Keep hardcoded as they are brand colors) */
+  .text-glow-emerald { text-shadow: 0 0 30px rgba(16, 185, 129, 0.6); }
   .text-glow-red { text-shadow: 0 0 30px rgba(239, 68, 68, 0.6); }
   .text-glow-pink { text-shadow: 0 0 30px rgba(236, 72, 153, 0.6); }
 
   .scanline {
-    @apply absolute w-full h-[2px] blur-[2px] z-50 pointer-events-none;
-    background-color: var(--accent-dim); /* Replaced bg-theme-accent/30 */
+    @apply absolute w-full h-[2px] bg-emerald-500/30 blur-[2px] z-50 pointer-events-none;
     animation: scan 3s linear infinite;
   }
 
-  /* Holographic Glitch adapted for theme */
+  .data-stream {
+    @apply absolute text-[6px] font-mono text-emerald-500/10 whitespace-nowrap pointer-events-none z-0;
+  }
+
+  /* Holographic Glitch */
   .glitch-text {
     position: relative;
     display: inline-block;
@@ -103,54 +63,14 @@
   }
   .glitch-text::before {
     left: 2px;
-    text-shadow: -2px 0 var(--accent-main);
+    text-shadow: -2px 0 #ff00c1;
     clip: rect(44px, 450px, 56px, 0);
     animation: glitch-anim 5s infinite linear alternate-reverse;
   }
   .glitch-text::after {
     left: -2px;
-    text-shadow: -2px 0 var(--accent-glow), 2px 2px var(--text-main);
+    text-shadow: -2px 0 #00fff9, 2px 2px #ff00c1;
     animation: glitch-anim2 1s infinite linear alternate-reverse;
-  }
-
-  /* Glitch Reveal Animation - Original */
-  @keyframes glitch-reveal {
-    0% { opacity: 0; transform: translateX(-20px) skewX(20deg); filter: blur(5px); }
-    20% { opacity: 1; transform: translateX(5px) skewX(-20deg); }
-    40% { transform: translateX(-5px) skewX(10deg); }
-    60% { transform: translateX(2px) skewX(-5deg); filter: blur(0px); }
-    80% { transform: translateX(0); }
-    100% { opacity: 1; transform: none; }
-  }
-  .animate-glitch-reveal {
-    animation: glitch-reveal 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-  }
-
-  /* RGB Shift & Skew for Certifications */
-  @keyframes rgb-shake {
-    0% { text-shadow: -2px 0 var(--accent-main), 2px 0 #f43f5e; transform: translate(0); }
-    25% { text-shadow: 2px 0 var(--accent-main), -2px 0 #f43f5e; transform: translate(-2px, 1px); }
-    50% { text-shadow: -1px 0 var(--accent-main), 1px 0 #f43f5e; transform: translate(1px, -1px); }
-    75% { text-shadow: 1px 0 var(--accent-main), -1px 0 #f43f5e; transform: translate(-1px, 1px); }
-    100% { text-shadow: -2px 0 var(--accent-main), 2px 0 #f43f5e; transform: translate(0); }
-  }
-
-  @keyframes glitch-skew {
-    0% { transform: skew(0deg); }
-    20% { transform: skew(-10deg); }
-    40% { transform: skew(10deg); }
-    60% { transform: skew(-5deg); }
-    80% { transform: skew(5deg); }
-    100% { transform: skew(0deg); }
-  }
-
-  .cert-card:hover .cert-title {
-    animation: rgb-shake 0.3s cubic-bezier(.36,.07,.19,.97) both infinite;
-  }
-  
-  .cert-card:hover .cert-icon {
-    animation: glitch-skew 0.3s infinite;
-    filter: drop-shadow(0 0 5px var(--accent-main));
   }
 }
 
@@ -180,7 +100,7 @@
 .animate-ticker {
   display: flex;
   width: max-content;
-  animation: ticker 40s linear infinite; /* Slowed down for better readability */
+  animation: ticker 25s linear infinite;
 }
 
 .perspective-1000 {
