@@ -14,6 +14,7 @@
     --accent-dim: rgba(16, 185, 129, 0.1);
     --accent-glow: rgba(16, 185, 129, 0.4);
     --accent-gradient: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    --highlight-color: rgba(255, 255, 255, 0.05);
   }
 
   .theme-minimal {
@@ -27,6 +28,7 @@
     --accent-dim: rgba(37, 99, 235, 0.08);
     --accent-glow: rgba(37, 99, 235, 0.2);
     --accent-gradient: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+    --highlight-color: rgba(0, 0, 0, 0.05);
   }
 
   .theme-maximal {
@@ -40,6 +42,7 @@
     --accent-dim: rgba(244, 63, 94, 0.15);
     --accent-glow: rgba(244, 63, 94, 0.6);
     --accent-gradient: linear-gradient(135deg, #f43f5e 0%, #eab308 100%); /* Rose to Yellow */
+    --highlight-color: rgba(255, 255, 255, 0.08);
   }
 
   body {
@@ -61,7 +64,8 @@
   
   .bento-card::before {
     content: '';
-    @apply absolute inset-0 bg-gradient-to-br from-theme-text/5 to-transparent opacity-0 transition-opacity duration-500 pointer-events-none;
+    @apply absolute inset-0 opacity-0 transition-opacity duration-500 pointer-events-none;
+    background: linear-gradient(to bottom right, var(--highlight-color), transparent);
   }
 
   .bento-card:hover::before {
@@ -69,7 +73,8 @@
   }
 
   .glass-pill {
-    @apply px-3 py-1 bg-theme-accent-dim border border-theme-accent/20 rounded-full text-[9px] font-black uppercase tracking-widest text-theme-accent backdrop-blur-md;
+    @apply px-3 py-1 bg-theme-accent-dim rounded-full text-[9px] font-black uppercase tracking-widest text-theme-accent backdrop-blur-md;
+    border: 1px solid var(--accent-dim); /* Replaced border-theme-accent/20 to fix build error */
   }
 
   /* Dynamic Glow Text */
@@ -80,7 +85,8 @@
   .text-glow-pink { text-shadow: 0 0 30px rgba(236, 72, 153, 0.6); }
 
   .scanline {
-    @apply absolute w-full h-[2px] bg-theme-accent/30 blur-[2px] z-50 pointer-events-none;
+    @apply absolute w-full h-[2px] blur-[2px] z-50 pointer-events-none;
+    background-color: var(--accent-dim); /* Replaced bg-theme-accent/30 */
     animation: scan 3s linear infinite;
   }
 
