@@ -24,6 +24,23 @@ const App: React.FC = () => {
   // Dynamic Vibe Override: If project is open, intensify to 'maximal'
   const vibe = activeProject ? 'maximal' : baseVibe;
 
+  // Dynamic Metadata Update
+  React.useEffect(() => {
+    if (activeProject) {
+      document.title = `${activeProject.title} | Navneet Sharma`;
+      const metaDescription = document.querySelector('meta[name="description"]');
+      if (metaDescription) {
+        metaDescription.setAttribute('content', activeProject.brief.outcome);
+      }
+    } else {
+      document.title = 'Navneet Sharma 3.0 | Neural Orbital System';
+      const metaDescription = document.querySelector('meta[name="description"]');
+      if (metaDescription) {
+        metaDescription.setAttribute('content', 'A high-end Bento-style portfolio for Navneet Sharma, featuring Data Science, AI/ML, and Full-Stack development expertise.');
+      }
+    }
+  }, [activeProject]);
+
   // Memoize flat skills list
   const skills = useMemo(() => SKILL_CATEGORIES.flatMap(c => c.skills), []);
 
@@ -109,7 +126,7 @@ const App: React.FC = () => {
                 <div className="space-y-4">
                   {[
                     { label: "Neural Load", value: "14.2%", color: "bg-emerald-500" },
-                    { label: "RAG Latency", value: "42ms", color: "bg-emerald-500" },
+                    { label: "Query Latency", value: "42ms", color: "bg-emerald-500" },
                     { label: "Uptime", value: "99.99%", color: "bg-emerald-500" }
                   ].map((stat, i) => (
                     <div key={i} className="space-y-2">
@@ -211,7 +228,7 @@ const App: React.FC = () => {
                <TiltCard className="p-10 h-full glass-card">
                   <div className="flex items-center justify-between mb-12">
                      <h3 className="font-display font-bold text-2xl uppercase flex items-center gap-4 tracking-tight">
-                        <ShieldCheck className="text-emerald-500" size={24} /> Formation
+                        <ShieldCheck className="text-emerald-500" size={24} /> Education & Certs
                      </h3>
                   </div>
                   <div className="grid gap-4">
