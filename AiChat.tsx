@@ -66,8 +66,8 @@ const AiChat = () => {
       if (hasApiKey) {
         // --- GEMINI MODE (CLOUD INTELLIGENCE) ---
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        const systemPrompt = `You are a portfolio assistant for ${PROFILE.name}, an AI Engineer. 
-        Your tone is professional, concise, and engineering-focused. Avoid fluff.
+        const systemPrompt = `You are a portfolio assistant for ${PROFILE.name}, a Python Backend & Data Science Engineer. 
+        Your tone is professional, concise, and data-focused. Avoid fluff.
         Use the following data context to answer questions about skills, projects, and experience.
         
         DATA CONTEXT:
@@ -98,9 +98,9 @@ const AiChat = () => {
         const lowerInput = input.toLowerCase();
 
         if (lowerInput.includes('skill') || lowerInput.includes('stack') || lowerInput.includes('tech')) {
-           responseText = `Core Stack: ${SKILL_CATEGORIES[0].skills.slice(0, 4).join(', ')}. Focus on RAG & Pipelines.`;
+           responseText = `Core Stack: ${SKILL_CATEGORIES[0].skills.slice(0, 4).join(', ')}. Focus on Python & Data Science.`;
         } else if (lowerInput.includes('project') || lowerInput.includes('work') || lowerInput.includes('built')) {
-           responseText = `Flagship: ${PROJECTS[0].title}. Strategy: ${PROJECTS[0].brief.strategy}.`;
+           responseText = `Flagship: ${PROJECTS[0].title}. Outcome: ${PROJECTS[0].brief.outcome}.`;
         } else if (lowerInput.includes('contact') || lowerInput.includes('email') || lowerInput.includes('hire')) {
            responseText = `Signal: ${PROFILE.email}. Status: Available for deployment.`;
         } else if (lowerInput.includes('who') || lowerInput.includes('navneet')) {
