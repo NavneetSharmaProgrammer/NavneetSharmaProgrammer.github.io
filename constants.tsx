@@ -38,8 +38,8 @@ export interface ExperienceItem {
 
 export const PROFILE = {
   name: "Navneet Sharma",
-  role: "AI ENGINEER",
-  subRole: "RETRIEVAL SYSTEMS",
+  role: "PYTHON BACKEND & DATA SCIENCE ENGINEER",
+  subRole: "AI & ANALYTICS",
   location: "NOIDA, INDIA",
   email: "navneetsharmaprogrammer@gmail.com",
   phone: "+91-8630066072",
@@ -50,117 +50,108 @@ export const PROFILE = {
   instagram: "https://www.instagram.com/navneet_sharma_/",
   whatsapp: "https://wa.me/918630066072",
   resumeUrl: "https://drive.google.com/file/d/17NcRr-YBBp9gAW5n9evWhQsAHjQHKI7Q/view?usp=sharing",
-  summary: "I design systems that transform unstructured data into usable intelligence. My work focuses on Retrieval-Augmented Generation (RAG) architectures, predictive modeling, and data infrastructure. I prioritize performance, clarity, and deployment viability over experimentation.",
-  mission: "Building systems that scale beyond notebooks.",
+  summary: "Driven Data Science Practitioner and Python Developer specializing in Python backend architecture (Flask), Machine Learning pipelines, and advanced data visualization. Proven ability to translate raw data into actionable business intelligence and build end-to-end applications.",
+  mission: "Translating raw data into actionable business intelligence.",
   currentStatus: "System Nominal"
 };
 
 export const PROJECTS: Project[] = [
   {
-    id: "rag-system",
-    title: "Semantic Retrieval System",
+    id: "hotel-analytics",
+    title: "Hotel Booking Analytics",
     brief: {
-      constraint: "Keyword search failed to capture context in unstructured video transcripts.",
-      strategy: "Implemented Whisper for transcription & LangChain vector embeddings for semantic indexing.",
-      outcome: "Reduced retrieval latency by 40% and enabled natural-language Q&A over media assets."
+      constraint: "Processed a massive real-world dataset of 119,000+ records with missing values.",
+      strategy: "Conducted deep EDA using Pandas, Matplotlib, and Seaborn to uncover cancellation drivers.",
+      outcome: "Identified seasonal trends and market behaviors, preparing data for high-accuracy ML modeling."
     },
-    tags: ["Python", "Vector Search", "Whisper", "Flask"],
-    imageUrl: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800",
+    tags: ["Python", "Pandas", "EDA", "Seaborn"],
+    imageUrl: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=800",
     date: "2025",
-    stat: "RAG PIPELINE",
+    stat: "DATA ANALYTICS",
     type: 'AI'
   },
   {
-    id: "gen-media",
-    title: "Autonomous Media Pipeline",
+    id: "vidsnap-ai",
+    title: "VidSnapAI Pipeline",
     brief: {
-      constraint: "Manual content creation workflows bottlenecked production scale.",
-      strategy: "Orchestrated ElevenLabs (TTS) and FFmpeg via Flask for deterministic rendering.",
-      outcome: "Fully automated asset generation pipeline, eliminating manual editing cycles."
+      constraint: "Manual video content creation workflows were highly inefficient.",
+      strategy: "Engineered a Flask backend integrating FFmpeg and AI voiceover APIs for automated rendering.",
+      outcome: "Reduced manual editing workflows by 100% through a fully automated content pipeline."
     },
-    tags: ["Python", "FFmpeg", "API Orchestration", "Auto-Agents"],
+    tags: ["Flask", "FFmpeg", "Python", "REST API"],
     imageUrl: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=800",
     date: "2025",
-    stat: "AUTOMATION",
+    stat: "GEN-AI PIPELINE",
     type: 'GEN'
   },
   {
-    id: "ecommerce-core",
-    title: "Data-Driven E-Commerce",
+    id: "rag-ta",
+    title: "RAG AI Teaching Assistant",
     brief: {
-      constraint: "Complex state updates causing layout shifts and UI lag.",
-      strategy: "Centralized Redux architecture with selective re-render control.",
-      outcome: "Achieved 98/100 Lighthouse performance score with zero CLS."
+      constraint: "Difficulty in querying unstructured video lecture content efficiently.",
+      strategy: "Built a RAG pipeline using OpenAI Whisper for transcription and vector embeddings for search.",
+      outcome: "Enabled context-aware semantic search and accurate Q&A over video lecture archives."
     },
-    tags: ["React", "Redux", "Performance", "UX Metric"],
-    imageUrl: "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&q=80&w=800",
-    link: "https://thriftbymusk.vercel.app/",
-    date: "2024",
-    stat: "HIGH PERFORMANCE",
-    type: 'WEB'
+    tags: ["LLMs", "Vector Search", "Whisper", "RAG"],
+    imageUrl: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800",
+    date: "2025",
+    stat: "SEMANTIC SEARCH",
+    type: 'AI'
   }
 ];
 
 export const WORK_LOG: ExperienceItem[] = [
   { 
-    inst: "Croma Campus", 
+    inst: "Croma Campus Pvt. Ltd.", 
     role: "Data Science Trainee", 
     date: "SEP 2025 - PRESENT", 
     active: true, 
-    log: "Developed predictive regression models and structured ETL workflows. Built Power BI dashboards translating raw data into executive-ready insights." 
-  },
-  { 
-    inst: "Micro Info Tech", 
-    role: "Web Development Intern", 
-    date: "MAY 2025 - JUN 2025", 
-    active: false, 
-    log: "Optimized frontend architecture reducing load times. Standardized Git branching strategies to eliminate merge conflicts during deployment." 
-  },
-  { 
-    inst: "UptoSkills", 
-    role: "Full Stack Intern", 
-    date: "JAN 2025 - APR 2025", 
-    active: false, 
-    log: "Built dynamic MERN solutions with Redux state management. Integrated backend REST APIs for production-grade data flow." 
+    log: "Developing memory-efficient Python scripts for data wrangling and Scikit-Learn predictive models. Designing interactive Power BI dashboards with advanced DAX and T-SQL querying." 
   }
 ];
 
 export const SKILL_CATEGORIES: SkillCategory[] = [
   { 
-    title: "MACHINE LEARNING", 
-    skills: ["Python", "Scikit-learn", "PyTorch", "Feature Engineering", "NLP"] 
+    title: "CORE & WEB", 
+    skills: ["Python (OOP)", "Flask", "REST APIs", "Web Scraping", "HTML/CSS"] 
   },
   { 
-    title: "DATA INFRASTRUCTURE", 
-    skills: ["SQL", "Vector Databases", "ETL Workflows", "Pandas", "RAG"] 
+    title: "DATA SCIENCE & ML", 
+    skills: ["Pandas", "NumPy", "Scikit-Learn", "TensorFlow", "Deep Learning", "EDA"] 
   },
   { 
-    title: "DEPLOYMENT & INTERFACE", 
-    skills: ["Flask", "React", "State Management", "API Integration", "Git"] 
+    title: "DATABASES", 
+    skills: ["MS SQL Server", "T-SQL", "MySQL", "Stored Procedures", "Triggers"] 
   },
   {
-    title: "VISUALIZATION",
-    skills: ["Power BI", "DAX", "Matplotlib", "Data Modeling"]
+    title: "BI & TOOLS",
+    skills: ["Power BI (DAX)", "Advanced Excel", "Git/GitHub", "FFmpeg", "LLMs"]
   }
 ];
 
 export const CERTIFICATIONS: Certification[] = [
   { 
-    title: "Python Systems Engineering", 
-    issuer: "CodeWithHarry", 
-    date: "2025",
-    focus: "Object-Oriented Design • API Integration • Flask Backends"
-  },
-  { 
-    title: "Data Science Training", 
+    title: "Professional in Data Science", 
     issuer: "Croma Campus", 
-    date: "2025", 
-    focus: "ML Modeling • SQL Pipelines • BI Dashboards"
+    date: "2025",
+    focus: "Python Data Engineering • ML Modeling • SQL Architecture"
   },
   { 
-    title: "Frontend Engineering Intern", 
-    issuer: "Micro Info Tech", 
+    title: "Bachelor of Computer Applications", 
+    issuer: "Maa Shakumbhari University", 
     date: "2025", 
-    focus: "Performance Optimization • Git Workflow Standardization"
+    focus: "First Division • Software Engineering • Data Structures"
   },
+  { 
+    title: "Job Ready Data Science", 
+    issuer: "CodeWithHarry", 
+    date: "2025", 
+    focus: "End-to-End ML Pipelines • Real-world Data Projects"
+  },
+  { 
+    title: "Complete Python Bootcamp", 
+    issuer: "CodeWithHarry", 
+    date: "2025", 
+    focus: "Advanced Python • Scripting • Automation"
+  }
 ];
