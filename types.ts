@@ -2,11 +2,17 @@
 export interface Project {
   id: string;
   title: string;
-  description: string;
+  brief: {
+    constraint: string;
+    strategy: string;
+    outcome: string;
+  };
   tags: string[];
   imageUrl: string;
   link?: string;
   date: string;
+  stat?: string;
+  type?: 'AI' | 'WEB' | 'GEN';
 }
 
 export interface Experience {
@@ -28,6 +34,7 @@ export interface Certification {
   issuer: string;
   date: string;
   id?: string;
+  focus?: string;
 }
 
 export interface CourseModule {
