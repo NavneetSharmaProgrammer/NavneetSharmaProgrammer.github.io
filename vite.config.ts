@@ -6,8 +6,6 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   return {
     plugins: [react()],
-    // Replace with your repository name if not using a custom domain
-    base: '/NavneetSharmaProgrammer.github.io/', 
     build: {
       outDir: 'dist',
     },
