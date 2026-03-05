@@ -67,6 +67,7 @@ export const OrbitalNav = ({ vibe, setVibe }: OrbitalNavProps) => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={toggleOpen}
+          aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
           className={`relative w-16 h-16 bg-[#050505] border rounded-full flex items-center justify-center z-50 transition-colors duration-500
             ${isOpen ? 'border-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.15)]' : 'border-white/10 shadow-2xl'}`}
         >
