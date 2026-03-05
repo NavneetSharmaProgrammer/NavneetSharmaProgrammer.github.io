@@ -53,7 +53,7 @@ export const PROFILE = {
   resumeUrl: "https://drive.google.com/file/d/17NcRr-YBBp9gAW5n9evWhQsAHjQHKI7Q/view?usp=sharing",
   summary: "Python Backend Developer & Data Scientist. Specialized in RAG Pipelines, GenAI & Scalable ML Models. Seeking first full-time deployment in AI/ML roles.",
   mission: "Engineering. Data. Driven.",
-  about: "I am a Python Backend Developer and Data Scientist-in-training, specializing in building robust data pipelines and intelligent GenAI systems. I don't just study algorithms—I build them. My engineering philosophy is rooted in hands-on system architecture, from optimizing complex SQL databases to developing and deploying functional machine learning models. Today, my primary execution thread is focused on Applied Generative AI. I am actively architecting systems that can 'think' and 'search' using frameworks like LangChain and ChromaDB, and I build the modular Python/Flask backends that bring these concepts to life.",
+  about: "Specializing in Large Language Models (LLMs), Vector Databases, Python Backend Architecture, and Machine Learning Pipelines. Translating raw data into intelligent, automated digital products and actionable business intelligence through high-fidelity engineering.",
   idleMode: "When I am not actively coding, my focus shifts to continuous system upgrades: reverse-engineering hardware, exploring advancements in vector embeddings, and refining my data science workflows to stay at the cutting edge of LLM research.",
   currentStatus: "[ RECENT BCA GRADUATE // DATA SCIENCE TRAINEE ]"
 };
