@@ -27,7 +27,7 @@ export const TiltCard = ({ children, className = "", onClick, noTilt = false }: 
   const glowOpacity = useTransform(scale, [1, 1.02], [0, 1]);
   
   // Dynamic gradient angle based on tilt
-  const gradientAngle = useTransform(rotateX, (val) => val * 15 + 135); // Offset to move light source
+  const gradientAngle = useTransform(rotateX, (val: number) => val * 15 + 135); // Offset to move light source
   const gradientBg = useMotionTemplate`linear-gradient(${gradientAngle}deg, rgba(16,185,129,0.05), transparent)`;
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
