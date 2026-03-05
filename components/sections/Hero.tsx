@@ -113,6 +113,11 @@ export const Hero = () => {
         {/* Header - Status Indicator */}
         <div className="flex flex-col sm:flex-row justify-between items-start gap-6 sm:gap-0 border-b border-white/5 pb-8 mb-8">
            <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-1 mb-2">
+                <span className="font-mono text-[8px] text-zinc-500 uppercase tracking-widest">System: Operational</span>
+                <span className="font-mono text-[8px] text-zinc-500 uppercase tracking-widest">Neural Link Established</span>
+                <span className="font-mono text-[8px] text-emerald-500/60 uppercase tracking-widest font-bold">Core Version: v3.4.0-STABLE</span>
+              </div>
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <div className="w-2 h-2 bg-emerald-500 rounded-full animate-ping absolute inset-0" />
@@ -122,7 +127,6 @@ export const Hero = () => {
               </div>
               <div className="flex flex-col gap-1">
                 <span className="font-mono text-[8px] text-zinc-600 uppercase tracking-widest">Lat: 28.5355 // Long: 77.3910</span>
-                <span className="font-mono text-[8px] text-zinc-600 uppercase tracking-widest">Uptime: 1024:12:44:02</span>
               </div>
            </div>
            
@@ -233,13 +237,36 @@ export const Hero = () => {
           </h1>
 
           <motion.div 
-            className="mt-8 sm:mt-12 space-y-8 max-w-2xl"
+            className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-[10px] text-zinc-500 border-y border-white/5 py-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: step >= 4 ? 1 : 0 }}
+            transition={{ duration: 1 }}
+          >
+            <span className="text-zinc-700 uppercase tracking-widest">System Metrics:</span>
+            <div className="flex items-center gap-2">
+              <span className="text-emerald-500/50">Neural Load:</span>
+              <span className="text-white">14.2%</span>
+            </div>
+            <span className="text-zinc-800">|</span>
+            <div className="flex items-center gap-2">
+              <span className="text-emerald-500/50">Query Latency:</span>
+              <span className="text-white">42ms</span>
+            </div>
+            <span className="text-zinc-800">|</span>
+            <div className="flex items-center gap-2">
+              <span className="text-emerald-500/50">Uptime:</span>
+              <span className="text-white">99.99%</span>
+            </div>
+          </motion.div>
+
+          <motion.div 
+            className="mt-8 space-y-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: step >= 4 ? 1 : 0 }}
             transition={{ duration: 1 }}
           >
             <p className="font-mono text-sm md:text-base text-zinc-400 leading-relaxed tracking-tight border-l-2 border-emerald-500/20 pl-6">
-              {PROFILE.summary}
+              {PROFILE.about}
             </p>
 
             <div className="space-y-4">
@@ -284,6 +311,8 @@ export const Hero = () => {
                <span className="absolute right-0 top-0 text-lg transition-all duration-300 group-hover:translate-x-2">]</span>
             </button>
 
+            <span className="hidden sm:block text-zinc-800 self-center">//</span>
+
             <a 
               href={PROFILE.resumeUrl} 
               target="_blank"
@@ -295,6 +324,8 @@ export const Hero = () => {
                <span className="mx-2 group-hover:text-glow-neon group-hover:animate-flicker">Download Dossier (PDF)</span>
                <span className="absolute right-0 top-0 text-lg transition-all duration-300 group-hover:translate-x-2">]</span>
             </a>
+
+            <span className="hidden sm:block text-zinc-800 self-center">//</span>
 
             <a 
               href={PROFILE.github} 
