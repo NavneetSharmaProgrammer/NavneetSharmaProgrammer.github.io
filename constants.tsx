@@ -11,6 +11,7 @@ export interface Project {
   tags: string[];
   imageUrl: string;
   link?: string;
+  github?: string;
   date: string;
   stat?: string;
   type?: 'AI' | 'WEB' | 'GEN';
@@ -38,7 +39,7 @@ export interface ExperienceItem {
 
 export const PROFILE = {
   name: "Navneet Sharma",
-  role: "PYTHON BACKEND & DATA SCIENCE ENGINEER",
+  role: "AI/ML Developer & Python Backend Engineer",
   subRole: "AI & ANALYTICS",
   location: "NOIDA, INDIA",
   email: "navneetsharmaprogrammer@gmail.com",
@@ -50,52 +51,57 @@ export const PROFILE = {
   instagram: "https://www.instagram.com/navneet_sharma_/",
   whatsapp: "https://wa.me/918630066072",
   resumeUrl: "https://drive.google.com/file/d/17NcRr-YBBp9gAW5n9evWhQsAHjQHKI7Q/view?usp=sharing",
-  summary: "Driven Data Science Practitioner and Python Developer specializing in Python backend architecture (Flask), Machine Learning pipelines, and advanced data visualization. Proven ability to translate raw data into actionable business intelligence and build end-to-end applications.",
-  mission: "Translating raw data into actionable business intelligence.",
-  currentStatus: "System Nominal"
+  summary: "Python Backend Developer & Data Scientist. Specialized in RAG Pipelines, GenAI & Scalable ML Models. Seeking first full-time deployment in AI/ML roles.",
+  mission: "Engineering. Data. Driven.",
+  about: "I am a Python Backend Developer and Data Scientist-in-training, specializing in building robust data pipelines and intelligent GenAI systems. I don't just study algorithms—I build them. My engineering philosophy is rooted in hands-on system architecture, from optimizing complex SQL databases to developing and deploying functional machine learning models. Today, my primary execution thread is focused on Applied Generative AI. I am actively architecting systems that can 'think' and 'search' using frameworks like LangChain and ChromaDB, and I build the modular Python/Flask backends that bring these concepts to life.",
+  idleMode: "When I am not actively coding, my focus shifts to continuous system upgrades: reverse-engineering hardware, exploring advancements in vector embeddings, and refining my data science workflows to stay at the cutting edge of LLM research.",
+  currentStatus: "[ RECENT BCA GRADUATE // DATA SCIENCE TRAINEE ]"
 };
 
 export const PROJECTS: Project[] = [
   {
-    id: "hotel-analytics",
-    title: "Hotel Booking Analytics",
+    id: "rag-ta",
+    title: "RAG AI Teaching Assistant",
     brief: {
-      constraint: "Processed a massive real-world dataset of 119,000+ records with missing values.",
-      strategy: "Conducted deep EDA using Pandas, Matplotlib, and Seaborn to uncover cancellation drivers.",
-      outcome: "Identified seasonal trends and market behaviors, preparing data for high-accuracy ML modeling."
+      constraint: "Students waste hours manually scrubbing through video lectures to find specific concepts or answers.",
+      strategy: "Engineered a context-aware AI pipeline that transcribes audio via Whisper, converts text into vector embeddings in ChromaDB, and uses an LLM for Q&A.",
+      outcome: "Enabled context-aware semantic search and accurate Q&A over video lecture archives."
     },
-    tags: ["Python", "Pandas", "EDA", "Seaborn"],
-    imageUrl: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=800",
+    tags: ["Python", "LangChain", "ChromaDB", "Whisper", "Vector Search"],
+    imageUrl: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800",
+    github: "https://github.com/NavneetSharmaProgrammer",
     date: "2025",
-    stat: "DATA ANALYTICS",
+    stat: "SEMANTIC SEARCH & LLMs",
     type: 'AI'
   },
   {
     id: "vidsnap-ai",
     title: "VidSnapAI Pipeline",
     brief: {
-      constraint: "Manual video content creation workflows were highly inefficient.",
-      strategy: "Engineered a Flask backend integrating FFmpeg and AI voiceover APIs for automated rendering.",
-      outcome: "Reduced manual editing workflows by 100% through a fully automated content pipeline."
+      constraint: "Video editing is a highly manual, time-consuming workflow requiring expensive software.",
+      strategy: "Built a modular Flask backend handling async media processing, integrating AI voiceover APIs and FFmpeg.",
+      outcome: "Automated 100% of the workflow, programmatically stitching audio and video."
     },
-    tags: ["Flask", "FFmpeg", "Python", "REST API"],
+    tags: ["Python", "Flask", "FFmpeg", "REST APIs", "Gen-AI"],
     imageUrl: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=800",
+    github: "https://github.com/NavneetSharmaProgrammer",
     date: "2025",
     stat: "GEN-AI PIPELINE",
     type: 'GEN'
   },
   {
-    id: "rag-ta",
-    title: "RAG AI Teaching Assistant",
+    id: "hotel-analytics",
+    title: "Hotel Booking Predictor",
     brief: {
-      constraint: "Difficulty in querying unstructured video lecture content efficiently.",
-      strategy: "Built a RAG pipeline using OpenAI Whisper for transcription and vector embeddings for search.",
-      outcome: "Enabled context-aware semantic search and accurate Q&A over video lecture archives."
+      constraint: "Hotels lose revenue due to unpredictable booking cancellations.",
+      strategy: "Processed 119,000+ records, cleaned missing values, engineered 10+ temporal features, and evaluated classification models.",
+      outcome: "Identified seasonal trends and market behaviors, forecasting cancellations with high accuracy."
     },
-    tags: ["LLMs", "Vector Search", "Whisper", "RAG"],
-    imageUrl: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800",
+    tags: ["Python", "Pandas", "Scikit-Learn", "EDA", "SQL", "Power BI"],
+    imageUrl: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=800",
+    github: "https://github.com/NavneetSharmaProgrammer",
     date: "2025",
-    stat: "SEMANTIC SEARCH",
+    stat: "DATA ANALYTICS & CLASSIFICATION",
     type: 'AI'
   }
 ];
@@ -112,20 +118,32 @@ export const WORK_LOG: ExperienceItem[] = [
 
 export const SKILL_CATEGORIES: SkillCategory[] = [
   { 
-    title: "CORE & WEB", 
-    skills: ["Python (OOP)", "Flask", "REST APIs", "Web Scraping", "HTML/CSS"] 
+    title: "CORE PYTHON & SCRIPTING", 
+    skills: ["Python (OOP & Advanced)", "Scripting & Automation", "Multithreading & Async", "Regex", "Error Handling & Debugging"] 
   },
   { 
-    title: "DATA SCIENCE & ML", 
-    skills: ["Pandas", "NumPy", "Scikit-Learn", "TensorFlow", "Deep Learning", "EDA"] 
+    title: "AI, LLMs & GEN-AI", 
+    skills: ["RAG", "LLMs", "LangChain", "OpenAI API (GPT, Whisper)", "Vector DBs (Chroma, Pinecone)", "Semantic Search"] 
   },
   { 
-    title: "DATABASES", 
-    skills: ["MS SQL Server", "T-SQL", "MySQL", "Stored Procedures", "Triggers"] 
+    title: "ML & DEEP LEARNING", 
+    skills: ["End-to-End Pipelines", "Scikit-Learn", "TensorFlow & Keras", "Feature Engineering", "Model Tuning", "ML Algorithms"] 
   },
-  {
-    title: "BI & TOOLS",
-    skills: ["Power BI (DAX)", "Advanced Excel", "Git/GitHub", "FFmpeg", "LLMs"]
+  { 
+    title: "DATA ENGINEERING", 
+    skills: ["Pandas", "NumPy", "EDA", "Matplotlib & Seaborn", "Web Scraping (BS4, Requests)"] 
+  },
+  { 
+    title: "DATABASE ARCHITECTURE", 
+    skills: ["SQL Architecture", "MS SQL Server & T-SQL", "MySQL", "Advanced Querying", "Stored Procedures & Triggers", "Data Structures"] 
+  },
+  { 
+    title: "BI & REPORTING", 
+    skills: ["Power BI (DAX)", "Advanced Excel", "Pivot Tables", "MIS Reporting", "Business Analytics"] 
+  },
+  { 
+    title: "BACKEND & DEV TOOLS", 
+    skills: ["Node.js", "Python Flask", "REST APIs", "Git & GitHub", "Jupyter Notebook", "Postman", "FFmpeg", "HTML/CSS"] 
   }
 ];
 
