@@ -11,8 +11,8 @@ export const CustomCursor = ({ vibe }: CursorProps) => {
   const cursorY = useMotionValue(-100);
 
   // Smooth spring for trailing effect
-  const springX = useSpring(cursorX, { stiffness: 150, damping: 25 });
-  const springY = useSpring(cursorY, { stiffness: 150, damping: 25 });
+  const springX = useSpring(cursorX, { stiffness: 250, damping: 20 });
+  const springY = useSpring(cursorY, { stiffness: 250, damping: 20 });
 
   const [variant, setVariant] = useState<'default' | 'hover'>('default');
   const [isVisible, setIsVisible] = useState(false);
@@ -50,7 +50,7 @@ export const CustomCursor = ({ vibe }: CursorProps) => {
     <>
       {/* Precision Dot */}
       <motion.div
-        className="fixed top-0 left-0 w-2 h-2 bg-white rounded-full pointer-events-none z-[9999] mix-blend-difference"
+        className="fixed top-0 left-0 w-3 h-3 bg-emerald-500 rounded-full pointer-events-none z-[10000] shadow-[0_0_15px_rgba(16,185,129,0.6)] border border-white/20"
         style={{
           x: springX,
           y: springY,
@@ -61,7 +61,7 @@ export const CustomCursor = ({ vibe }: CursorProps) => {
 
       {/* Tracking Ring */}
       <motion.div
-        className="fixed top-0 left-0 w-10 h-10 border border-emerald-500/30 rounded-full pointer-events-none z-[9998]"
+        className="fixed top-0 left-0 w-12 h-12 border border-emerald-500/40 rounded-full pointer-events-none z-[9999] shadow-[0_0_20px_rgba(16,185,129,0.1)]"
         style={{
           x: springX,
           y: springY,
