@@ -21,7 +21,7 @@ SUMMARY: ${PROFILE.summary}
 TECHNICAL STACK: ${SKILL_CATEGORIES.flatMap(c => c.skills).join(', ')}
 KEY PROJECTS: ${PROJECTS.map(p => `${p.title} (${p.tags.join(', ')}): PROBLEM: ${p.brief.constraint} | SOLUTION: ${p.brief.strategy} | OUTCOME: ${p.brief.outcome}`).join('\n')}
 EXPERIENCE: ${WORK_LOG.map(w => `${w.role} at ${w.inst}: ${w.log}`).join(' | ')}
-CONTACT: Email: ${PROFILE.email}, GitHub: ${PROFILE.github}
+CONTACT: Email: ${PROFILE.email}, GitHub: ${PROFILE.github}, LinkedIn: ${PROFILE.linkedIn}, YouTube: ${PROFILE.youtube}, Instagram: ${PROFILE.instagram}, WhatsApp: ${PROFILE.whatsapp}
 `;
 
 const AiChat = () => {
