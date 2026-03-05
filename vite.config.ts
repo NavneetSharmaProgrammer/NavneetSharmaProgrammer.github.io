@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     // Replace with your repository name if not using a custom domain
-    base: '/', 
+    base: '/NavneetSharmaProgrammer.github.io/', 
     build: {
       outDir: 'dist',
     },
