@@ -10,7 +10,7 @@ const Typewriter = ({ text, delay = 0, onComplete }: { text: string; delay?: num
   const [isComplete, setIsComplete] = useState(false);
 
   useEffect(() => {
-    let timeout: NodeJS.Timeout;
+    let timeout: any;
     let currentText = '';
     let index = 0;
 
@@ -45,7 +45,7 @@ const DecodeText = ({ targetText, initialScramble, delay = 0, onComplete }: { ta
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+';
 
   useEffect(() => {
-    let timeout: NodeJS.Timeout;
+    let timeout: any;
     timeout = setTimeout(() => {
       let iteration = 0;
       const interval = setInterval(() => {
