@@ -52,7 +52,7 @@ const AiChat = () => {
     if (!input.trim()) return;
 
     const userMsg: Message = {
-      id: Date.now().toString(),
+      id: `user-${Date.now()}-${Math.random()}`,
       role: 'user',
       text: input,
       timestamp: new Date()
@@ -84,7 +84,7 @@ const AiChat = () => {
         const text = response.text || "Signal lost.";
         
         setMessages(prev => [...prev, {
-          id: (Date.now() + 1).toString(),
+          id: `model-${Date.now()}-${Math.random()}`,
           role: 'model',
           text: text,
           timestamp: new Date()
@@ -94,23 +94,38 @@ const AiChat = () => {
         // --- LOCAL MODE (OFFLINE HEURISTICS) ---
         await new Promise(resolve => setTimeout(resolve, 600));
         
-        let responseText = "Data point not found in local cache.";
+        let responseText = "";
         const lowerInput = input.toLowerCase();
 
-        if (lowerInput.includes('skill') || lowerInput.includes('stack') || lowerInput.includes('tech')) {
-           responseText = `Core Stack: ${SKILL_CATEGORIES[0].skills.slice(0, 4).join(', ')}. Focus on Python & Data Science.`;
+        if (lowerInput === 'hi' || lowerInput === 'hello') {
+           responseText = `Greetings. I am the Navneet_Core AI Assistant. Type 'help' to see available commands.`;
+        } else if (lowerInput === 'help') {
+           responseText = "AVAILABLE COMMANDS:\n> skills\n> projects\n> contact\n> clear";
+        } else if (lowerInput.includes('skill') || lowerInput.includes('stack') || lowerInput.includes('tech')) {
+           responseText = `INITIALIZING CORE STACK:\n- Python (Data Structures, Scripting)\n- Advanced Excel & Power BI\n- SQL (MySQL, T-SQL)\nStatus: Actively upgrading neural pathways in Data Analytics.`;
         } else if (lowerInput.includes('project') || lowerInput.includes('work') || lowerInput.includes('built')) {
-           responseText = `Flagship: ${PROJECTS[0].title}. Outcome: ${PROJECTS[0].brief.outcome}.`;
+           responseText = `ACCESSING ARCHIVES...\n1. ${PROJECTS[0].title}\n2. ${PROJECTS[1].title}\n*Type 'contact' to request full dossier.*`;
         } else if (lowerInput.includes('contact') || lowerInput.includes('email') || lowerInput.includes('hire')) {
-           responseText = `Signal: ${PROFILE.email}. Status: Available for deployment.`;
+           responseText = `COMMUNICATION PROTOCOL:\nEmail: ${PROFILE.email}\nLinkedIn: Connected\nStatus: Available for Data Analyst deployment.`;
         } else if (lowerInput.includes('who') || lowerInput.includes('navneet')) {
            responseText = `${PROFILE.summary}`;
+        } else if (lowerInput === 'clear') {
+           setMessages([{
+             id: 'init',
+             role: 'system',
+             text: 'READY. QUERY THE ARCHITECTURE.',
+             timestamp: new Date()
+           }]);
+           setIsLoading(false);
+           return;
+        } else if (lowerInput === 'sudo') {
+           responseText = "ACCESS DENIED. This incident will be reported.";
         } else {
-           responseText = "Local Search Limit Reached. Try 'Skills', 'Projects', or 'Contact'.";
+           responseText = `COMMAND NOT RECOGNIZED: '${input}'. Available parameters: 'Skills', 'Projects', 'Contact'. Type 'help' for directory.`;
         }
 
         setMessages(prev => [...prev, {
-          id: (Date.now() + 1).toString(),
+          id: `model-${Date.now()}-${Math.random()}`,
           role: 'model',
           text: responseText,
           timestamp: new Date()
@@ -118,12 +133,12 @@ const AiChat = () => {
       }
     } catch (error) {
       console.error(error);
-      setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
-        role: 'system',
-        text: 'ERROR: CONNECTION DROPPED.',
-        timestamp: new Date()
-      }]);
+        setMessages(prev => [...prev, {
+          id: `system-${Date.now()}-${Math.random()}`,
+          role: 'system',
+          text: 'ERROR: CONNECTION DROPPED.',
+          timestamp: new Date()
+        }]);
     } finally {
       setIsLoading(false);
     }
@@ -155,7 +170,7 @@ const AiChat = () => {
             initial={{ opacity: 0, y: 20, scale: 0.95, filter: 'blur(10px)' }}
             animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
             exit={{ opacity: 0, y: 20, scale: 0.95, filter: 'blur(10px)' }}
-            className="fixed bottom-24 right-6 w-[90vw] md:w-[450px] h-[600px] bg-[#050505]/95 border border-emerald-500/20 rounded-[2rem] shadow-[0_0_50px_rgba(16,185,129,0.1)] z-50 flex flex-col overflow-hidden backdrop-blur-2xl"
+            className="fixed bottom-24 right-6 w-[90vw] md:w-[450px] h-[600px] bg-[#050505]/95 border border-emerald-500/20 rounded-[2rem] shadow-[0_0_50px_rgba(16,185,129,0.1)] z-50 flex flex-col overflow-hidden backdrop-blur-md"
           >
             {/* Ambient Glow */}
             <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/5 to-transparent pointer-events-none" />
@@ -193,7 +208,7 @@ const AiChat = () => {
                     <span className="text-[8px]">[{msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}]</span>
                   </div>
                   <div 
-                    className={`max-w-[90%] p-4 rounded-2xl ${
+                    className={`max-w-[90%] p-4 rounded-2xl whitespace-pre-wrap ${
                       msg.role === 'user' 
                         ? 'bg-emerald-500 text-black font-bold shadow-[0_0_20px_rgba(16,185,129,0.2)]' 
                         : msg.role === 'system' 
