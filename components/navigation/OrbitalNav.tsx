@@ -23,10 +23,10 @@ export const OrbitalNav = ({ vibe, setVibe }: OrbitalNavProps) => {
   const springConfig = { type: "spring" as const, stiffness: 400, damping: 25 };
 
   return (
-    <div className="fixed bottom-8 right-8 z-50 flex flex-col items-end justify-center pointer-events-none">
+    <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center justify-center pointer-events-none">
       
       {/* Container needs pointer-events-auto for interaction */}
-      <div className="relative pointer-events-auto flex flex-col items-center">
+      <div className="relative pointer-events-auto">
         <AnimatePresence>
           {isOpen && navItems.map((item, index) => {
              // Calculate precise orbital position (Top Semicircle: -160deg to -20deg)
@@ -51,9 +51,9 @@ export const OrbitalNav = ({ vibe, setVibe }: OrbitalNavProps) => {
                  exit={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
                  transition={{ ...springConfig, delay: index * 0.05 }}
                  onClick={() => { setVibe(item.value as Vibe); setIsOpen(false); }}
-                 className={`absolute top-0 left-0 w-12 h-12 rounded-full flex items-center justify-center border backdrop-blur-md shadow-lg transition-all duration-500
+                 className={`absolute top-0 left-0 w-12 h-12 rounded-full flex items-center justify-center border backdrop-blur-2xl shadow-lg transition-all duration-500
                    ${isActive 
-                     ? 'bg-gradient-to-br from-emerald-500 to-cyan-500 text-black border-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.4)] scale-110' 
+                     ? 'bg-emerald-500 text-black border-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.4)] scale-110' 
                      : 'bg-white/[0.03] border-white/10 text-zinc-500 hover:text-white hover:border-emerald-500/30 hover:bg-white/[0.08]'}`}
                >
                  <item.icon size={18} />
@@ -85,7 +85,7 @@ export const OrbitalNav = ({ vibe, setVibe }: OrbitalNavProps) => {
      <motion.div 
        initial={{ opacity: 0, y: -10 }}
        animate={{ opacity: 1, y: 0 }}
-       className="mt-4 px-4 py-1.5 bg-white/[0.02] backdrop-blur-md border border-white/5 rounded-full text-[8px] font-mono text-zinc-600 uppercase tracking-[0.4em] pointer-events-auto flex items-center gap-3"
+       className="mt-8 px-4 py-1.5 bg-white/[0.02] backdrop-blur-xl border border-white/5 rounded-full text-[8px] font-mono text-zinc-600 uppercase tracking-[0.4em] pointer-events-auto flex items-center gap-3"
      >
         <span className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse" />
         SYS.NAV // <span className="text-emerald-500 font-bold">{vibe}</span>
