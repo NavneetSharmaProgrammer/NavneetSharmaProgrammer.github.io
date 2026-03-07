@@ -53,7 +53,7 @@ export const OrbitalNav = ({ vibe, setVibe }: OrbitalNavProps) => {
                  onClick={() => { setVibe(item.value as Vibe); setIsOpen(false); }}
                  className={`absolute top-0 left-0 w-12 h-12 rounded-full flex items-center justify-center border backdrop-blur-md shadow-lg transition-all duration-500
                    ${isActive 
-                     ? 'bg-gradient-to-br from-emerald-500 to-cyan-500 text-black border-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.4)] scale-110' 
+                     ? 'bg-emerald-500 text-black border-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.4)] scale-110' 
                      : 'bg-white/[0.03] border-white/10 text-zinc-500 hover:text-white hover:border-emerald-500/30 hover:bg-white/[0.08]'}`}
                >
                  <item.icon size={18} />
