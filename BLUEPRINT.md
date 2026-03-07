@@ -58,8 +58,8 @@ To keep this portfolio ahead of the curve, consider these upgrades:
 
 ---
 
-## ⚡ Performance   Notes
+## ⚡ Performance Notes
 
-*   **Frame Budget**: The app targets 60fps. Heavy logic is kept o  ut of the render loop.
+*   **Frame Budget**: The app targets 60fps. Heavy logic is kept out of the render loop.
 *   **Glitch Animations**: CSS-based glitch effects (`index.css`) are cheaper than JS animations. Use them for "reveals".
 *   **Motion Values**: We use `useMotionValue` instead of `useState` for mouse interaction. This bypasses the React Virtual DOM diffing for purely visual updates, ensuring zero lag even on lower-end devices.
