@@ -39,8 +39,8 @@ export const TerminalConsole: React.FC = () => {
   }, [logs]);
 
   return (
-    <div className="bg-black/80 border border-emerald-500/20 rounded-lg p-4 font-mono text-[10px] max-h-[250px] h-[250px] overflow-hidden relative group">
-      <div className="absolute top-2 right-2 flex gap-1 z-10">
+    <div className="bg-black/80 border border-emerald-500/20 rounded-lg p-4 font-mono text-[10px] h-40 overflow-hidden relative group">
+      <div className="absolute top-2 right-2 flex gap-1">
         <div className="w-1.5 h-1.5 rounded-full bg-red-500/50" />
         <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/50" />
         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50" />
