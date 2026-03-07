@@ -154,6 +154,10 @@ export const NeuralBackground = React.memo(({ vibe }: NeuralBackgroundProps) => 
         rotationSpeedY = 0.0005; // Very slow
       }
 
+      // Pulse effect for the sphere
+      const pulse = Math.sin(time * 2) * 0.02;
+      sphere.scale.setScalar(targetScale + pulse);
+
       // Smooth Transitions (Lerp)
       material.opacity = lerp(material.opacity, targetOpacity, 0.05);
       
