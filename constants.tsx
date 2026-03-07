@@ -15,7 +15,6 @@ export interface Project {
   date: string;
   stat?: string;
   type?: 'AI' | 'WEB' | 'GEN';
-  colorClass?: string;
 }
 
 export interface SkillCategory {
@@ -73,8 +72,7 @@ export const PROJECTS: Project[] = [
     github: "https://github.com/NavneetSharmaProgrammer",
     date: "2025",
     stat: "SEMANTIC SEARCH & LLMs",
-    type: 'AI',
-    colorClass: 'bento-cyan'
+    type: 'AI'
   },
   {
     id: "vidsnap-ai",
@@ -89,8 +87,7 @@ export const PROJECTS: Project[] = [
     github: "https://github.com/NavneetSharmaProgrammer",
     date: "2025",
     stat: "GEN-AI PIPELINE",
-    type: 'GEN',
-    colorClass: 'bento-fuchsia'
+    type: 'GEN'
   },
   {
     id: "hotel-analytics",
@@ -105,8 +102,7 @@ export const PROJECTS: Project[] = [
     github: "https://github.com/NavneetSharmaProgrammer",
     date: "2025",
     stat: "DATA ANALYTICS & CLASSIFICATION",
-    type: 'AI',
-    colorClass: 'bento-orange'
+    type: 'AI'
   }
 ];
 
