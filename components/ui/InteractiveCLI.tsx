@@ -13,39 +13,65 @@ export const InteractiveCLI: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleCommand = (e: React.FormEvent) => {
+  const handleCommand = async (e: React.FormEvent) => {
     e.preventDefault();
     const cmd = input.trim().toLowerCase();
     if (!cmd) return;
 
+    // Add user command to history immediately
+    setHistory(prev => [...prev, { command: input, output: '...' }]);
+    const currentInput = input;
+    setInput('');
+
+    // Simulate thinking delay
+    await new Promise(resolve => setTimeout(resolve, 400));
+
     let output: string | React.ReactNode = '';
 
     switch (cmd) {
+      case 'hi':
+      case 'hello':
+        output = "Greetings. I am the Navneet_Core AI Assistant. Type 'help' to see available commands.";
+        break;
       case 'whoami':
         output = PROFILE.summary;
         break;
+      case 'skills':
       case 'cat skills.txt':
-        output = "Python, SQL, LangChain, ChromaDB, Flask, PyTorch, Scikit-Learn, Pandas, NumPy, Docker, AWS, Git";
+        output = "INITIALIZING CORE STACK:\n- Python (Data Structures, Scripting)\n- Advanced Excel & Power BI\n- SQL (MySQL, T-SQL)\nStatus: Actively upgrading neural pathways in Data Analytics.";
+        break;
+      case 'projects':
+        output = "ACCESSING ARCHIVES...\n1. Retail Data Dashboard (Power BI)\n2. Python Data Wrangling Scripts\n*Type 'contact' to request full dossier.*";
+        break;
+      case 'contact':
+        output = `COMMUNICATION PROTOCOL:\nEmail: ${PROFILE.email}\nLinkedIn: Connected\nStatus: Available for Data Analyst deployment.`;
         break;
       case 'ping navneet':
         output = "Connection Established. Ready for deployment.";
         break;
       case 'sudo hire navneet':
-        output = "Access Granted. Initializing interview protocols. Initializing connection to " + PROFILE.email;
+      case 'sudo':
+        if (cmd === 'sudo') {
+          output = "ACCESS DENIED. This incident will be reported.";
+        } else {
+          output = "Access Granted. Initializing interview protocols. Initializing connection to " + PROFILE.email;
+        }
         break;
       case 'help':
-        output = "Available commands: whoami, cat skills.txt, ping navneet, sudo hire navneet, clear";
+        output = "AVAILABLE COMMANDS: hi, help, skills, projects, contact, whoami, ping navneet, sudo hire navneet, clear";
         break;
       case 'clear':
         setHistory([]);
-        setInput('');
         return;
       default:
-        output = `Command not found: ${cmd}. Type 'help' for available commands.`;
+        output = `COMMAND NOT RECOGNIZED: '${cmd}'. Type 'help' for directory.`;
     }
 
-    setHistory(prev => [...prev, { command: input, output }]);
-    setInput('');
+    setHistory(prev => {
+      const newHistory = [...prev];
+      newHistory[newHistory.length - 1] = { command: currentInput, output };
+      return newHistory;
+    });
   };
 
   useEffect(() => {
@@ -72,7 +98,7 @@ export const InteractiveCLI: React.FC = () => {
               <span className="text-emerald-500">guest@navneet:~$</span>
               <span className="text-white">{item.command}</span>
             </div>
-            <div className="text-zinc-400 pl-4">{item.output}</div>
+            <div className="text-zinc-400 pl-4 whitespace-pre-wrap">{item.output}</div>
           </div>
         ))}
       </div>
