@@ -23,26 +23,15 @@ import {
   AlgorithmicCore, ETLPipeline, ClassificationReport, APIInference,
   InteractiveInferenceNode, IncidentReports, ExternalRegistries, SystemTopology 
 } from './components/ui/AIMLModules';
-import { TechStackManifest } from './components/sections/TechStackManifest';
-import ImageLab from './components/ui/ImageLab';
 import AiChat from './AiChat';
 
 const App: React.FC = () => {
-  const [isBooting, setIsBooting] = useState(true);
   const [baseVibe, setBaseVibe] = useState<Vibe>('neural');
   const [activeProject, setActiveProject] = useState<any>(null);
   const [activeSection, setActiveSection] = useState<'portfolio' | 'career'>('portfolio');
 
-  const skills = useMemo(() => SKILL_CATEGORIES.flatMap(cat => cat.skills), []);
-
   // Dynamic Vibe Override: If project is open, intensify to 'maximal'
   const vibe = activeProject ? 'maximal' : baseVibe;
-
-  // Startup Sequence
-  React.useEffect(() => {
-    const timer = setTimeout(() => setIsBooting(false), 2500);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Dynamic Metadata Update
   React.useEffect(() => {
@@ -64,77 +53,9 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen font-sans selection:bg-emerald-500 selection:text-black">
       
-      <AnimatePresence>
-        {isBooting && (
-          <motion.div 
-            key="boot"
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
-            transition={{ duration: 0.8, ease: "circOut" }}
-            className="fixed inset-0 z-[1000] bg-[#050505] flex flex-col items-center justify-center p-8 overflow-hidden"
-          >
-            <div className="absolute inset-0 opacity-20 pointer-events-none">
-              <div className="grid-bg" />
-              <div className="scanline" />
-            </div>
-            
-            <div className="w-full max-w-md space-y-8 relative z-10">
-              <div className="flex items-center gap-4 mb-12">
-                <div className="w-12 h-12 border-2 border-emerald-500 rounded-xl flex items-center justify-center animate-pulse">
-                  <Terminal className="text-emerald-500" size={24} />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-mono text-sm text-emerald-500 font-bold tracking-tighter">NAVNEET_OS [v3.4.0]</span>
-                  <span className="font-mono text-[10px] text-zinc-600 uppercase tracking-widest">Neural Kernel Initializing...</span>
-                </div>
-              </div>
-
-              <div className="space-y-4 font-mono text-[10px] uppercase tracking-widest text-zinc-500">
-                <div className="flex justify-between">
-                  <span>Core_Engine</span>
-                  <span className="text-emerald-500">OK</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Neural_Weights</span>
-                  <span className="text-emerald-500">LOADED</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Orbital_Link</span>
-                  <span className="text-emerald-500">ESTABLISHED</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Visual_Buffer</span>
-                  <motion.span 
-                    animate={{ opacity: [1, 0, 1] }}
-                    transition={{ duration: 0.2, repeat: 10 }}
-                    className="text-emerald-500"
-                  >
-                    SYNCING...
-                  </motion.span>
-                </div>
-              </div>
-
-              <div className="relative h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                <motion.div 
-                  className="absolute inset-0 bg-emerald-500"
-                  initial={{ width: 0 }}
-                  animate={{ width: "100%" }}
-                  transition={{ duration: 2, ease: "easeInOut" }}
-                />
-              </div>
-              
-              <div className="flex justify-center">
-                <span className="font-mono text-[8px] text-zinc-700 animate-pulse">ESTABLISHING SECURE CONNECTION TO NEURAL_GRID...</span>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* --- LAYER 0: SYSTEMS --- */}
       <NeuralBackground vibe={vibe} />
       <CustomCursor vibe={vibe} />
-      <div className="grid-bg" />
       <div className="atmosphere" />
       <div className="noise" />
       <OrbitalNav vibe={vibe} setVibe={setBaseVibe} />
@@ -223,14 +144,200 @@ const App: React.FC = () => {
                   <Hero />
                 </div>
 
-                {/* BACKGROUND DAEMON SECTION - Moved up for context */}
-                <div className="md:col-span-12 mt-6">
+                {/* SECONDARY GRID - Telemetry, GitHub, Tech Stack */}
+                <div className="md:col-span-4">
+                  <TiltCard className="p-6 sm:p-8 glass-card border-emerald-500/10 h-full">
+                    <div className="flex justify-between items-center mb-8">
+                      <div className="flex items-center gap-3">
+                        <Activity size={18} className="text-emerald-500" />
+                        <h3 className="font-display font-bold text-sm uppercase tracking-widest">Telemetry</h3>
+                      </div>
+                      <span className="font-mono text-sm text-emerald-500 animate-pulse">LIVE_SYNC</span>
+                    </div>
+                    <div className="space-y-6">
+                      {[
+                        { label: "Datasets Processed", value: "119K+ ROWS", percent: 100, trend: "NOMINAL" },
+                        { label: "Model Accuracy", value: "92.5%", percent: 92.5, trend: "OPTIMAL" },
+                        { label: "Pipeline Uptime", value: "99.9%", percent: 99.9, trend: "STABLE" }
+                      ].map((stat, i) => (
+                        <div key={i} className="space-y-3">
+                          <div className="flex justify-between items-end text-sm font-mono uppercase tracking-wider">
+                            <div className="flex flex-col gap-1">
+                              <span className="text-zinc-500">{stat.label}</span>
+                              <span className="text-emerald-500/50 text-xs">{stat.trend}</span>
+                            </div>
+                            <span className="text-white font-bold">{stat.value}</span>
+                          </div>
+                          <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                            <motion.div 
+                              className="h-full bg-emerald-500"
+                              initial={{ width: 0 }}
+                              whileInView={{ width: `${stat.percent}%` }}
+                              transition={{ duration: 1.5, delay: i * 0.1, ease: "circOut" }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </TiltCard>
+                </div>
+
+                <div className="md:col-span-4">
+                  <TiltCard className="p-6 sm:p-8 glass-card border-emerald-500/10 h-full">
+                    <div className="flex justify-between items-center mb-8">
+                      <div className="flex items-center gap-3">
+                        <Activity size={18} className="text-emerald-500" />
+                        <h3 className="font-display font-bold text-sm uppercase tracking-widest">Node Stats</h3>
+                      </div>
+                      <span className="font-mono text-sm text-emerald-500 animate-pulse">GITHUB_API</span>
+                    </div>
+                    <a href={PROFILE.github} target="_blank" rel="noopener noreferrer" className="flex justify-center interactive group/stats">
+                      <img 
+                        src={`https://github-readme-stats.vercel.app/api?username=${PROFILE.github.replace(/\/$/, '').split('/').pop()}&show_icons=true&theme=matrix&hide_border=true&bg_color=050505`} 
+                        alt="GitHub Stats" 
+                        className="w-full opacity-80 group-hover/stats:opacity-100 transition-opacity"
+                        referrerPolicy="no-referrer"
+                      />
+                    </a>
+                  </TiltCard>
+                </div>
+
+                <div className="md:col-span-4">
+                  <TiltCard className="p-6 sm:p-8 glass-card h-full">
+                    <div className="flex items-center gap-3 mb-6">
+                      <Activity size={18} className="text-emerald-500" />
+                      <h3 className="font-display font-bold text-sm uppercase tracking-widest">Tech Matrix</h3>
+                    </div>
+                    <div className="grid grid-cols-4 gap-2">
+                      {[
+                        "PY", "LC", "DB", "SQL",
+                        "FL", "PT", "SK", "PD",
+                        "NP", "DK", "AW", "GT"
+                      ].map((tech, i) => (
+                        <motion.div 
+                          key={i}
+                          className="aspect-square rounded-sm bg-emerald-500/5 border border-emerald-500/10 flex items-center justify-center group/tech relative overflow-hidden"
+                          whileHover={{ scale: 1.05, borderColor: "rgba(16,185,129,0.4)" }}
+                        >
+                          <span className="font-mono text-xs text-emerald-500/40 group-hover/tech:text-emerald-500 transition-colors z-10">{tech}</span>
+                          <motion.div 
+                            className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover/tech:opacity-100 transition-opacity"
+                            animate={{ 
+                              opacity: [0, 0.1, 0],
+                            }}
+                            transition={{ 
+                              duration: 2, 
+                              repeat: Infinity,
+                              delay: Math.random() * 2
+                            }}
+                          />
+                        </motion.div>
+                      ))}
+                    </div>
+                    <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-1">
+                       {[
+                         { k: "PY", v: "Python" }, { k: "LC", v: "LangChain" },
+                         { k: "DB", v: "VectorDB" }, { k: "SQL", v: "MySQL" },
+                         { k: "FL", v: "Flask" }, { k: "PT", v: "PyTorch" }
+                       ].map((item, i) => (
+                         <div key={i} className="flex items-center gap-2 text-xs font-mono text-zinc-600">
+                            <span className="text-emerald-500/50">{item.k}:</span>
+                            <span className="truncate">{item.v}</span>
+                         </div>
+                       ))}
+                    </div>
+                  </TiltCard>
+                </div>
+
+                {/* PROJECTS GRID - Full width */}
+                <div id="projects-grid" className="md:col-span-12 mt-12">
+                   <span className="font-mono text-sm text-emerald-500 uppercase tracking-[0.5em] mb-8 block">/// ACTIVE_NODES (PROJECTS) ///</span>
+                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                     {PROJECTS.map((project) => (
+                        <ProjectCard key={project.id} project={project} onClick={() => setActiveProject(project)} />
+                     ))}
+                   </div>
+                </div>
+
+                {/* INTERACTIVE CLI SECTION */}
+                <div className="md:col-span-12 mt-12">
+                   <span className="font-mono text-sm text-emerald-500 uppercase tracking-[0.5em] mb-8 block">/// SYSTEM_INTERFACE_ACCESS ///</span>
+                   <InteractiveCLI />
+                </div>
+
+                {/* LIVE INFERENCE PLAYGROUND */}
+                <div className="md:col-span-12 mt-12">
+                   <span className="font-mono text-sm text-emerald-500 uppercase tracking-[0.5em] mb-8 block">/// LIVE_INFERENCE_PLAYGROUND ///</span>
+                   <div className="max-w-3xl mx-auto">
+                      <InteractiveInferenceNode />
+                   </div>
+                </div>
+
+                {/* EXPERIENCE LOG & FORMATION */}
+                <div className="md:col-span-7 mt-12">
+                   <span className="font-mono text-sm text-emerald-500 uppercase tracking-[0.5em] mb-8 block">/// EXPERIENCE_LOG ///</span>
+                   <TiltCard className="h-full p-6 sm:p-10 glass-card">
+                      <div className="flex items-center gap-4 mb-12 pb-6 border-b border-white/5">
+                         <Terminal className="text-emerald-500" size={24} />
+                         <h3 className="font-display font-bold text-xl sm:text-2xl uppercase tracking-tight">Experience Log</h3>
+                      </div>
+                      <div className="space-y-12 pl-6 border-l border-emerald-500/20 relative flex-1 overflow-y-auto max-h-[500px] pr-4 custom-scrollbar">
+                         {WORK_LOG.map((log, i) => (
+                            <div key={i} className="relative group">
+                               <div className={`absolute -left-[31px] top-1.5 w-4 h-4 rounded-full border-4 border-[#050505] ${log.active ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]' : 'bg-zinc-800 group-hover:bg-emerald-500/50'} transition-all duration-500`} />
+                               <div className="flex flex-col gap-2">
+                                  <span className="font-display font-bold text-lg sm:text-xl leading-none group-hover:text-emerald-400 transition-colors">{log.role}</span>
+                                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                                    <span className="font-mono text-sm text-emerald-500 uppercase tracking-[0.2em] font-bold">{log.inst}</span>
+                                    <span className="hidden sm:block w-1 h-1 bg-zinc-700 rounded-full" />
+                                    <span className="font-mono text-sm text-zinc-500 uppercase tracking-widest">{log.date}</span>
+                                  </div>
+                                  <p className="text-sm text-zinc-400 mt-3 leading-relaxed font-light max-w-2xl">{log.log}</p>
+                               </div>
+                            </div>
+                         ))}
+                      </div>
+                   </TiltCard>
+                </div>
+
+                <div className="md:col-span-5 mt-12">
+                   <span className="font-mono text-sm text-emerald-500 uppercase tracking-[0.5em] mb-8 block">/// EDUCATION_AND_CERTS ///</span>
+                   <TiltCard className="p-6 sm:p-10 h-full glass-card">
+                      <div className="flex items-center justify-between mb-12">
+                         <h3 className="font-display font-bold text-xl sm:text-2xl uppercase flex items-center gap-4 tracking-tight">
+                            <ShieldCheck className="text-emerald-500" size={24} /> Education & Certs
+                         </h3>
+                      </div>
+                      <div className="grid gap-4">
+                         {CERTIFICATIONS.map((cert, i) => (
+                            <motion.div 
+                              key={i} 
+                              initial={{ opacity: 0, x: 20 }}
+                              whileInView={{ opacity: 1, x: 0 }}
+                              transition={{ delay: i * 0.1 }}
+                              className="interactive flex items-start justify-between p-6 rounded-3xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.05] hover:border-emerald-500/30 transition-all group cursor-default"
+                            >
+                               <div className="flex items-start gap-4">
+                                  <div className="w-1.5 h-10 bg-emerald-500/10 group-hover:bg-emerald-500 transition-all duration-500 rounded-full mt-1" />
+                                  <div className="flex flex-col">
+                                     <span className="font-bold text-sm uppercase tracking-tight group-hover:text-emerald-400 transition-colors">{cert.title}</span>
+                                     <span className="text-sm text-zinc-500 font-mono tracking-widest mt-2 uppercase">{cert.focus}</span>
+                                  </div>
+                               </div>
+                            </motion.div>
+                         ))}
+                      </div>
+                   </TiltCard>
+                </div>
+
+                {/* BACKGROUND DAEMON SECTION */}
+                <div className="md:col-span-12 mt-12">
                    <TiltCard className="p-10 md:p-16 glass-card border-white/5 relative overflow-hidden">
                       <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none hidden sm:block">
                          <Terminal size={200} />
                       </div>
                       <div className="max-w-4xl">
-                        <span className="font-mono text-sm text-emerald-500 uppercase tracking-[0.5em] mb-8 block"><span className="gradient-text-alt">/// INITIALIZING BACKGROUND_DAEMON ///</span></span>
+                        <span className="font-mono text-sm text-emerald-500 uppercase tracking-[0.5em] mb-8 block">/// INITIALIZING BACKGROUND_DAEMON ///</span>
                         <p className="text-xl md:text-2xl text-zinc-300 leading-relaxed font-light mb-8">
                           {PROFILE.about}
                         </p>
@@ -256,142 +363,29 @@ const App: React.FC = () => {
                    </TiltCard>
                 </div>
 
-                {/* SYSTEM OVERVIEW GRID - Telemetry, GitHub, Tech Stack */}
-                <div className="md:col-span-4 mt-6">
-                  <TiltCard className="p-6 sm:p-8 glass-card border-emerald-500/10 h-full">
-                    <div className="flex justify-between items-center mb-8">
-                      <div className="flex items-center gap-3">
-                        <Activity size={18} className="text-emerald-500" />
-                        <h3 className="font-display font-bold text-sm uppercase tracking-widest">Telemetry</h3>
-                      </div>
-                      <span className="font-mono text-sm text-emerald-500 animate-pulse">LIVE_SYNC</span>
-                    </div>
-                    <div className="space-y-6">
-                      {[
-                        { label: "Datasets Processed", value: "119K+ ROWS", percent: 100, trend: "NOMINAL" },
-                        { label: "Model Accuracy", value: "92.5%", percent: 92.5, trend: "OPTIMAL" },
-                        { label: "Pipeline Uptime", value: "99.9%", percent: 99.9, trend: "STABLE" }
-                      ].map((stat, i) => (
-                        <div key={i} className="space-y-3">
-                          <div className="flex justify-between items-end text-sm font-mono uppercase tracking-wider">
-                            <div className="flex flex-col gap-1">
-                              <span className="text-zinc-500">{stat.label}</span>
-                              <span className="text-emerald-500/50 text-xs">{stat.trend}</span>
-                            </div>
-                            <span className="text-white font-bold">{stat.value}</span>
-                          </div>
-                          <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden relative">
-                            <motion.div 
-                              className="h-full bg-emerald-500"
-                              initial={{ width: 0 }}
-                              whileInView={{ width: `${stat.percent}%` }}
-                              transition={{ duration: 1.5, delay: i * 0.1, ease: "circOut" }}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </TiltCard>
-                </div>
-
-                <div className="md:col-span-4 mt-6">
-                  <TiltCard className="p-6 sm:p-8 glass-card border-emerald-500/10 h-full">
-                    <div className="flex justify-between items-center mb-8">
-                      <div className="flex items-center gap-3">
-                        <Github size={18} className="text-emerald-500" />
-                        <h3 className="font-display font-bold text-sm uppercase tracking-widest">Node Stats</h3>
-                      </div>
-                      <span className="font-mono text-sm text-emerald-500 animate-pulse">GITHUB_API</span>
-                    </div>
-                    <a href={PROFILE.github} target="_blank" rel="noopener noreferrer" className="flex justify-center interactive group/stats">
-                      <img 
-                        src={`https://github-readme-stats.vercel.app/api?username=${PROFILE.github.replace(/\/$/, '').split('/').pop()}&show_icons=true&theme=matrix&hide_border=true&bg_color=050505`} 
-                        alt="GitHub Stats" 
-                        className="w-full opacity-80 group-hover/stats:opacity-100 transition-opacity"
-                        referrerPolicy="no-referrer"
-                      />
-                    </a>
-                  </TiltCard>
-                </div>
-
-                <div className="md:col-span-4 mt-6">
-                  <TiltCard className="p-6 sm:p-8 glass-card border-emerald-500/10 h-full flex flex-col justify-center items-center text-center">
-                    <div className="flex flex-col items-center gap-4">
-                      <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/20">
-                        <Zap size={32} className="text-emerald-500" />
-                      </div>
-                      <div className="space-y-2">
-                        <h3 className="font-display font-bold text-lg uppercase tracking-widest">Neural Stack</h3>
-                        <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest">v3.4.0 Optimized</p>
-                      </div>
-                      <motion.div 
-                        className="px-4 py-2 bg-emerald-500 text-black text-[10px] font-mono font-bold rounded-full uppercase tracking-widest"
-                        animate={{ opacity: [0.5, 1, 0.5] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      >
-                        System Ready
-                      </motion.div>
-                    </div>
-                  </TiltCard>
-                </div>
-
-                {/* PROJECTS GRID - Full width */}
-                <div id="projects-grid" className="md:col-span-12 mt-12">
-                   <span className="font-mono text-sm text-emerald-500 uppercase tracking-[0.5em] mb-8 block"><span className="gradient-text">/// ACTIVE_NODES (PROJECTS) ///</span></span>
-                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                     {PROJECTS.map((project) => (
-                        <ProjectCard key={project.id} project={project} colorClass={project.colorClass} />
-                     ))}
-                   </div>
-                </div>
-
-                {/* INTERACTIVE MODULES SECTION */}
+                {/* ENGINEERING LOGS */}
                 <div className="md:col-span-12 mt-12">
-                   <span className="font-mono text-sm text-emerald-500 uppercase tracking-[0.5em] mb-8 block"><span className="gradient-text">/// SYSTEM_INTERFACE_ACCESS ///</span></span>
-                   <InteractiveCLI />
-                </div>
-
-                <div className="md:col-span-12 mt-12">
-                   <span className="font-mono text-sm text-emerald-500 uppercase tracking-[0.5em] mb-8 block"><span className="gradient-text-alt">/// LIVE_INFERENCE_PLAYGROUND ///</span></span>
-                   <div className="max-w-3xl mx-auto">
-                      <InteractiveInferenceNode />
-                   </div>
-                </div>
-
-                <div className="md:col-span-12 mt-12">
-                   <span className="font-mono text-sm text-emerald-500 uppercase tracking-[0.5em] mb-8 block"><span className="gradient-text">/// NEURAL_IMAGE_SYNTHESIS_LAB ///</span></span>
-                   <ImageLab />
-                </div>
-
-                <div className="md:col-span-12 mt-12">
-                   <span className="font-mono text-sm text-emerald-500 uppercase tracking-[0.5em] mb-8 block"><span className="gradient-text">/// ENGINEERING_LOGS // INCIDENT_REPORTS ///</span></span>
+                   <span className="font-mono text-sm text-emerald-500 uppercase tracking-[0.5em] mb-8 block">/// ENGINEERING_LOGS // INCIDENT_REPORTS ///</span>
                    <IncidentReports />
                 </div>
 
-                {/* TECH STACK SECTION - FULL WIDTH */}
-                <div className="md:col-span-12 mt-12">
-                   <TechStackManifest />
-                </div>
-                            <motion.div 
-                              key={i} 
-                              className="flex items-center gap-4 sm:gap-6 interactive cursor-default"
-                              whileHover={{ scale: 1.1, rotate: [-1, 1, -1] }}
-                            >
-
                 {/* DETAILED SKILLS GRID */}
-                <div className="md:col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                   {SKILL_CATEGORIES.map((cat, i) => (
-                     <TiltCard key={i} className="p-6 sm:p-8 glass-card border-white/5 hover:border-emerald-500/30 transition-all">
-                        <h4 className="font-display font-bold text-xs uppercase tracking-widest text-emerald-500 mb-4 sm:mb-6 border-b border-emerald-500/10 pb-4">{cat.title}</h4>
-                        <div className="flex flex-wrap gap-2">
-                           {cat.skills.map((skill, j) => (
-                             <span key={j} className="px-3 py-1.5 bg-white/5 rounded-lg text-[10px] font-mono text-zinc-400 border border-white/5 hover:border-emerald-500/20 hover:text-white transition-all">
-                                {skill}
-                             </span>
-                           ))}
-                        </div>
-                     </TiltCard>
-                   ))}
+                <div className="md:col-span-12 mt-12">
+                   <span className="font-mono text-sm text-emerald-500 uppercase tracking-[0.5em] mb-8 block">/// TECH_STACK_MODULE.EXE ///</span>
+                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                     {SKILL_CATEGORIES.map((cat, i) => (
+                       <TiltCard key={i} className="p-8 glass-card border-white/5 hover:border-emerald-500/30 transition-all">
+                          <h4 className="font-display font-bold text-sm uppercase tracking-widest text-emerald-500 mb-6 border-b border-emerald-500/10 pb-4">{cat.title}</h4>
+                          <div className="flex flex-wrap gap-2">
+                             {cat.skills.map((skill, j) => (
+                               <span key={j} className="px-3 py-1.5 bg-white/5 rounded-lg text-sm font-mono text-zinc-400 border border-white/5 hover:border-emerald-500/20 hover:text-white transition-all">
+                                  {skill}
+                               </span>
+                             ))}
+                          </div>
+                       </TiltCard>
+                     ))}
+                   </div>
                 </div>
 
                 {/* CONTACT NODES */}
@@ -428,63 +422,6 @@ const App: React.FC = () => {
                            </a>
                         </div>
                       </motion.div>
-                   </TiltCard>
-                </div>
-
-                {/* EXPERIENCE LOG & FORMATION */}
-                <div className="md:col-span-7 mt-12">
-                   <span className="font-mono text-sm text-emerald-500 uppercase tracking-[0.5em] mb-8 block"><span className="gradient-text-alt">/// EXPERIENCE_LOG ///</span></span>
-                   <TiltCard className="h-full p-6 sm:p-10 glass-card">
-                      <div className="flex items-center gap-4 mb-12 pb-6 border-b border-white/5">
-                         <Terminal className="text-emerald-500" size={24} />
-                         <h3 className="font-display font-bold text-xl sm:text-2xl uppercase tracking-tight">Experience Log</h3>
-                      </div>
-                      <div className="space-y-12 pl-6 border-l border-emerald-500/20 relative flex-1 overflow-y-auto max-h-[500px] pr-4 custom-scrollbar">
-                         {WORK_LOG.map((log, i) => (
-                            <div key={i} className="relative group">
-                               <div className={`absolute -left-[31px] top-1.5 w-4 h-4 rounded-full border-4 border-[#050505] ${log.active ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]' : 'bg-zinc-800 group-hover:bg-emerald-500/50'} transition-all duration-500`} />
-                               <div className="flex flex-col gap-2">
-                                  <span className="font-display font-bold text-lg sm:text-xl leading-none group-hover:text-emerald-400 transition-colors">{log.role}</span>
-                                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-                                    <span className="font-mono text-sm text-emerald-500 uppercase tracking-[0.2em] font-bold">{log.inst}</span>
-                                    <span className="hidden sm:block w-1 h-1 bg-zinc-700 rounded-full" />
-                                    <span className="font-mono text-sm text-zinc-500 uppercase tracking-widest">{log.date}</span>
-                                  </div>
-                                  <p className="text-sm text-zinc-400 mt-3 leading-relaxed font-light max-w-2xl">{log.log}</p>
-                               </div>
-                            </div>
-                         ))}
-                      </div>
-                   </TiltCard>
-                </div>
-
-                <div className="md:col-span-5 mt-12">
-                   <span className="font-mono text-sm text-emerald-500 uppercase tracking-[0.5em] mb-8 block"><span className="gradient-text">/// EDUCATION_AND_CERTS ///</span></span>
-                   <TiltCard className="p-6 sm:p-10 h-full glass-card">
-                      <div className="flex items-center justify-between mb-12">
-                         <h3 className="font-display font-bold text-xl sm:text-2xl uppercase flex items-center gap-4 tracking-tight">
-                            <ShieldCheck className="text-emerald-500" size={24} /> Education & Certs
-                         </h3>
-                      </div>
-                      <div className="grid gap-4">
-                         {CERTIFICATIONS.map((cert, i) => (
-                            <motion.div 
-                              key={i} 
-                              initial={{ opacity: 0, x: 20 }}
-                              whileInView={{ opacity: 1, x: 0 }}
-                              transition={{ delay: i * 0.1 }}
-                              className="interactive flex items-start justify-between p-6 rounded-3xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.05] hover:border-emerald-500/30 transition-all group cursor-default"
-                            >
-                               <div className="flex items-start gap-4">
-                                  <div className="w-1.5 h-10 bg-emerald-500/10 group-hover:bg-emerald-500 transition-all duration-500 rounded-full mt-1" />
-                                  <div className="flex flex-col">
-                                     <span className="font-bold text-sm uppercase tracking-tight group-hover:text-emerald-400 transition-colors">{cert.title}</span>
-                                     <span className="text-sm text-zinc-500 font-mono tracking-widest mt-2 uppercase">{cert.focus}</span>
-                                  </div>
-                               </div>
-                            </motion.div>
-                         ))}
-                      </div>
                    </TiltCard>
                 </div>
 
@@ -554,6 +491,125 @@ const App: React.FC = () => {
           </AnimatePresence>
 
           {/* --- MODALS --- */}
+          <AnimatePresence>
+            {activeProject && (
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[100] bg-[#0B0F14]/90 backdrop-blur-md flex items-center justify-center p-4"
+                onClick={() => setActiveProject(null)}
+              >
+                {/* Ambient Glow for Modal */}
+                <motion.div 
+                   initial={{ opacity: 0 }} animate={{ opacity: 0.2 }} exit={{ opacity: 0 }}
+                   className="absolute inset-0 bg-gradient-radial from-emerald-500/30 to-transparent pointer-events-none"
+                />
+
+                <motion.div
+                  layoutId={`project-${activeProject.id}`}
+                  className="w-full max-w-5xl bg-[#12161C] border border-emerald-500/20 rounded-[2rem] overflow-hidden shadow-2xl relative"
+                  onClick={(e) => e.stopPropagation()}
+                  transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+                >
+                   <button onClick={() => setActiveProject(null)} className="absolute top-6 right-6 z-50 p-2 bg-black/50 rounded-full text-white hover:text-red-500 transition-colors">
+                      <X size={24} />
+                   </button>
+                   
+                   <div className="grid grid-cols-1 md:grid-cols-2">
+                      {/* Left Panel - Image */}
+                      <motion.div 
+                        className="h-[400px] md:h-auto relative overflow-hidden group"
+                        initial={{ opacity: 0, x: -50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6, delay: 0.1 }}
+                      >
+                         <img src={activeProject.imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="" />
+                         <div className="absolute inset-0 bg-gradient-to-t from-[#12161C] via-transparent to-transparent" />
+                         <div className="absolute bottom-8 left-8">
+                            <span className="px-3 py-1 bg-emerald-500 text-black font-bold text-xs uppercase tracking-widest rounded mb-4 inline-block">{activeProject.stat}</span>
+                            <h2 className="text-4xl md:text-5xl font-display font-black uppercase leading-none">{activeProject.title}</h2>
+                         </div>
+                      </motion.div>
+                      
+                      {/* Right Panel - Details */}
+                      <motion.div 
+                        className="p-12 flex flex-col justify-between bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-opacity-5"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                      >
+                         <div className="space-y-8">
+                            <div>
+                               <h4 className="font-mono text-sm text-emerald-500 uppercase tracking-widest mb-2">/ Technical Brief</h4>
+                               <div className="space-y-4 font-mono text-sm text-zinc-400">
+                                  <div className='p-4 bg-white/5 rounded border border-white/5'>
+                                      <span className="text-zinc-500 block text-sm uppercase mb-1">Constraint</span>
+                                      {activeProject.brief.constraint}
+                                  </div>
+                                  <div className='p-4 bg-white/5 rounded border border-white/5'>
+                                      <span className="text-zinc-500 block text-sm uppercase mb-1">Strategy</span>
+                                      {activeProject.brief.strategy}
+                                  </div>
+                                  <div className='p-4 bg-emerald-500/10 rounded border border-emerald-500/20 text-emerald-400'>
+                                      <span className="text-emerald-600 block text-sm uppercase mb-1">Outcome</span>
+                                      {activeProject.brief.outcome}
+                                  </div>
+                               </div>
+                            </div>
+                            
+                            <div className="p-6 bg-black/30 rounded-xl border border-white/5 font-mono text-sm">
+                               <div className="flex items-center gap-2 mb-4 text-zinc-500 border-b border-white/5 pb-2">
+                                  <Code size={14} /> <span>Stack_Trace.json</span>
+                               </div>
+                               <div className="text-emerald-400 space-y-1">
+                                  {activeProject.tags.map((tag: string, i: number) => (
+                                     <div key={i}>"{tag}": <span className="text-white">true</span>,</div>
+                                  ))}
+                               </div>
+                            </div>
+
+                            {activeProject.id === 'hotel-analytics' && (
+                              <div className="space-y-2">
+                                <h4 className="font-mono text-sm text-emerald-500 uppercase tracking-widest mb-2">/ Model_Metrics.log</h4>
+                                <ClassificationReport />
+                              </div>
+                            )}
+
+                            {(activeProject.id === 'vidsnap-ai' || activeProject.id === 'rag-ta') && (
+                              <div className="space-y-2">
+                                <h4 className="font-mono text-sm text-emerald-500 uppercase tracking-widest mb-2">/ API_Inference.json</h4>
+                                <APIInference />
+                              </div>
+                            )}
+                         </div>
+                         
+                       <div className="flex gap-4 mt-8 pt-8 border-t border-white/5">
+                          {activeProject.link && (
+                             <a 
+                               href={activeProject.link} 
+                               target="_blank" 
+                               rel="noopener noreferrer"
+                               aria-label={`Launch ${activeProject.title} project`}
+                               className="flex-1 py-4 bg-emerald-500 text-black font-bold uppercase tracking-widest text-center rounded hover:bg-emerald-400 transition-colors"
+                             >
+                                Launch
+                             </a>
+                          )}
+                          <a 
+                            href={activeProject.github || PROFILE.github} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            aria-label={`View ${activeProject.title} source code on GitHub`}
+                            className="px-6 py-4 border border-white/10 rounded hover:bg-white/5 transition-colors flex items-center justify-center"
+                          >
+                             <Github size={20} />
+                          </a>
+                       </div>
+                      </motion.div>
+                   </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </LayoutGroup>
 
         <AiChat />
